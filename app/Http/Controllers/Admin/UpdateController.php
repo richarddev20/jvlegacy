@@ -56,10 +56,7 @@ class UpdateController extends Controller
         $update->sent_on = now();
         $update->save();
 
-        $this->sendBulkEmails($update);
-
-        // Count emails sent (excluding Ben and Scott)
-        $emailcount = count($emails) - 2;
+        $emailcount = $this->dispatchBulkEmails($update);
 
         return redirect()->route('admin.updates.index')
             ->with('success', 'Update posted and ' . $emailcount . ' investors notified.');
@@ -69,7 +66,14 @@ class UpdateController extends Controller
     public function sendBulkEmails($id)
     {
         $update = Update::findOrFail($id);
+        $emailcount = $this->dispatchBulkEmails($update);
 
+        return redirect()->route('admin.updates.index')
+            ->with('success', $emailcount . ' investors notified.');
+    }
+
+    protected function dispatchBulkEmails(Update $update)
+    {
         $investorAccounts = Investments::where('project_id', $update->project_id)
             ->with('account')
             ->get()
@@ -95,10 +99,9 @@ class UpdateController extends Controller
         }
 
         // Count emails sent (excluding Ben and Scott)
-        $emailcount = count($emails) - 2;
+        $emailcount = max(count($emails) - 2, 0);
 
-        return redirect()->route('admin.updates.index')
-            ->with('success', $emailcount . ' investors notified.');
+        return $emailcount;
     }
 
     // Function to send update email to just Ben, Scott and Chris
