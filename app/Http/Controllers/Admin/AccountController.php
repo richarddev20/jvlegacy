@@ -50,7 +50,57 @@ class AccountController extends Controller
 
         $entity = $account->person ?? $account->company;
 
-        return view('admin.accounts.show', compact('account', 'entity'));
+        // Group investments by project for overview
+        $projectInvestments = $account->investments()
+            ->with('project')
+            ->get()
+            ->groupBy(function ($investment) {
+                return $investment->project_id ?? 'no-project';
+            })
+            ->map(function ($investments, $projectId) {
+                if ($projectId === 'no-project') {
+                    return [
+                        'project' => null,
+                        'project_id' => null,
+                        'project_name' => 'No Project Assigned',
+                        'total_invested' => $investments->sum('amount'),
+                        'total_paid' => $investments->where('paid', 1)->sum('amount'),
+                        'total_unpaid' => $investments->where('paid', 0)->sum('amount'),
+                        'investment_count' => $investments->count(),
+                        'paid_count' => $investments->where('paid', 1)->count(),
+                        'unpaid_count' => $investments->where('paid', 0)->count(),
+                        'investments' => $investments,
+                    ];
+                }
+                
+                $project = $investments->first()->project;
+                return [
+                    'project' => $project,
+                    'project_id' => $project->project_id ?? null,
+                    'project_name' => $project->name ?? 'Unknown Project',
+                    'total_invested' => $investments->sum('amount'),
+                    'total_paid' => $investments->where('paid', 1)->sum('amount'),
+                    'total_unpaid' => $investments->where('paid', 0)->sum('amount'),
+                    'investment_count' => $investments->count(),
+                    'paid_count' => $investments->where('paid', 1)->count(),
+                    'unpaid_count' => $investments->where('paid', 0)->count(),
+                    'investments' => $investments,
+                ];
+            })
+            ->values();
+
+        // Get available projects for upsell
+        $availableProjects = \App\Models\Project::whereIn('status', [
+            \App\Models\Project::STATUS_PENDING_EQUITY,
+            \App\Models\Project::STATUS_PENDING_PURCHASE,
+            \App\Models\Project::STATUS_PENDING_CONSTRUCTION,
+            \App\Models\Project::STATUS_UNDER_CONSTRUCTION,
+        ])
+        ->orderByDesc('launched_on')
+        ->limit(3)
+        ->get();
+
+        return view('admin.accounts.show', compact('account', 'entity', 'projectInvestments', 'availableProjects'));
     }
 
     public function updateType(Request $request, $id)
