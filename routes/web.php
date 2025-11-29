@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\InvestmentController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\UpdateController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\Investor\InvestorDashboardController;
 use App\Http\Controllers\Investor\InvestorDocumentController;
 use App\Http\Controllers\Investor\InvestorNotificationController;
@@ -97,6 +98,9 @@ Route::get('/updates/{id}', UpdateShowController::class)->name('updates.show');
 
 Route::get('/projects', [PublicProjectController::class, 'index'])->name('public.projects.index');
 Route::get('/projects/{project}', [PublicProjectController::class, 'show'])->name('public.projects.show');
+
+// Document download route
+Route::get('/document/investor/{hash}', [DocumentController::class, 'investor'])->name('document.investor');
 
 // One-time route to run missing migrations (remove after use)
 Route::get('/run-migrations', function () {
