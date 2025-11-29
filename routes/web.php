@@ -94,4 +94,49 @@ Route::get('/updates/{id}', UpdateShowController::class)->name('updates.show');
 Route::get('/projects', [PublicProjectController::class, 'index'])->name('public.projects.index');
 Route::get('/projects/{project}', [PublicProjectController::class, 'show'])->name('public.projects.show');
 
+// One-time route to create admin account (remove after use)
+Route::get('/create-admin-account', function () {
+    $email = 'rich@rise-capital.uk';
+    $password = 'password123';
+    
+    // Check if account already exists
+    if (\App\Models\Account::where('email', $email)->exists()) {
+        return response()->json([
+            'error' => 'Account already exists',
+            'email' => $email,
+        ], 400);
+    }
+    
+    // Split name
+    $nameParts = explode(' ', 'Rich Copestake', 2);
+    $firstName = $nameParts[0];
+    $lastName = $nameParts[1] ?? '';
+    
+    // Create person record
+    $person = \App\Models\Person::create([
+        'first_name' => $firstName,
+        'last_name' => $lastName,
+        'email' => $email,
+    ]);
+    
+    // Create account with GUARDIAN type (type_id = 2) for global admin access
+    $account = \App\Models\Account::create([
+        'email' => $email,
+        'password' => bcrypt($password),
+        'type_id' => 2, // GUARDIAN = System Admin
+        'person_id' => $person->id,
+        'deleted' => 0,
+    ]);
+    
+    return response()->json([
+        'success' => true,
+        'message' => 'Admin account created successfully!',
+        'email' => $email,
+        'password' => $password,
+        'type' => 'GUARDIAN (Global Admin)',
+        'account_id' => $account->id,
+        'login_url' => url('/investor/login'),
+    ]);
+})->name('create.admin.account');
+
 require __DIR__.'/auth.php';
