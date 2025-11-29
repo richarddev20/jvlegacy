@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\InvestmentController;
+use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\UpdateController;
 use App\Http\Controllers\Investor\InvestorDashboardController;
 use App\Http\Controllers\Investor\InvestorDocumentController;
@@ -47,6 +48,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
 
     Route::post('/accounts/{id}/type', [AccountController::class, 'updateType'])->name('accounts.updateType');
     Route::post('/accounts/{id}/password', [AccountController::class, 'updatePassword'])->name('accounts.updatePassword');
+
+    Route::get('/projects/{projectId}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::post('/projects/{projectId}/resend-documents', [ProjectController::class, 'resendDocuments'])->name('projects.resend_documents');
 
     Route::post('accounts/{id}/masquerade', function ($id) {
         $target = Account::on('legacy')->findOrFail($id);

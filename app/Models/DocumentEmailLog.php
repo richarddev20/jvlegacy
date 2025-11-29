@@ -23,6 +23,16 @@ class DocumentEmailLog extends Model
     protected $casts = [
         'sent_at' => 'datetime',
     ];
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'account_id');
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'project_id');
+    }
 }
 
 

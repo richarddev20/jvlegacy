@@ -79,7 +79,7 @@
                     <td class="px-4 py-2 whitespace-nowrap">{{ $inv->id }}</td>
                     <td class="px-4 py-2 whitespace-nowrap">
                         @if($inv->project_id)
-                            <a href="{{ route('public.projects.show', $inv->project_id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                            <a href="{{ route('admin.projects.show', $inv->project_id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
                                 {{ $inv->project_id }} – {{ $inv->project->name ?? '—' }}
                             </a>
                         @else
