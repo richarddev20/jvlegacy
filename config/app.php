@@ -134,5 +134,6 @@ return [
 
     'sys_url' => env('SYS_URL', 'https://sys.jaevee.co.uk'),
     'public_url' => env('PUBLIC_URL', 'https://jaevee.co.uk'),
+    'legacy_system_url' => env('LEGACY_SYSTEM_URL', 'https://beta.jaevee.co.uk'),
 
 ];

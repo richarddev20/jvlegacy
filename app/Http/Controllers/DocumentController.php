@@ -6,6 +6,7 @@ use App\Models\ProjectInvestorDocument;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class DocumentController extends Controller
 {
@@ -327,7 +328,45 @@ class DocumentController extends Controller
         }
 
         if (!$filePath || !file_exists($filePath)) {
-            \Log::error('Document file not found', [
+            \Log::warning('Document file not found locally, attempting to proxy from legacy system', [
+                'document_id' => $document->id,
+                'proposal_id' => $document->proposal_id,
+                'hash' => $document->hash,
+            ]);
+            
+            // Fallback: Try to proxy from legacy system (beta.jaevee.co.uk)
+            $legacyUrl = config('app.legacy_system_url', 'https://beta.jaevee.co.uk');
+            $proxyUrl = $legacyUrl . '/document/investor/' . urlencode($hash);
+            
+            try {
+                \Log::info('Attempting to proxy document from legacy system', ['url' => $proxyUrl]);
+                
+                $response = Http::timeout(10)->withoutVerifying()->get($proxyUrl);
+                
+                if ($response->successful()) {
+                    $fileName = ($document->name ?? 'document') . '.pdf';
+                    if (!str_ends_with(strtolower($fileName), '.pdf')) {
+                        $fileName .= '.pdf';
+                    }
+                    
+                    \Log::info('Successfully proxied document from legacy system', [
+                        'document_id' => $document->id,
+                        'size' => strlen($response->body()),
+                    ]);
+                    
+                    return response($response->body(), 200, [
+                        'Content-Type' => 'application/pdf',
+                        'Content-Disposition' => 'inline; filename="' . $fileName . '"',
+                    ]);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Failed to proxy document from legacy system', [
+                    'error' => $e->getMessage(),
+                    'url' => $proxyUrl,
+                ]);
+            }
+            
+            \Log::error('Document file not found and proxy failed', [
                 'document_id' => $document->id,
                 'proposal_id' => $document->proposal_id,
                 'hash' => $document->hash,
