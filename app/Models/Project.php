@@ -63,8 +63,17 @@ class Project extends Model
     protected $table = 'projects';
     public $timestamps = false;
 
-    protected $primaryKey = 'project_id'; // <- Important
-    public $incrementing = false; // if it's a string or non-auto ID
+    // Note: 'id' is the auto-increment primary key, 'project_id' is the external/public ID
+    protected $fillable = [
+        'name',
+        'description',
+        'project_id',
+        'account_id',
+        'status',
+        'progress',
+        'created_on',
+        'updated_on',
+    ];
 
     protected $casts = [
         'created_on' => 'datetime',

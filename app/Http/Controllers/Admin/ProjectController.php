@@ -15,7 +15,78 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        return view('admin.projects.index');
+        $query = Project::with('property');
+        
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('project_id', 'like', '%' . $request->search . '%');
+        }
+        
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        $projects = $query->orderByDesc('created_on')->paginate(25)->withQueryString();
+        
+        return view('admin.projects.index', compact('projects'));
+    }
+    
+    public function create()
+    {
+        $accounts = \App\Models\Account::on('legacy')
+            ->where('deleted', 0)
+            ->with('person', 'company')
+            ->orderBy('id')
+            ->limit(500)
+            ->get();
+        
+        return view('admin.projects.create', compact('accounts'));
+    }
+    
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'account_id' => 'required|exists:legacy.accounts,id',
+            'status' => 'nullable|integer',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+        ]);
+        
+        // Get the next project_id
+        $lastProject = Project::whereNotNull('project_id')
+            ->orderByDesc('project_id')
+            ->first();
+        
+        $nextProjectId = $lastProject ? ((int)$lastProject->project_id + 1) : 1000;
+        
+        $project = new Project();
+        $project->name = $validated['name'];
+        $project->description = $validated['description'] ?? '';
+        $project->account_id = $validated['account_id'];
+        $project->status = $validated['status'] ?? Project::STATUS_NOT_SUBMITTED;
+        $project->progress = 0;
+        $project->created_on = now();
+        $project->updated_on = now();
+        
+        // Save first to get the internal ID
+        $project->save();
+        
+        // Now set the project_id (external ID)
+        $project->project_id = $nextProjectId;
+        $project->save();
+        
+        // Handle image upload if provided
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = $project->project_id . '_' . time() . '_' . $image->getClientOriginalName();
+            $imagePath = $image->storeAs('projects', $imageName, 'public');
+            // Store image path - you may need to add an image_path column or use a files table
+            // For now, we'll just store it (you can add this field later if needed)
+        }
+        
+        return redirect()->route('admin.projects.show', $project->project_id)
+            ->with('success', 'Project created successfully with Project ID: ' . $project->project_id);
     }
 
     public function show($projectId)

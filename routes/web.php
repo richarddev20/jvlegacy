@@ -52,11 +52,13 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::get('/accounts/{id}', [AccountController::class, 'show'])->name('accounts.show');
 
-        Route::post('/accounts/{id}/type', [AccountController::class, 'updateType'])->name('accounts.updateType');
-        Route::post('/accounts/{id}/password', [AccountController::class, 'updatePassword'])->name('accounts.updatePassword');
+    Route::post('/accounts/{id}/type', [AccountController::class, 'updateType'])->name('accounts.updateType');
+    Route::post('/accounts/{id}/password', [AccountController::class, 'updatePassword'])->name('accounts.updatePassword');
         Route::put('/accounts/{id}', [AccountController::class, 'update'])->name('accounts.update');
 
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
+    Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('/projects/{projectId}', [ProjectController::class, 'show'])->name('projects.show');
     Route::post('/projects/{projectId}/resend-documents', [ProjectController::class, 'resendDocuments'])->name('projects.resend_documents');
     
@@ -167,14 +169,14 @@ Route::prefix('investor')->name('investor.')->group(function () {
     Route::post('login', [InvestorAuthController::class, 'login'])->name('login.post');
     Route::post('logout', [InvestorAuthController::class, 'logout'])->name('logout');
 
-        Route::middleware('auth:investor')->group(function () {
-            Route::get('/dashboard', InvestorDashboardController::class)->name('dashboard');
+    Route::middleware('auth:investor')->group(function () {
+        Route::get('/dashboard', InvestorDashboardController::class)->name('dashboard');
             Route::put('/profile', [\App\Http\Controllers\Investor\InvestorProfileController::class, 'update'])->name('profile.update');
             Route::post('/projects/{project}/documents/email', [InvestorDocumentController::class, 'email'])->name('documents.email');
             Route::post('/notifications/{notification}/read', [InvestorNotificationController::class, 'markRead'])->name('notifications.read');
             Route::post('/notifications/mark-all-read', [InvestorNotificationController::class, 'markAllRead'])->name('notifications.read_all');
             Route::post('/projects/{project}/support', [InvestorSupportController::class, 'store'])->name('support.store');
-        });
+    });
 });
 
 Route::get('/updates/{id}', UpdateShowController::class)->name('updates.show');
