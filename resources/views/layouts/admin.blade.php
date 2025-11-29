@@ -24,15 +24,18 @@
 <body class="bg-gray-50" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
-        <aside class="w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 border-r border-gray-700 flex flex-col fixed h-full z-30 shadow-2xl">
+        <aside class="w-64 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700/50 flex flex-col fixed h-full z-30 shadow-2xl">
             <!-- Logo -->
-            <div class="h-16 flex items-center px-6 border-b border-gray-700 bg-gradient-to-r from-blue-600 to-blue-500">
+            <div class="h-16 flex items-center justify-between px-5 border-b border-slate-700/50 bg-slate-900/50">
                 <div class="flex items-center">
-                    <div class="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center mr-3 backdrop-blur-sm">
-                        <img src="{{asset('logo.png')}}" alt="Logo" class="h-7">
+                    <div class="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mr-3 shadow-lg">
+                        <img src="{{asset('logo.png')}}" alt="Logo" class="h-6">
                     </div>
-                    <span class="text-lg font-bold text-white tracking-tight">JaeVee System</span>
+                    <span class="text-lg font-bold text-white tracking-tight">JaeVee</span>
                 </div>
+                <button class="text-slate-400 hover:text-white transition-colors" id="sidebar-toggle">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
             </div>
 
             <!-- Navigation -->
@@ -43,76 +46,73 @@
                 @endphp
                 
                 @if($account && in_array($account->type_id, [1,2,3]))
-                    <div class="px-3 space-y-2">
-                        <a href="{{ route('admin.investments.index') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.investments') ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/50' : 'text-gray-300 hover:bg-gray-700/50 hover:text-white' }}">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-lg mr-3 {{ str_starts_with($currentRoute, 'admin.investments') ? 'bg-white/20' : 'bg-gray-700/50 group-hover:bg-gray-600/50' }} transition-colors">
-                                <i class="fas fa-chart-line text-lg {{ str_starts_with($currentRoute, 'admin.investments') ? 'text-white' : 'text-blue-400' }}"></i>
-                            </div>
-                            <span class="font-semibold">Investments</span>
-                            @if(str_starts_with($currentRoute, 'admin.investments'))
-                                <div class="ml-auto w-2 h-2 rounded-full bg-white"></div>
-                            @endif
-                        </a>
-                        <a href="{{ route('admin.projects.index') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.projects') ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/50' : 'text-gray-300 hover:bg-gray-700/50 hover:text-white' }}">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-lg mr-3 {{ str_starts_with($currentRoute, 'admin.projects') ? 'bg-white/20' : 'bg-gray-700/50 group-hover:bg-gray-600/50' }} transition-colors">
-                                <i class="fas fa-folder-open text-lg {{ str_starts_with($currentRoute, 'admin.projects') ? 'text-white' : 'text-green-400' }}"></i>
-                            </div>
-                            <span class="font-semibold">Projects</span>
-                            @if(str_starts_with($currentRoute, 'admin.projects'))
-                                <div class="ml-auto w-2 h-2 rounded-full bg-white"></div>
-                            @endif
-                        </a>
-                        <a href="{{ route('admin.updates.index') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.updates') ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/50' : 'text-gray-300 hover:bg-gray-700/50 hover:text-white' }}">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-lg mr-3 {{ str_starts_with($currentRoute, 'admin.updates') ? 'bg-white/20' : 'bg-gray-700/50 group-hover:bg-gray-600/50' }} transition-colors">
-                                <i class="fas fa-bullhorn text-lg {{ str_starts_with($currentRoute, 'admin.updates') ? 'text-white' : 'text-yellow-400' }}"></i>
-                            </div>
-                            <span class="font-semibold">Updates</span>
-                            @if(str_starts_with($currentRoute, 'admin.updates'))
-                                <div class="ml-auto w-2 h-2 rounded-full bg-white"></div>
-                            @endif
-                        </a>
-                        <a href="{{ route('admin.accounts.index') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.accounts') ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/50' : 'text-gray-300 hover:bg-gray-700/50 hover:text-white' }}">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-lg mr-3 {{ str_starts_with($currentRoute, 'admin.accounts') ? 'bg-white/20' : 'bg-gray-700/50 group-hover:bg-gray-600/50' }} transition-colors">
-                                <i class="fas fa-users text-lg {{ str_starts_with($currentRoute, 'admin.accounts') ? 'text-white' : 'text-purple-400' }}"></i>
-                            </div>
-                            <span class="font-semibold">Accounts</span>
-                            @if(str_starts_with($currentRoute, 'admin.accounts'))
-                                <div class="ml-auto w-2 h-2 rounded-full bg-white"></div>
-                            @endif
-                        </a>
+                    <!-- Navigation Section -->
+                    <div class="px-4 mb-6">
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-3">Navigation</p>
+                        <div class="space-y-1">
+                            <a href="{{ route('admin.investments.index') }}" class="group relative flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.investments') ? 'bg-slate-800/50 text-white' : 'text-slate-300 hover:bg-slate-800/30 hover:text-white' }}">
+                                @if(str_starts_with($currentRoute, 'admin.investments'))
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-400 rounded-r"></div>
+                                @endif
+                                <i class="fas fa-chart-line w-5 text-center mr-3 {{ str_starts_with($currentRoute, 'admin.investments') ? 'text-teal-400' : 'text-slate-400 group-hover:text-teal-400' }}"></i>
+                                <span>Investments</span>
+                            </a>
+                            <a href="{{ route('admin.projects.index') }}" class="group relative flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.projects') ? 'bg-slate-800/50 text-white' : 'text-slate-300 hover:bg-slate-800/30 hover:text-white' }}">
+                                @if(str_starts_with($currentRoute, 'admin.projects'))
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-400 rounded-r"></div>
+                                @endif
+                                <i class="fas fa-folder-open w-5 text-center mr-3 {{ str_starts_with($currentRoute, 'admin.projects') ? 'text-teal-400' : 'text-slate-400 group-hover:text-teal-400' }}"></i>
+                                <span>Projects</span>
+                            </a>
+                            <a href="{{ route('admin.updates.index') }}" class="group relative flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.updates') ? 'bg-slate-800/50 text-white' : 'text-slate-300 hover:bg-slate-800/30 hover:text-white' }}">
+                                @if(str_starts_with($currentRoute, 'admin.updates'))
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-400 rounded-r"></div>
+                                @endif
+                                <i class="fas fa-bullhorn w-5 text-center mr-3 {{ str_starts_with($currentRoute, 'admin.updates') ? 'text-teal-400' : 'text-slate-400 group-hover:text-teal-400' }}"></i>
+                                <span>Updates</span>
+                            </a>
+                            <a href="{{ route('admin.accounts.index') }}" class="group relative flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.accounts') ? 'bg-slate-800/50 text-white' : 'text-slate-300 hover:bg-slate-800/30 hover:text-white' }}">
+                                @if(str_starts_with($currentRoute, 'admin.accounts'))
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-400 rounded-r"></div>
+                                @endif
+                                <i class="fas fa-users w-5 text-center mr-3 {{ str_starts_with($currentRoute, 'admin.accounts') ? 'text-teal-400' : 'text-slate-400 group-hover:text-teal-400' }}"></i>
+                                <span>Accounts</span>
+                            </a>
+                        </div>
                     </div>
                 @elseif($account && $account->type_id == 8)
-                    <div class="px-3 space-y-2">
-                        <a href="{{ route('admin.accounts.show', $account->id) }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.accounts') ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/50' : 'text-gray-300 hover:bg-gray-700/50 hover:text-white' }}">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-lg mr-3 {{ str_starts_with($currentRoute, 'admin.accounts') ? 'bg-white/20' : 'bg-gray-700/50 group-hover:bg-gray-600/50' }} transition-colors">
-                                <i class="fas fa-user text-lg {{ str_starts_with($currentRoute, 'admin.accounts') ? 'text-white' : 'text-blue-400' }}"></i>
-                            </div>
-                            <span class="font-semibold">My Account</span>
-                            @if(str_starts_with($currentRoute, 'admin.accounts'))
-                                <div class="ml-auto w-2 h-2 rounded-full bg-white"></div>
-                            @endif
-                        </a>
+                    <div class="px-4 mb-6">
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-3">Account</p>
+                        <div class="space-y-1">
+                            <a href="{{ route('admin.accounts.show', $account->id) }}" class="group relative flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.accounts') ? 'bg-slate-800/50 text-white' : 'text-slate-300 hover:bg-slate-800/30 hover:text-white' }}">
+                                @if(str_starts_with($currentRoute, 'admin.accounts'))
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-400 rounded-r"></div>
+                                @endif
+                                <i class="fas fa-user w-5 text-center mr-3 {{ str_starts_with($currentRoute, 'admin.accounts') ? 'text-teal-400' : 'text-slate-400 group-hover:text-teal-400' }}"></i>
+                                <span>My Account</span>
+                            </a>
+                        </div>
                     </div>
                 @endif
             </nav>
 
             <!-- User Section -->
             @if($account)
-                <div class="border-t border-gray-700 p-4 bg-gray-800/50">
-                    <div class="flex items-center mb-4">
+                <div class="border-t border-slate-700/50 p-4 bg-slate-900/30">
+                    <div class="flex items-center mb-3">
                         <div class="flex-shrink-0">
-                            <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg ring-2 ring-blue-400/20">
-                                <i class="fas fa-user text-white text-lg"></i>
+                            <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
+                                <i class="fas fa-user text-white text-sm"></i>
                             </div>
                         </div>
                         <div class="ml-3 flex-1 min-w-0">
                             <p class="text-sm font-semibold text-white truncate">{{ $account->name }}</p>
-                            <p class="text-xs text-gray-400 truncate">{{ $account->email }}</p>
+                            <p class="text-xs text-slate-400 truncate">{{ $account->email }}</p>
                         </div>
                     </div>
                     <form action="{{ route('investor.logout') }}" method="POST">
                         @csrf
-                        <button type="submit" class="w-full flex items-center justify-center px-4 py-2.5 text-sm font-medium text-white bg-red-600/80 hover:bg-red-600 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:scale-[1.02]">
+                        <button type="submit" class="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-slate-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 rounded-lg transition-all duration-200">
                             <i class="fas fa-sign-out-alt mr-2"></i>
                             <span>Logout</span>
                         </button>

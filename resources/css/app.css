@@ -37,14 +37,23 @@ aside nav::-webkit-scrollbar {
 }
 
 aside nav::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.1);
 }
 
 aside nav::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 3px;
 }
 
 aside nav::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* Sidebar navigation hover effects */
+aside nav a {
+    position: relative;
+}
+
+aside nav a:hover {
+    transform: translateX(2px);
 }
