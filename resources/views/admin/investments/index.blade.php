@@ -75,15 +75,41 @@
             </thead>
             <tbody class="divide-y divide-gray-100">
             @forelse ($investments as $inv)
-                <tr class="hover:bg-blue-50 cursor-pointer transition-colors" onclick="window.location.href='{{ route('admin.accounts.show', ['id' => $inv->account->id ?? 0]) }}'" title="Click to view account details">
+                <tr class="hover:bg-gray-50 transition-colors">
                     <td class="px-4 py-2 whitespace-nowrap">{{ $inv->id }}</td>
-                    <td class="px-4 py-2 whitespace-nowrap">{{ $inv->project_id }} – {{ $inv->project->name ?? '—' }}</td>
                     <td class="px-4 py-2 whitespace-nowrap">
-                        {!! $inv->account->type_icon ?? '' !!}
-                        {{ $inv->account->name ?? '—' }}
+                        @if($inv->project_id)
+                            <a href="{{ route('public.projects.show', $inv->project_id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                                {{ $inv->project_id }} – {{ $inv->project->name ?? '—' }}
+                            </a>
+                        @else
+                            —
+                        @endif
                     </td>
-                    <td class="px-4 py-2 whitespace-nowrap">{{ $inv->transfer_id ?? '—' }}</td>
-                    <td class="px-4 py-2 whitespace-nowrap">{{ $inv->pay_in_id ?? '—' }}</td>
+                    <td class="px-4 py-2 whitespace-nowrap">
+                        @if($inv->account && $inv->account->id)
+                            <a href="{{ route('admin.accounts.show', ['id' => $inv->account->id]) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                                {!! $inv->account->type_icon ?? '' !!}
+                                {{ $inv->account->name ?? '—' }}
+                            </a>
+                        @else
+                            —
+                        @endif
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap">
+                        @if($inv->transfer_id)
+                            <span class="text-gray-600">{{ $inv->transfer_id }}</span>
+                        @else
+                            —
+                        @endif
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap">
+                        @if($inv->pay_in_id)
+                            <span class="text-gray-600">{{ $inv->pay_in_id }}</span>
+                        @else
+                            —
+                        @endif
+                    </td>
                     <td class="px-4 py-2 whitespace-nowrap">{!! money($inv->amount) !!}</td>
                     <td class="px-4 py-2 whitespace-nowrap">{{ $inv->type_label ?? '—' }}</td>
                     <td class="px-4 py-2 whitespace-nowrap">
