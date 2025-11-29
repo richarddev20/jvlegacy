@@ -60,19 +60,23 @@ class InvestorDashboardController extends Controller
 
                 foreach ($payouts as $payout) {
                     if ($payout->paid) {
-                        InvestorNotification::firstOrCreate(
-                            [
-                                'account_id' => $account->id,
-                                'source_type' => 'payout',
-                                'source_id' => $payout->id,
-                            ],
-                            [
-                                'project_id' => $project->project_id,
-                                'type' => 'payout',
-                                'message' => 'Payment of ' . strip_tags(money($payout->amount ?? 0)) . ' recorded on ' . ($payout->paid_on ? $payout->paid_on->format('d M Y') : ''),
-                                'link' => url('/investor/dashboard') . '#project-' . $project->project_id,
-                            ]
-                        );
+                        try {
+                            InvestorNotification::firstOrCreate(
+                                [
+                                    'account_id' => $account->id,
+                                    'source_type' => 'payout',
+                                    'source_id' => $payout->id,
+                                ],
+                                [
+                                    'project_id' => $project->project_id,
+                                    'type' => 'payout',
+                                    'message' => 'Payment of ' . strip_tags(money($payout->amount ?? 0)) . ' recorded on ' . ($payout->paid_on ? $payout->paid_on->format('d M Y') : ''),
+                                    'link' => url('/investor/dashboard') . '#project-' . $project->project_id,
+                                ]
+                            );
+                        } catch (\Exception $e) {
+                            // Table doesn't exist yet, skip notification creation
+                        }
                     }
                 }
 
@@ -80,11 +84,17 @@ class InvestorDashboardController extends Controller
             }
         }
 
-        $notifications = InvestorNotification::where('account_id', $account->id)
-            ->orderByDesc('created_at')
-            ->limit(15)
-            ->get();
-        $unreadNotifications = $notifications->whereNull('read_at')->count();
+        try {
+            $notifications = InvestorNotification::where('account_id', $account->id)
+                ->orderByDesc('created_at')
+                ->limit(15)
+                ->get();
+            $unreadNotifications = $notifications->whereNull('read_at')->count();
+        } catch (\Exception $e) {
+            // Table doesn't exist yet, use empty collection
+            $notifications = collect();
+            $unreadNotifications = 0;
+        }
 
         return view('investor.dashboard', compact(
             'account',

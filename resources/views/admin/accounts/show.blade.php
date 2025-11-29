@@ -38,6 +38,17 @@
 
     <div class="bg-white shadow rounded-lg p-4 mb-8 w-full mt-8">
         <h2 class="text-lg font-semibold mb-2">Admin Actions</h2>
+        
+        <div class="mb-4 pb-4 border-b border-gray-200">
+            <form action="{{ route('admin.accounts.masquerade', $account->id) }}" method="POST" class="inline">
+                @csrf
+                <button type="submit" class="bg-purple-600 text-white rounded px-4 py-2 hover:bg-purple-700 font-semibold">
+                    👁️ View as Investor
+                </button>
+            </form>
+            <p class="text-sm text-gray-600 mt-2">See exactly what this investor sees on their dashboard</p>
+        </div>
+        
         <form action="{{ route('admin.accounts.updateType', $account->id) }}" method="POST" class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2">
             @csrf
             <label for="type_id" class="font-semibold">Change Account Type:</label>
