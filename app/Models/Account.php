@@ -12,6 +12,23 @@ class Account extends Authenticatable
     protected $table = 'accounts';
     public $timestamps = false;
 
+    protected $fillable = [
+        'person_id',
+        'company_id',
+        'type_id',
+        'client_id',
+        'email',
+        'password',
+        'created_on',
+        'updated_on',
+        'experience',
+        'eula',
+        'privacy',
+        'status',
+        'kyc_status',
+        'credit',
+        'deleted',
+    ];
 
     public function getAuthIdentifierName()
     {
