@@ -35,6 +35,11 @@ Route::get('/', function () {
 Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(function () {
     Route::get('/dashboard', [InvestmentController::class, 'index'])->name('investments.index');
     Route::get('/investments', [InvestmentController::class, 'index'])->name('investments.index');
+    Route::get('/investments/create', [InvestmentController::class, 'create'])->name('investments.create');
+    Route::post('/investments', [InvestmentController::class, 'store'])->name('investments.store');
+    Route::get('/investments/{investment}/edit', [InvestmentController::class, 'edit'])->name('investments.edit');
+    Route::put('/investments/{investment}', [InvestmentController::class, 'update'])->name('investments.update');
+    Route::delete('/investments/{investment}', [InvestmentController::class, 'destroy'])->name('investments.destroy');
     Route::get('/investments/export', [InvestmentController::class, 'export'])->name('investments.export');
 
     Route::get('/updates', [UpdateController::class, 'index'])->name('updates.index');
@@ -50,8 +55,84 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
     Route::post('/accounts/{id}/type', [AccountController::class, 'updateType'])->name('accounts.updateType');
     Route::post('/accounts/{id}/password', [AccountController::class, 'updatePassword'])->name('accounts.updatePassword');
 
+    Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('/projects/{projectId}', [ProjectController::class, 'show'])->name('projects.show');
     Route::post('/projects/{projectId}/resend-documents', [ProjectController::class, 'resendDocuments'])->name('projects.resend_documents');
+    
+    // Document tracing for a specific project
+    Route::get('/projects/{projectId}/trace-documents', function ($projectId) {
+        $project = \App\Models\Project::where('project_id', $projectId)->firstOrFail();
+        $documents = \App\Models\ProjectInvestorDocument::where('proposal_id', $project->id)->get();
+        
+        $results = [
+            'project' => [
+                'id' => $project->id,
+                'project_id' => $project->project_id,
+                'name' => $project->name,
+            ],
+            'documents' => [],
+            'file_locations' => [],
+        ];
+        
+        foreach ($documents as $document) {
+            $docInfo = [
+                'id' => $document->id,
+                'name' => $document->name,
+                'hash' => $document->hash,
+                'proposal_id' => $document->proposal_id,
+                'created_on' => $document->created_on?->format('Y-m-d H:i:s'),
+            ];
+            
+            // Check all possible file locations
+            $possiblePaths = [
+                base_path('../jvsystem/App/Cache/Docs/Investor/' . $document->proposal_id . '/' . $document->hash . '.pdf'),
+                dirname(base_path()) . '/jvsystem/App/Cache/Docs/Investor/' . $document->proposal_id . '/' . $document->hash . '.pdf',
+                '/home/forge/jvsystem/App/Cache/Docs/Investor/' . $document->proposal_id . '/' . $document->hash . '.pdf',
+                '/home/forge/beta.jaevee.co.uk/App/Cache/Docs/Investor/' . $document->proposal_id . '/' . $document->hash . '.pdf',
+                '/var/www/jvsystem/App/Cache/Docs/Investor/' . $document->proposal_id . '/' . $document->hash . '.pdf',
+                '/home/betajaeveecouk/beta.jaevee.co.uk/App/Cache/Docs/Investor/' . $document->proposal_id . '/' . $document->hash . '.pdf',
+                storage_path('app/documents/investor/' . $document->proposal_id . '/' . $document->hash . '.pdf'),
+            ];
+            
+            $fileChecks = [];
+            foreach ($possiblePaths as $path) {
+                $fileChecks[] = [
+                    'path' => $path,
+                    'exists' => file_exists($path),
+                    'readable' => file_exists($path) && is_readable($path),
+                    'size' => file_exists($path) ? filesize($path) : null,
+                ];
+            }
+            
+            $docInfo['file_checks'] = $fileChecks;
+            $docInfo['found'] = collect($fileChecks)->contains('exists', true);
+            
+            $results['documents'][] = $docInfo;
+        }
+        
+        // Check if the base directory exists
+        $baseDirs = [
+            base_path('../jvsystem/App/Cache/Docs/Investor'),
+            dirname(base_path()) . '/jvsystem/App/Cache/Docs/Investor',
+            '/home/forge/jvsystem/App/Cache/Docs/Investor',
+            '/home/forge/beta.jaevee.co.uk/App/Cache/Docs/Investor',
+            '/var/www/jvsystem/App/Cache/Docs/Investor',
+            '/home/betajaeveecouk/beta.jaevee.co.uk/App/Cache/Docs/Investor',
+        ];
+        
+        foreach ($baseDirs as $baseDir) {
+            $proposalDir = $baseDir . '/' . $project->id;
+            $results['file_locations'][] = [
+                'base_dir' => $baseDir,
+                'base_exists' => is_dir($baseDir),
+                'proposal_dir' => $proposalDir,
+                'proposal_dir_exists' => is_dir($proposalDir),
+                'files_in_proposal_dir' => is_dir($proposalDir) ? array_map('basename', glob($proposalDir . '/*.pdf')) : [],
+            ];
+        }
+        
+        return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+    })->name('projects.trace_documents');
 
     Route::post('accounts/{id}/masquerade', function ($id) {
         $target = Account::on('legacy')->findOrFail($id);

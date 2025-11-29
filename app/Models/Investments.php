@@ -16,14 +16,7 @@ class Investments extends Model
         'amount', 'type', 'paid', 'paid_on', 'reserved_until',
     ];
 
-    // Optional: enforce read-only access
-    protected static function booted()
-    {
-        static::saving(fn () => false);
-        static::creating(fn () => false);
-        static::updating(fn () => false);
-        static::deleting(fn () => false);
-    }
+    // Removed read-only protection to allow admin management
 
     public function account()
     {
@@ -32,7 +25,8 @@ class Investments extends Model
 
     public function project()
     {
-        return $this->belongsTo(Project::class, 'project_id', 'project_id');
+        // project_id in investments table is the internal id, not project_id
+        return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 
     public function getTypeLabelAttribute(): string

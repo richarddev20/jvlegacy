@@ -4,7 +4,12 @@
 @section('title', 'Investments')
 
 @section('content')
-    <h2 class="text-xl font-bold mb-4">Recent Investments</h2>
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold">Recent Investments</h2>
+        <a href="{{ route('admin.investments.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            Create Investment
+        </a>
+    </div>
 
     <div class="bg-white p-4 rounded shadow mb-6">
         <form method="GET" class="mb-4 flex flex-wrap gap-4 items-end">
@@ -71,6 +76,7 @@
                 <th class="px-4 py-2">Paid</th>
                 <th class="px-4 py-2">Paid On</th>
                 <th class="px-4 py-2">Reserved Until</th>
+                <th class="px-4 py-2">Actions</th>
             </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -78,9 +84,9 @@
                 <tr class="hover:bg-gray-50 transition-colors">
                     <td class="px-4 py-2 whitespace-nowrap">{{ $inv->id }}</td>
                     <td class="px-4 py-2 whitespace-nowrap">
-                        @if($inv->project_id)
-                            <a href="{{ route('admin.projects.show', $inv->project_id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
-                                {{ $inv->project_id }} – {{ $inv->project->name ?? '—' }}
+                        @if($inv->project && $inv->project->project_id)
+                            <a href="{{ route('admin.projects.show', $inv->project->project_id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                                {{ $inv->project->project_id }} – {{ $inv->project->name ?? '—' }}
                             </a>
                         @else
                             —
@@ -121,6 +127,11 @@
                     </td>
                     <td class="px-4 py-2 whitespace-nowrap">{{ human_date($inv->paid_on) }}</td>
                     <td class="px-4 py-2 whitespace-nowrap">{{ human_date($inv->reserved_until) }}</td>
+                    <td class="px-4 py-2 whitespace-nowrap">
+                        <a href="{{ route('admin.investments.edit', $inv->id) }}" class="text-blue-600 hover:text-blue-800 hover:underline mr-3">
+                            Edit
+                        </a>
+                    </td>
                 </tr>
             @empty
                 <tr>

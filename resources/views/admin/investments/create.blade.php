@@ -1,0 +1,100 @@
+@extends('layouts.admin')
+
+@section('title', 'Create Investment')
+
+@section('content')
+    <h2 class="text-xl font-bold mb-4">Create New Investment</h2>
+
+    <div class="bg-white p-6 rounded shadow">
+        <form method="POST" action="{{ route('admin.investments.store') }}" class="space-y-4">
+            @csrf
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Project <span class="text-red-500">*</span></label>
+                    <select name="project_id" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
+                        <option value="">Select Project</option>
+                        @foreach ($projects as $project)
+                            @if($project->project_id)
+                                <option value="{{ $project->project_id }}">
+                                    {{ $project->project_id }} – {{ $project->name }}
+                                </option>
+                            @endif
+                        @endforeach
+                    </select>
+                    @error('project_id')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">Account (Investor) <span class="text-red-500">*</span></label>
+                    <select name="account_id" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
+                        <option value="">Select Account</option>
+                        @foreach ($accounts as $account)
+                            <option value="{{ $account->id }}">
+                                #{{ $account->id }} – {{ $account->name }} ({{ $account->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('account_id')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">Amount (£) <span class="text-red-500">*</span></label>
+                    <input type="number" name="amount" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
+                    @error('amount')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">Type</label>
+                    <select name="type" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="0">Equity</option>
+                        <option value="1">Debt</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">Transfer ID</label>
+                    <input type="number" name="transfer_id" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">Pay In ID</label>
+                    <input type="number" name="pay_in_id" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+
+                <div>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="paid" value="1" class="mr-2">
+                        <span class="text-sm font-medium">Mark as Paid</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex gap-4 mt-6">
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    Create Investment
+                </button>
+                <a href="{{ route('admin.investments.index') }}" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    @if ($errors->any())
+        <div class="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <ul class="list-disc pl-5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+@endsection
+
