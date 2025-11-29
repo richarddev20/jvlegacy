@@ -52,24 +52,24 @@
             </div>
 
             <aside class="space-y-6">
-                <div class="border border-slate-100 rounded-2xl p-6">
-                    <h3 class="text-lg font-semibold text-slate-900">Key facts</h3>
-                    <dl class="mt-4 space-y-3 text-sm text-slate-600">
-                        <div class="flex justify-between">
-                            <dt>Units</dt>
-                            <dd>{{ $project->property->planned_total_no_of_units ?? '—' }}</dd>
+                <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-semibold text-slate-900 mb-5">Key facts</h3>
+                    <dl class="space-y-4">
+                        <div class="pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                            <dt class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Units</dt>
+                            <dd class="text-base font-semibold text-slate-900">{{ $project->property->planned_total_no_of_units ?? '—' }}</dd>
                         </div>
-                        <div class="flex justify-between">
-                            <dt>Exit strategy</dt>
-                            <dd>{{ $project->property->exit_strategy ?? 'To be confirmed' }}</dd>
+                        <div class="pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                            <dt class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Exit strategy</dt>
+                            <dd class="text-base font-semibold text-slate-900">{{ $project->property->exit_strategy ?? 'To be confirmed' }}</dd>
                         </div>
-                        <div class="flex justify-between">
-                            <dt>Location</dt>
-                            <dd>{{ $project->property->local_authority ?? 'UK' }}</dd>
+                        <div class="pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                            <dt class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Location</dt>
+                            <dd class="text-base font-semibold text-slate-900">{{ $project->property->local_authority ?? 'UK' }}</dd>
                         </div>
-                        <div class="flex justify-between">
-                            <dt>Timeline status</dt>
-                            <dd>{{ \App\Models\Project::STATUS_MAP[$project->status] ?? 'In progress' }}</dd>
+                        <div class="pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                            <dt class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Timeline status</dt>
+                            <dd class="text-base font-semibold text-slate-900">{{ \App\Models\Project::STATUS_MAP[$project->status] ?? 'In progress' }}</dd>
                         </div>
                     </dl>
                 </div>
