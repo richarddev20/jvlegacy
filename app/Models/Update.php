@@ -39,7 +39,7 @@ class Update extends Model
     // Optional: scope for recent updates
     public function scopeRecent($query, $limit = 5)
     {
-        return $query->orderByDesc('created_at')->limit($limit);
+        return $query->orderByDesc('sent_on')->limit($limit);
     }
 
     // Scope to exclude deleted records

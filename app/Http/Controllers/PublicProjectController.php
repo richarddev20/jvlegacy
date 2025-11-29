@@ -28,7 +28,10 @@ class PublicProjectController extends Controller
     public function show($projectId)
     {
         $project = Project::with(['property', 'investorDocuments', 'updates' => function ($query) {
-            $query->where('category', 3)->latest()->limit(5);
+            $query->where('category', 3)
+                ->where('deleted', 0)
+                ->orderByDesc('sent_on')
+                ->limit(5);
         }])
             ->where('project_id', $projectId)
             ->firstOrFail();
