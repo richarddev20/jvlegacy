@@ -94,8 +94,7 @@
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Account Documents</h3>
                 <p class="text-sm text-gray-600 mb-4">Upload documents for this investor account</p>
                 
-                <form id="document-upload-form" class="space-y-4" enctype="multipart/form-data">
-                    @csrf
+                <div id="document-upload-form" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Document Name <span class="text-red-500">*</span></label>
@@ -128,10 +127,10 @@
                             <span class="text-sm font-medium">Private (only visible to this account)</span>
                         </label>
                     </div>
-                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                    <button type="button" id="upload-document-btn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                         <i class="fas fa-upload mr-2"></i>Upload Document
                     </button>
-                </form>
+                </div>
                 
                 <div id="documents-list" class="mt-6 space-y-2">
                     <!-- Documents will be loaded here via AJAX -->
@@ -248,15 +247,21 @@ $(document).ready(function() {
     });
 
     // Handle document upload
-    $('#document-upload-form').on('submit', function(e) {
+    $('#upload-document-btn').on('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         const accountId = $('#account-select').val();
         if (!accountId) {
             alert('Please select an account first');
             return;
         }
 
-        const formData = new FormData(this);
+        const formData = new FormData();
+        formData.append('name', $('#doc-name').val());
+        formData.append('category', $('#doc-category').val());
+        formData.append('file', $('#doc-file')[0].files[0]);
+        formData.append('description', $('#doc-description').val());
+        formData.append('is_private', $('#document-upload-form input[name="is_private"]').is(':checked') ? 1 : 0);
         formData.append('_token', '{{ csrf_token() }}');
 
         $.ajax({
@@ -271,7 +276,11 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     alert('Document uploaded successfully!');
-                    $('#document-upload-form')[0].reset();
+                    $('#doc-name').val('');
+                    $('#doc-category').val('general');
+                    $('#doc-file').val('');
+                    $('#doc-description').val('');
+                    $('#document-upload-form input[name="is_private"]').prop('checked', true);
                     loadAccountDocuments(accountId);
                 } else {
                     alert('Error: ' + (response.message || 'Unknown error'));
