@@ -157,26 +157,30 @@ class InvestmentController extends Controller
 
     public function store(Request $request)
     {
+        // Convert empty strings to null BEFORE validation
+        $data = $request->all();
+        if (isset($data['transfer_id']) && ($data['transfer_id'] === '' || $data['transfer_id'] === '0' || $data['transfer_id'] === 0)) {
+            $data['transfer_id'] = null;
+        }
+        if (isset($data['pay_in_id']) && ($data['pay_in_id'] === '' || $data['pay_in_id'] === '0' || $data['pay_in_id'] === 0)) {
+            $data['pay_in_id'] = null;
+        }
+        if (isset($data['type']) && $data['type'] === '') {
+            $data['type'] = null;
+        }
+        
+        // Merge back into request
+        $request->merge($data);
+
         $validated = $request->validate([
             'project_id' => 'required|exists:legacy.projects,project_id',
             'account_id' => 'required|exists:legacy.accounts,id',
             'amount' => 'required|numeric|min:0',
             'type' => 'nullable|in:1,2', // 1 = Debt, 2 = Mezzanine
             'paid' => 'nullable|boolean',
-            'transfer_id' => 'nullable|integer|min:1',
-            'pay_in_id' => 'nullable|integer|min:1',
+            'transfer_id' => 'nullable|integer',
+            'pay_in_id' => 'nullable|integer',
         ]);
-
-        // Convert empty string to null for nullable fields
-        if (isset($validated['type']) && $validated['type'] === '') {
-            $validated['type'] = null;
-        }
-        if (isset($validated['transfer_id']) && $validated['transfer_id'] === '') {
-            $validated['transfer_id'] = null;
-        }
-        if (isset($validated['pay_in_id']) && $validated['pay_in_id'] === '') {
-            $validated['pay_in_id'] = null;
-        }
 
         // Get the project - need to find by project_id but use id for the investment
         $project = Project::where('project_id', $validated['project_id'])->firstOrFail();
@@ -187,8 +191,8 @@ class InvestmentController extends Controller
             'amount' => (int)($validated['amount'] * 100), // Convert to pennies
             'type' => $validated['type'] ?? 1, // Default to Debt
             'paid' => $validated['paid'] ? 1 : 0,
-            'transfer_id' => !empty($validated['transfer_id']) ? $validated['transfer_id'] : null,
-            'pay_in_id' => !empty($validated['pay_in_id']) ? $validated['pay_in_id'] : null,
+            'transfer_id' => $validated['transfer_id'] ?? null,
+            'pay_in_id' => $validated['pay_in_id'] ?? null,
             'paid_on' => $validated['paid'] ? now() : null,
         ]);
 
@@ -219,26 +223,30 @@ class InvestmentController extends Controller
 
     public function update(Request $request, Investments $investment)
     {
+        // Convert empty strings to null BEFORE validation
+        $data = $request->all();
+        if (isset($data['transfer_id']) && ($data['transfer_id'] === '' || $data['transfer_id'] === '0' || $data['transfer_id'] === 0)) {
+            $data['transfer_id'] = null;
+        }
+        if (isset($data['pay_in_id']) && ($data['pay_in_id'] === '' || $data['pay_in_id'] === '0' || $data['pay_in_id'] === 0)) {
+            $data['pay_in_id'] = null;
+        }
+        if (isset($data['type']) && $data['type'] === '') {
+            $data['type'] = null;
+        }
+        
+        // Merge back into request
+        $request->merge($data);
+
         $validated = $request->validate([
             'project_id' => 'required|exists:legacy.projects,project_id',
             'account_id' => 'required|exists:legacy.accounts,id',
             'amount' => 'required|numeric|min:0',
             'type' => 'nullable|in:1,2', // 1 for Debt, 2 for Mezzanine
             'paid' => 'nullable|boolean',
-            'transfer_id' => 'nullable|integer|min:1',
-            'pay_in_id' => 'nullable|integer|min:1',
+            'transfer_id' => 'nullable|integer',
+            'pay_in_id' => 'nullable|integer',
         ]);
-
-        // Convert empty string to null for nullable fields
-        if (isset($validated['type']) && $validated['type'] === '') {
-            $validated['type'] = null;
-        }
-        if (isset($validated['transfer_id']) && $validated['transfer_id'] === '') {
-            $validated['transfer_id'] = null;
-        }
-        if (isset($validated['pay_in_id']) && $validated['pay_in_id'] === '') {
-            $validated['pay_in_id'] = null;
-        }
 
         // Get the project's internal ID
         $project = Project::where('project_id', $validated['project_id'])->firstOrFail();
@@ -249,8 +257,8 @@ class InvestmentController extends Controller
             'amount' => (int)($validated['amount'] * 100),
             'type' => $validated['type'] ?? 1, // Default to Debt
             'paid' => $validated['paid'] ? 1 : 0,
-            'transfer_id' => !empty($validated['transfer_id']) ? $validated['transfer_id'] : null,
-            'pay_in_id' => !empty($validated['pay_in_id']) ? $validated['pay_in_id'] : null,
+            'transfer_id' => $validated['transfer_id'] ?? null,
+            'pay_in_id' => $validated['pay_in_id'] ?? null,
             'paid_on' => $validated['paid'] ? ($investment->paid_on ?? now()) : null,
         ]);
 
