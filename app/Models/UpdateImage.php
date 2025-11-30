@@ -27,7 +27,7 @@ class UpdateImage extends Model
         'deleted' => 'boolean',
     ];
 
-    public function update()
+    public function updateRecord()
     {
         return $this->belongsTo(Update::class, 'update_id');
     }
