@@ -214,7 +214,6 @@ Route::prefix('investor')->name('investor.')->group(function () {
             Route::get('/support/tickets/{ticketId}', [InvestorSupportController::class, 'show'])->name('support.show');
             Route::post('/support/tickets', [InvestorSupportController::class, 'store'])->name('support.store');
             Route::post('/support/tickets/{ticketId}/reply', [InvestorSupportController::class, 'reply'])->name('support.reply');
-            Route::post('/projects/{project}/support', [InvestorSupportController::class, 'store'])->name('support.store');
     });
 });
 

@@ -380,8 +380,9 @@
                     </div>
 
                     <dialog id="support-modal-{{ $projectId }}" class="rounded-lg w-full max-w-2xl p-0">
-                        <form method="POST" action="{{ route('investor.support.store', $project->project_id) }}">
+                        <form method="POST" action="{{ route('investor.support.store') }}">
                             @csrf
+                            <input type="hidden" name="project_id" value="{{ $project->project_id }}">
                             <div class="p-6 border-b">
                                 <h4 class="text-xl font-semibold">Support Request · {{ $project->name }}</h4>
                                 <p class="text-sm text-gray-500 mt-1">Tell us what you need help with; the team will reply by email.</p>
