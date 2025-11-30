@@ -745,7 +745,7 @@ Route::get('/run-support-ticket-migration', function () {
     }
 })->name('run.support.ticket.migration');
 
-// One-time route to run email history migration
+// One-time route to run email history migration (no auth required)
 Route::get('/run-email-history-migration', function () {
     try {
         $filePath = database_path('migrations_sql/009_create_email_history_table.sql');
@@ -813,7 +813,7 @@ Route::get('/run-email-history-migration', function () {
     }
 })->name('run.email.history.migration');
 
-// One-time route to run system status updates migration
+// One-time route to run system status updates migration (no auth required)
 Route::get('/run-system-status-updates-migration', function () {
     try {
         $filePath = database_path('migrations_sql/008_create_system_status_updates.sql');

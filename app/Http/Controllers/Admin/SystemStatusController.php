@@ -98,12 +98,19 @@ class SystemStatusController extends Controller
 
     public function edit($id)
     {
+        $status = SystemStatus::findOrFail($id);
+        
+        // Try to load updates if table exists
         try {
-            $status = SystemStatus::with(['updates.account.person', 'updates.account.company', 'updates.fixedBy.person', 'updates.fixedBy.company'])
-                ->findOrFail($id);
+            $status->load(['updates.account.person', 'updates.account.company', 'updates.fixedBy.person', 'updates.fixedBy.company']);
         } catch (\Exception $e) {
-            $status = SystemStatus::findOrFail($id);
+            // Updates table doesn't exist yet, just continue without updates
+            if (!str_contains($e->getMessage(), "Table 'jvsys.system_status_updates' doesn't exist")) {
+                // Re-throw if it's a different error
+                throw $e;
+            }
         }
+        
         return view('admin.system-status.edit', compact('status'));
     }
 

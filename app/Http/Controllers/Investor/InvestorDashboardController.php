@@ -146,11 +146,30 @@ class InvestorDashboardController extends Controller
         // Get system status
         try {
             $systemStatus = SystemStatus::forLogin()
-                ->with(['updates.account.person', 'updates.account.company', 'updates.fixedBy.person', 'updates.fixedBy.company'])
                 ->orderByDesc('created_on')
                 ->first();
+            
+            // Try to load updates if table exists
+            if ($systemStatus) {
+                try {
+                    $systemStatus->load(['updates.account.person', 'updates.account.company', 'updates.fixedBy.person', 'updates.fixedBy.company']);
+                } catch (\Exception $e) {
+                    // Updates table doesn't exist yet, just continue without updates
+                    if (!str_contains($e->getMessage(), "Table 'jvsys.system_status_updates' doesn't exist")) {
+                        // Re-throw if it's a different error
+                        throw $e;
+                    }
+                }
+            }
         } catch (\Exception $e) {
-            $systemStatus = null;
+            // Table doesn't exist yet
+            if (str_contains($e->getMessage(), "Table 'jvsys.system_status' doesn't exist") || 
+                str_contains($e->getMessage(), "Table 'jvsys.system_status_updates' doesn't exist")) {
+                $systemStatus = null;
+            } else {
+                // Re-throw if it's a different error
+                throw $e;
+            }
         }
 
         // Get email history (combine all email sources)
