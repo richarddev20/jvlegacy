@@ -118,10 +118,10 @@ class InvestmentController extends Controller
             'project_id' => 'required|exists:legacy.projects,project_id',
             'account_id' => 'required|exists:legacy.accounts,id',
             'amount' => 'required|numeric|min:0',
-            'type' => 'nullable|in:0,1', // 0 = Equity, 1 = Debt
+            'type' => 'nullable|in:1,2', // 1 = Debt, 2 = Mezzanine
             'paid' => 'nullable|boolean',
-            'transfer_id' => 'nullable|integer',
-            'pay_in_id' => 'nullable|integer',
+            'transfer_id' => 'nullable|integer|min:1',
+            'pay_in_id' => 'nullable|integer|min:1',
         ]);
 
         // Get the project - need to find by project_id but use id for the investment
@@ -131,10 +131,10 @@ class InvestmentController extends Controller
             'project_id' => $project->id, // Use internal id, not project_id
             'account_id' => $validated['account_id'],
             'amount' => (int)($validated['amount'] * 100), // Convert to pennies
-            'type' => $validated['type'] ?? 0,
+            'type' => $validated['type'] ?? 1, // Default to Debt
             'paid' => $validated['paid'] ? 1 : 0,
-            'transfer_id' => $validated['transfer_id'] ?? 0,
-            'pay_in_id' => $validated['pay_in_id'] ?? 0,
+            'transfer_id' => !empty($validated['transfer_id']) ? $validated['transfer_id'] : null,
+            'pay_in_id' => !empty($validated['pay_in_id']) ? $validated['pay_in_id'] : null,
             'paid_on' => $validated['paid'] ? now() : null,
         ]);
 
@@ -171,8 +171,8 @@ class InvestmentController extends Controller
             'amount' => 'required|numeric|min:0',
             'type' => 'nullable|in:0,1',
             'paid' => 'nullable|boolean',
-            'transfer_id' => 'nullable|integer',
-            'pay_in_id' => 'nullable|integer',
+            'transfer_id' => 'nullable|integer|min:1',
+            'pay_in_id' => 'nullable|integer|min:1',
         ]);
 
         // Get the project's internal ID
@@ -186,8 +186,8 @@ class InvestmentController extends Controller
             'amount' => (int)($validated['amount'] * 100),
             'type' => $validated['type'] ?? 0,
             'paid' => $validated['paid'] ? 1 : 0,
-            'transfer_id' => $validated['transfer_id'] ?? 0,
-            'pay_in_id' => $validated['pay_in_id'] ?? 0,
+            'transfer_id' => !empty($validated['transfer_id']) ? $validated['transfer_id'] : null,
+            'pay_in_id' => !empty($validated['pay_in_id']) ? $validated['pay_in_id'] : null,
             'paid_on' => $validated['paid'] ? ($investment->paid_on ?? now()) : null,
         ]);
 
