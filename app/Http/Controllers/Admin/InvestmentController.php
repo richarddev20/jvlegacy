@@ -124,6 +124,17 @@ class InvestmentController extends Controller
             'pay_in_id' => 'nullable|integer|min:1',
         ]);
 
+        // Convert empty string to null for nullable fields
+        if (isset($validated['type']) && $validated['type'] === '') {
+            $validated['type'] = null;
+        }
+        if (isset($validated['transfer_id']) && $validated['transfer_id'] === '') {
+            $validated['transfer_id'] = null;
+        }
+        if (isset($validated['pay_in_id']) && $validated['pay_in_id'] === '') {
+            $validated['pay_in_id'] = null;
+        }
+
         // Get the project - need to find by project_id but use id for the investment
         $project = Project::where('project_id', $validated['project_id'])->firstOrFail();
 
@@ -174,6 +185,17 @@ class InvestmentController extends Controller
             'transfer_id' => 'nullable|integer|min:1',
             'pay_in_id' => 'nullable|integer|min:1',
         ]);
+
+        // Convert empty string to null for nullable fields
+        if (isset($validated['type']) && $validated['type'] === '') {
+            $validated['type'] = null;
+        }
+        if (isset($validated['transfer_id']) && $validated['transfer_id'] === '') {
+            $validated['transfer_id'] = null;
+        }
+        if (isset($validated['pay_in_id']) && $validated['pay_in_id'] === '') {
+            $validated['pay_in_id'] = null;
+        }
 
         // Get the project's internal ID
         $project = Project::where('project_id', $validated['project_id'])->firstOrFail();
