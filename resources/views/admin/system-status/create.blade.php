@@ -111,17 +111,36 @@
                 quill.root.innerHTML = {!! json_encode(old('message')) !!};
             @endif
 
+            // Always keep the hidden textarea in sync with Quill content
+            function updateHiddenTextarea() {
+                var content = quill.root.innerHTML;
+                var textContent = quill.getText().trim();
+                
+                // Only update if there's actual text content (not just empty HTML)
+                if (textContent && textContent !== '') {
+                    document.getElementById('message-input').value = content;
+                } else {
+                    document.getElementById('message-input').value = '';
+                }
+            }
+            
+            // Update on every change
+            quill.on('text-change', updateHiddenTextarea);
+            
             // Update hidden textarea before form submit
             var form = document.querySelector('form');
             var messageInput = document.getElementById('message-input');
             var messageError = document.getElementById('message-error');
             
             form.addEventListener('submit', function(e) {
+                // Force update before validation
+                updateHiddenTextarea();
+                
                 var content = quill.root.innerHTML;
                 var textContent = quill.getText().trim();
                 
                 // Check if editor has meaningful content
-                if (!textContent || textContent === '') {
+                if (!textContent || textContent === '' || textContent.length < 1) {
                     e.preventDefault();
                     e.stopPropagation();
                     messageError.classList.remove('hidden');
@@ -134,7 +153,7 @@
                 // Hide error if content exists
                 messageError.classList.add('hidden');
                 
-                // Update hidden textarea with HTML content
+                // Ensure textarea has the content
                 messageInput.value = content;
                 
                 // Remove any validation attributes that might cause issues
@@ -155,8 +174,12 @@
                 var textContent = quill.getText().trim();
                 if (textContent && textContent !== '') {
                     messageError.classList.add('hidden');
+                    updateHiddenTextarea();
                 }
             });
+            
+            // Initial update
+            updateHiddenTextarea();
         });
     </script>
     @endpush

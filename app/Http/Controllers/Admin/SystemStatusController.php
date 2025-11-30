@@ -32,10 +32,13 @@ class SystemStatusController extends Controller
         try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
-                'message' => 'required|string',
+                'message' => 'required|string|min:1',
                 'status_type' => 'required|in:info,success,warning,error,maintenance',
                 'is_active' => 'nullable|in:0,1',
                 'show_on_login' => 'nullable|in:0,1',
+            ], [
+                'message.required' => 'The message field is required.',
+                'message.min' => 'The message field must contain at least one character.',
             ]);
 
             // Convert checkbox values to boolean
@@ -53,9 +56,22 @@ class SystemStatusController extends Controller
                 }
             }
 
+            // Clean the message - remove empty paragraphs and whitespace
+            $message = trim($validated['message']);
+            // Remove empty paragraphs like <p><br></p> or <p></p>
+            $message = preg_replace('/<p[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/p>/i', '', $message);
+            $message = trim($message);
+            
+            // Validate that we have actual content after cleaning
+            if (empty($message) || strip_tags($message) === '') {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['message' => 'The message field must contain actual text content.']);
+            }
+            
             $status = SystemStatus::create([
                 'title' => $validated['title'],
-                'message' => $validated['message'],
+                'message' => $message,
                 'status_type' => $validated['status_type'],
                 'is_active' => $isActive,
                 'show_on_login' => $showOnLogin,
