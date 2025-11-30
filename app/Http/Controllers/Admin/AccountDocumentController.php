@@ -11,6 +11,38 @@ use Illuminate\Support\Str;
 
 class AccountDocumentController extends Controller
 {
+    public function index($accountId)
+    {
+        try {
+            $account = Account::findOrFail($accountId);
+            $documents = AccountDocument::where('account_id', $account->id)
+                ->where('deleted', false)
+                ->orderBy('created_on', 'desc')
+                ->get()
+                ->map(function($doc) {
+                    return [
+                        'id' => $doc->id,
+                        'name' => $doc->name,
+                        'file_type' => $doc->file_type,
+                        'file_size' => $doc->file_size,
+                        'category' => $doc->category,
+                        'url' => $doc->url,
+                    ];
+                });
+
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json($documents);
+            }
+
+            return $documents;
+        } catch (\Exception $e) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['error' => 'Account not found'], 404);
+            }
+            return redirect()->back()->with('error', 'Account not found.');
+        }
+    }
+
     public function store(Request $request, $accountId)
     {
         $account = Account::findOrFail($accountId);
@@ -42,17 +74,38 @@ class AccountDocumentController extends Controller
             'updated_on' => now(),
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Document uploaded successfully.',
+                'document' => [
+                    'id' => $document->id,
+                    'name' => $document->name,
+                    'file_type' => $document->file_type,
+                    'file_size' => $document->file_size,
+                    'category' => $document->category,
+                    'url' => $document->url,
+                ]
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Document uploaded successfully.');
     }
 
-    public function destroy($documentId)
+    public function destroy($accountId, $documentId)
     {
-        $document = AccountDocument::findOrFail($documentId);
+        $document = AccountDocument::where('account_id', $accountId)
+            ->where('id', $documentId)
+            ->firstOrFail();
         
         // Soft delete
         $document->deleted = true;
         $document->updated_on = now();
         $document->save();
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Document deleted successfully.']);
+        }
 
         return redirect()->back()->with('success', 'Document deleted successfully.');
     }

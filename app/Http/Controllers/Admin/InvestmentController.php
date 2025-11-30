@@ -102,14 +102,41 @@ class InvestmentController extends Controller
             ->orderBy('project_id')
             ->get(['project_id', 'id', 'name']);
 
+        // Don't load all accounts - use search instead
+        return view('admin.investments.create', compact('projects'));
+    }
+
+    public function searchAccounts(Request $request)
+    {
+        $query = $request->get('q', '');
+        
         $accounts = \App\Models\Account::on('legacy')
             ->where('deleted', 0)
             ->with('person', 'company')
+            ->where(function($q) use ($query) {
+                $q->where('email', 'like', "%{$query}%")
+                  ->orWhereHas('person', function($q) use ($query) {
+                      $q->where('first_name', 'like', "%{$query}%")
+                        ->orWhere('last_name', 'like', "%{$query}%");
+                  })
+                  ->orWhereHas('company', function($q) use ($query) {
+                      $q->where('name', 'like', "%{$query}%");
+                  });
+            })
             ->orderBy('id')
-            ->limit(500) // Limit to avoid timeout
+            ->limit(50)
             ->get();
 
-        return view('admin.investments.create', compact('projects', 'accounts'));
+        $results = $accounts->map(function($account) {
+            return [
+                'id' => $account->id,
+                'text' => "#{$account->id} – {$account->name} ({$account->email})",
+                'name' => $account->name,
+                'email' => $account->email,
+            ];
+        });
+
+        return response()->json(['results' => $results]);
     }
 
     public function store(Request $request)

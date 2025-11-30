@@ -46,6 +46,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
     Route::put('/investments/{investment}', [InvestmentController::class, 'update'])->name('investments.update');
     Route::delete('/investments/{investment}', [InvestmentController::class, 'destroy'])->name('investments.destroy');
     Route::get('/investments/export', [InvestmentController::class, 'export'])->name('investments.export');
+    Route::get('/investments/search-accounts', [InvestmentController::class, 'searchAccounts'])->name('investments.search-accounts');
 
     Route::get('/updates', [UpdateController::class, 'index'])->name('updates.index');
     Route::post('/updates', [UpdateController::class, 'store'])->name('updates.store');
@@ -91,7 +92,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
     Route::put('/project-documents/{documentId}/visibility', [ProjectDocumentController::class, 'updateVisibility'])->name('project-documents.update-visibility');
     
     // Account documents
+    Route::get('/accounts/{accountId}/documents', [AccountDocumentController::class, 'index'])->name('accounts.documents.index');
     Route::post('/accounts/{accountId}/documents', [AccountDocumentController::class, 'store'])->name('accounts.documents.store');
+    Route::delete('/accounts/{accountId}/documents/{documentId}', [AccountDocumentController::class, 'destroy'])->name('accounts.documents.destroy');
     Route::delete('/account-documents/{documentId}', [AccountDocumentController::class, 'destroy'])->name('account-documents.destroy');
     
     // Document tracing for a specific project
