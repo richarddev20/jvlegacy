@@ -98,7 +98,12 @@ class SystemStatusController extends Controller
 
     public function edit($id)
     {
-        $status = SystemStatus::findOrFail($id);
+        try {
+            $status = SystemStatus::with(['updates.account.person', 'updates.account.company', 'updates.fixedBy.person', 'updates.fixedBy.company'])
+                ->findOrFail($id);
+        } catch (\Exception $e) {
+            $status = SystemStatus::findOrFail($id);
+        }
         return view('admin.system-status.edit', compact('status'));
     }
 

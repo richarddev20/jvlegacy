@@ -72,6 +72,44 @@
                         <div class="text-sm text-gray-700">
                             {!! $systemStatus->message !!}
                         </div>
+                        
+                        @php
+                            try {
+                                $updates = $systemStatus->updates ?? collect();
+                            } catch (\Exception $e) {
+                                $updates = collect();
+                            }
+                        @endphp
+                        
+                        @if($updates->isNotEmpty())
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <h4 class="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Updates</h4>
+                                <div class="space-y-2">
+                                    @foreach($updates->take(5) as $update)
+                                        <div class="text-xs {{ $update->is_fixed ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200' }} border rounded p-2">
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex-1">
+                                                    <div class="flex items-center gap-2 mb-1">
+                                                        <span class="font-medium text-gray-900">
+                                                            {{ $update->account->name ?? 'System' }}
+                                                        </span>
+                                                        <span class="text-gray-500">
+                                                            {{ $update->created_on?->format('d M Y, H:i') ?? '' }}
+                                                        </span>
+                                                        @if($update->is_fixed)
+                                                            <span class="px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded flex items-center gap-1">
+                                                                <i class="fas fa-check-circle text-xs"></i> Fixed
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                    <p class="text-gray-700">{{ $update->message }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

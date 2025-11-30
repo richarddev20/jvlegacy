@@ -72,6 +72,96 @@
                 </div>
             </div>
         </form>
+
+        <!-- Status Updates Section -->
+        <div class="mt-8 pt-8 border-t border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Status Updates</h2>
+            <p class="text-sm text-gray-600 mb-4">Add updates to this status message. Users can mark updates as "fixed" when issues are resolved.</p>
+
+            <!-- Add Update Form -->
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <form id="add-update-form" class="space-y-3">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Add Update</label>
+                        <textarea 
+                            id="update-message" 
+                            rows="3" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            placeholder="Add an update to this status message..."
+                            required
+                        ></textarea>
+                    </div>
+                    <button 
+                        type="submit" 
+                        class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
+                    >
+                        <i class="fas fa-plus mr-2"></i>Add Update
+                    </button>
+                </form>
+            </div>
+
+            <!-- Updates List -->
+            <div class="space-y-3">
+                @php
+                    try {
+                        $updates = $status->updates ?? collect();
+                    } catch (\Exception $e) {
+                        $updates = collect();
+                    }
+                @endphp
+
+                @if($updates->isEmpty())
+                    <div class="p-6 text-center bg-gray-50 rounded-lg border border-gray-200">
+                        <i class="fas fa-info-circle text-gray-300 text-2xl mb-2"></i>
+                        <p class="text-sm text-gray-500">No updates yet. Add the first update above.</p>
+                    </div>
+                @else
+                    @foreach($updates as $update)
+                        <div class="p-4 bg-white rounded-lg border border-gray-200 {{ $update->is_fixed ? 'bg-green-50 border-green-200' : '' }}">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <p class="text-sm font-medium text-gray-900">
+                                            {{ $update->account->name ?? 'System' }}
+                                        </p>
+                                        <span class="text-xs text-gray-500">
+                                            {{ $update->created_on?->format('d M Y, H:i') ?? '' }}
+                                        </span>
+                                        @if($update->is_fixed)
+                                            <span class="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full flex items-center gap-1">
+                                                <i class="fas fa-check-circle"></i> Fixed
+                                            </span>
+                                            @if($update->fixedBy)
+                                                <span class="text-xs text-gray-500">
+                                                    by {{ $update->fixedBy->name }}
+                                                </span>
+                                            @endif
+                                        @endif
+                                    </div>
+                                    <p class="text-sm text-gray-700 whitespace-pre-wrap">{{ $update->message }}</p>
+                                </div>
+                                @if(!$update->is_fixed)
+                                    <form 
+                                        method="POST" 
+                                        action="{{ route('admin.system-status-updates.mark-fixed', $update->id) }}" 
+                                        class="ml-4"
+                                    >
+                                        @csrf
+                                        <button 
+                                            type="submit" 
+                                            class="px-3 py-1 text-xs font-medium text-green-700 bg-green-100 rounded hover:bg-green-200 transition-colors"
+                                        >
+                                            <i class="fas fa-check mr-1"></i>Mark Fixed
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+        </div>
     </div>
 
     @push('scripts')
@@ -151,6 +241,55 @@
                     messageError.classList.add('hidden');
                 }
             });
+
+            // Handle add update form
+            var addUpdateForm = document.getElementById('add-update-form');
+            if (addUpdateForm) {
+                addUpdateForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    var message = document.getElementById('update-message').value.trim();
+                    if (!message) {
+                        alert('Please enter an update message');
+                        return;
+                    }
+
+                    var formData = new FormData();
+                    formData.append('message', message);
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    var submitButton = addUpdateForm.querySelector('button[type="submit"]');
+                    var originalText = submitButton.innerHTML;
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Adding...';
+
+                    fetch('{{ route("admin.system-status.add-update", $status->id) }}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('update-message').value = '';
+                            location.reload();
+                        } else {
+                            alert('Error adding update: ' + (data.message || 'Unknown error'));
+                            submitButton.disabled = false;
+                            submitButton.innerHTML = originalText;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error adding update. Please try again.');
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalText;
+                    });
+                });
+            }
         });
     </script>
     @endpush

@@ -68,6 +68,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
     Route::put('/system-status/{id}', [SystemStatusController::class, 'update'])->name('system-status.update');
     Route::delete('/system-status/{id}', [SystemStatusController::class, 'destroy'])->name('system-status.destroy');
     Route::post('/system-status/{id}/toggle', [SystemStatusController::class, 'toggle'])->name('system-status.toggle');
+    Route::post('/system-status/{id}/add-update', [SystemStatusController::class, 'addUpdate'])->name('system-status.add-update');
+    Route::post('/system-status-updates/{updateId}/mark-fixed', [SystemStatusController::class, 'markFixed'])->name('system-status-updates.mark-fixed');
 
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::get('/accounts/create', [AccountController::class, 'create'])->name('accounts.create');
@@ -742,6 +744,74 @@ Route::get('/run-support-ticket-migration', function () {
         ], 500, [], JSON_PRETTY_PRINT);
     }
 })->name('run.support.ticket.migration');
+
+// One-time route to run email history migration
+Route::get('/run-email-history-migration', function () {
+    try {
+        $filePath = database_path('migrations_sql/009_create_email_history_table.sql');
+        
+        if (!file_exists($filePath)) {
+            return response()->json([
+                'success' => false,
+                'error' => 'File not found: ' . $filePath,
+            ], 404);
+        }
+        
+        $sql = file_get_contents($filePath);
+        
+        // Check if table already exists
+        if (\Illuminate\Support\Facades\Schema::connection('legacy')->hasTable('email_history')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Email history table already exists!',
+                'statements_executed' => 0,
+                'errors' => [],
+                'note' => 'The table was already present in the database.',
+            ], 200, [], JSON_PRETTY_PRINT);
+        }
+
+        // Execute SQL directly
+        \DB::connection('legacy')->unprepared($sql);
+
+        // Verify table creation
+        if (\Illuminate\Support\Facades\Schema::connection('legacy')->hasTable('email_history')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Email history table created successfully!',
+                'statements_executed' => 1,
+                'errors' => [],
+                'note' => 'The table has been created. You can now use the email history feature.',
+            ], 200, [], JSON_PRETTY_PRINT);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'SQL executed but table was not created.',
+                'statements_executed' => 1,
+                'errors' => ['Table verification failed'],
+            ], 500, [], JSON_PRETTY_PRINT);
+        }
+    } catch (\Exception $e) {
+        // Check if error is because table already exists
+        if (str_contains($e->getMessage(), 'already exists') || 
+            str_contains($e->getMessage(), 'Duplicate') ||
+            str_contains($e->getMessage(), 'Table \'jvsys.email_history\' already exists')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Email history table already exists!',
+                'statements_executed' => 0,
+                'errors' => [],
+                'note' => 'The table was already present in the database.',
+            ], 200, [], JSON_PRETTY_PRINT);
+        }
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Error creating email history table.',
+            'statements_executed' => 0,
+            'errors' => [$e->getMessage()],
+        ], 500, [], JSON_PRETTY_PRINT);
+    }
+})->name('run.email.history.migration');
 
 // One-time route to run document migrations (remove after use)
 Route::get('/run-document-migrations', function () {

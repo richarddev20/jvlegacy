@@ -146,6 +146,7 @@ class InvestorDashboardController extends Controller
         // Get system status
         try {
             $systemStatus = SystemStatus::forLogin()
+                ->with(['updates.account.person', 'updates.account.company', 'updates.fixedBy.person', 'updates.fixedBy.company'])
                 ->orderByDesc('created_on')
                 ->first();
         } catch (\Exception $e) {

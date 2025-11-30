@@ -15,6 +15,7 @@ class InvestorAuthController extends Controller
         // Get current active system status for login page
         try {
             $systemStatus = \App\Models\SystemStatus::forLogin()
+                ->with(['updates.account.person', 'updates.account.company', 'updates.fixedBy.person', 'updates.fixedBy.company'])
                 ->orderByDesc('created_on')
                 ->first();
         } catch (\Exception $e) {
