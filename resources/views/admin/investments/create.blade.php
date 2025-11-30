@@ -171,12 +171,17 @@ document.addEventListener('DOMContentLoaded', function() {
         allowClear: true,
         ajax: {
             url: '{{ route("admin.investments.search-accounts") }}',
+            type: 'GET',
             dataType: 'json',
             delay: 300,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
             data: function (params) {
                 return {
-                    q: params.term, // search term
-                    page: params.page
+                    q: params.term || '', // search term
+                    page: params.page || 1
                 };
             },
             processResults: function (data, params) {
@@ -184,11 +189,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 return {
                     results: data.results || [],
                     pagination: {
-                        more: (params.page * 50) < (data.total_count || 0)
+                        more: false // Disable pagination for now
                     }
                 };
             },
-            cache: true
+            cache: false,
+            error: function(xhr, status, error) {
+                console.error('Search error:', error, xhr.responseText);
+            }
         },
         minimumInputLength: 2,
         language: {
@@ -200,22 +208,25 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             noResults: function() {
                 return 'No accounts found';
+            },
+            loadingMore: function() {
+                return 'Loading more results...';
             }
         },
         templateResult: function(account) {
             if (account.loading) {
-                return '<div class="text-gray-500">Searching...</div>';
+                return '<div class="text-gray-500 py-2">Searching...</div>';
             }
             if (!account.id) {
                 return account.text;
             }
-            return $('<div class="py-1">').html(
-                '<div class="font-medium">' + account.text + '</div>' +
-                '<div class="text-xs text-gray-500">' + (account.email || '') + '</div>'
+            return $('<div class="py-2">').html(
+                '<div class="font-medium text-gray-900">' + (account.text || account.name || 'Account #' + account.id) + '</div>' +
+                '<div class="text-xs text-gray-500 mt-1">' + (account.email || '') + '</div>'
             );
         },
         templateSelection: function(account) {
-            return account.text || account.id;
+            return account.text || account.name || account.id || 'Select an account...';
         }
     });
 

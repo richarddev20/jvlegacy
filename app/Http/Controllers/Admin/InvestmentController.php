@@ -110,18 +110,31 @@ class InvestmentController extends Controller
     {
         $query = $request->get('q', '');
         
-        $accounts = \App\Models\Account::on('legacy')
-            ->where('deleted', 0)
+        if (strlen($query) < 2) {
+            return response()->json(['results' => []]);
+        }
+        
+        $accounts = \App\Models\Account::where('deleted', 0)
             ->with('person', 'company')
             ->where(function($q) use ($query) {
-                $q->where('email', 'like', "%{$query}%")
-                  ->orWhereHas('person', function($q) use ($query) {
-                      $q->where('first_name', 'like', "%{$query}%")
-                        ->orWhere('last_name', 'like', "%{$query}%");
-                  })
-                  ->orWhereHas('company', function($q) use ($query) {
-                      $q->where('name', 'like', "%{$query}%");
-                  });
+                // Search by account ID (if query is numeric)
+                if (is_numeric($query)) {
+                    $q->where('id', $query);
+                }
+                
+                // Search by email
+                $q->orWhere('email', 'like', "%{$query}%");
+                
+                // Search by person name
+                $q->orWhereHas('person', function($q) use ($query) {
+                    $q->where('first_name', 'like', "%{$query}%")
+                      ->orWhere('last_name', 'like', "%{$query}%");
+                });
+                
+                // Search by company name
+                $q->orWhereHas('company', function($q) use ($query) {
+                    $q->where('name', 'like', "%{$query}%");
+                });
             })
             ->orderBy('id')
             ->limit(50)
@@ -136,7 +149,10 @@ class InvestmentController extends Controller
             ];
         });
 
-        return response()->json(['results' => $results]);
+        return response()->json([
+            'results' => $results,
+            'total_count' => $results->count()
+        ]);
     }
 
     public function store(Request $request)
