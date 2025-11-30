@@ -813,6 +813,74 @@ Route::get('/run-email-history-migration', function () {
     }
 })->name('run.email.history.migration');
 
+// One-time route to run system status updates migration
+Route::get('/run-system-status-updates-migration', function () {
+    try {
+        $filePath = database_path('migrations_sql/008_create_system_status_updates.sql');
+        
+        if (!file_exists($filePath)) {
+            return response()->json([
+                'success' => false,
+                'error' => 'File not found: ' . $filePath,
+            ], 404);
+        }
+        
+        $sql = file_get_contents($filePath);
+        
+        // Check if table already exists
+        if (\Illuminate\Support\Facades\Schema::connection('legacy')->hasTable('system_status_updates')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'System status updates table already exists!',
+                'statements_executed' => 0,
+                'errors' => [],
+                'note' => 'The table was already present in the database.',
+            ], 200, [], JSON_PRETTY_PRINT);
+        }
+
+        // Execute SQL directly
+        \DB::connection('legacy')->unprepared($sql);
+
+        // Verify table creation
+        if (\Illuminate\Support\Facades\Schema::connection('legacy')->hasTable('system_status_updates')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'System status updates table created successfully!',
+                'statements_executed' => 1,
+                'errors' => [],
+                'note' => 'The table has been created. You can now use the system status updates feature.',
+            ], 200, [], JSON_PRETTY_PRINT);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'SQL executed but table was not created.',
+                'statements_executed' => 1,
+                'errors' => ['Table verification failed'],
+            ], 500, [], JSON_PRETTY_PRINT);
+        }
+    } catch (\Exception $e) {
+        // Check if error is because table already exists
+        if (str_contains($e->getMessage(), 'already exists') || 
+            str_contains($e->getMessage(), 'Duplicate') ||
+            str_contains($e->getMessage(), 'Table \'jvsys.system_status_updates\' already exists')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'System status updates table already exists!',
+                'statements_executed' => 0,
+                'errors' => [],
+                'note' => 'The table was already present in the database.',
+            ], 200, [], JSON_PRETTY_PRINT);
+        }
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Error creating system status updates table.',
+            'statements_executed' => 0,
+            'errors' => [$e->getMessage()],
+        ], 500, [], JSON_PRETTY_PRINT);
+    }
+})->name('run.system.status.updates.migration');
+
 // One-time route to run document migrations (remove after use)
 Route::get('/run-document-migrations', function () {
     try {
