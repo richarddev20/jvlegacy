@@ -185,4 +185,73 @@ class AccountController extends Controller
 
         return redirect()->back()->with('status', 'Account details updated successfully!');
     }
+
+    public function create()
+    {
+        $accountTypes = AccountType::orderBy('name')->get();
+        return view('admin.accounts.create', compact('accountTypes'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|unique:legacy.accounts,email',
+            'password' => 'required|string|min:8|confirmed',
+            'type_id' => 'required|exists:legacy.account_types,id',
+            'account_type' => 'required|in:person,company',
+            // Person fields
+            'first_name' => 'required_if:account_type,person|nullable|string|max:255',
+            'last_name' => 'required_if:account_type,person|nullable|string|max:255',
+            'telephone_number' => 'nullable|string|max:255',
+            // Company fields
+            'company_name' => 'required_if:account_type,company|nullable|string|max:255',
+        ]);
+
+        \DB::connection('legacy')->beginTransaction();
+        try {
+            $personId = null;
+            $companyId = null;
+
+            if ($request->account_type === 'person') {
+                $person = \App\Models\Person::create([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'telephone_number' => $request->telephone_number,
+                    'email' => $request->email,
+                    'created_on' => now(),
+                    'updated_on' => now(),
+                ]);
+                $personId = $person->id;
+            } elseif ($request->account_type === 'company') {
+                $company = \App\Models\Company::create([
+                    'name' => $request->company_name,
+                    'created_on' => now(),
+                    'updated_on' => now(),
+                ]);
+                $companyId = $company->id;
+            }
+
+            $account = Account::create([
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'type_id' => $request->type_id,
+                'person_id' => $personId,
+                'company_id' => $companyId,
+                'created_on' => now(),
+                'updated_on' => now(),
+                'status' => 1,
+                'deleted' => 0,
+            ]);
+
+            \DB::connection('legacy')->commit();
+
+            return redirect()->route('admin.accounts.show', $account->id)
+                ->with('status', 'Account created successfully!');
+        } catch (\Exception $e) {
+            \DB::connection('legacy')->rollBack();
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to create account: ' . $e->getMessage()]);
+        }
+    }
 }

@@ -69,6 +69,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
     Route::post('/system-status/{id}/toggle', [SystemStatusController::class, 'toggle'])->name('system-status.toggle');
 
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
+    Route::get('/accounts/create', [AccountController::class, 'create'])->name('accounts.create');
+    Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
     Route::get('/accounts/{id}', [AccountController::class, 'show'])->name('accounts.show');
 
     Route::post('/accounts/{id}/type', [AccountController::class, 'updateType'])->name('accounts.updateType');
