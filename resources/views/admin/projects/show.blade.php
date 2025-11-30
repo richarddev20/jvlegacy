@@ -3,17 +3,9 @@
 @section('title', 'Project: ' . $project->name)
 
 @section('content')
-    <div class="mb-4">
-        <a href="{{ route('admin.projects.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-900 font-medium">
-            <i class="fas fa-arrow-left mr-2"></i>
-            Back to Projects
-        </a>
-    </div>
-
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">{{ $project->name }}</h1>
                 <p class="text-sm text-gray-600 mt-1">Project ID: {{ $project->project_id }}</p>
                 <p class="text-sm text-gray-600">Status: {{ \App\Models\Project::STATUS_MAP[$project->status] ?? 'Unknown' }}</p>
             </div>

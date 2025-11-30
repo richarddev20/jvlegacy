@@ -6,8 +6,7 @@
     <div class="mb-6">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Projects</h2>
-                <p class="text-sm text-gray-500 mt-1.5">Manage all investment projects</p>
+                <p class="text-sm text-gray-500">Manage all investment projects</p>
             </div>
             <a href="{{ route('admin.projects.create') }}" class="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium shadow-sm hover:shadow-md">
                 <i class="fas fa-plus mr-2"></i>

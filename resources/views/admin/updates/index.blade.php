@@ -7,8 +7,7 @@
     <div class="mb-6">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Project Updates</h2>
-                <p class="text-sm text-gray-500 mt-1.5">Create and manage project updates for investors</p>
+                <p class="text-sm text-gray-500">Create and manage project updates for investors</p>
             </div>
         </div>
 

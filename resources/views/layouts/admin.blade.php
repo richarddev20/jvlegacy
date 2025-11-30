@@ -56,6 +56,13 @@
                     <div class="px-4 mb-6">
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-3">Navigation</p>
                         <div class="space-y-1">
+                            <a href="{{ route('admin.dashboard') }}" class="group relative flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{ $currentRoute === 'admin.dashboard' ? 'bg-slate-800/50 text-white' : 'text-slate-300 hover:bg-slate-800/30 hover:text-white' }}">
+                                @if($currentRoute === 'admin.dashboard')
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-400 rounded-r"></div>
+                                @endif
+                                <i class="fas fa-home w-5 text-center mr-3 {{ $currentRoute === 'admin.dashboard' ? 'text-teal-400' : 'text-slate-400 group-hover:text-teal-400' }}"></i>
+                                <span>Home</span>
+                            </a>
                             <a href="{{ route('admin.investments.index') }}" class="group relative flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.investments') ? 'bg-slate-800/50 text-white' : 'text-slate-300 hover:bg-slate-800/30 hover:text-white' }}">
                                 @if(str_starts_with($currentRoute, 'admin.investments'))
                                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-400 rounded-r"></div>
@@ -139,7 +146,136 @@
             <!-- Top Header -->
             <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-20 shadow-sm">
                 <div class="flex items-center">
-                    <h1 class="text-xl font-semibold text-gray-900 tracking-tight">@yield('title', 'Dashboard')</h1>
+                    @php
+                        $currentRoute = request()->route()->getName() ?? '';
+                        $routeSegments = explode('.', $currentRoute);
+                        $breadcrumbs = [];
+                        
+                        // Build breadcrumbs from route
+                        if ($currentRoute && $currentRoute !== 'admin.dashboard') {
+                            // Always start with Home
+                            $breadcrumbs[] = [
+                                'label' => 'Home',
+                                'url' => route('admin.dashboard'),
+                                'active' => false
+                            ];
+                            
+                            // Map route segments to labels
+                            $routeLabels = [
+                                'investments' => 'Investments',
+                                'projects' => 'Projects',
+                                'updates' => 'Updates',
+                                'accounts' => 'Accounts',
+                                'system-status' => 'System Status',
+                                'create' => 'Create',
+                                'edit' => 'Edit',
+                                'show' => 'Details',
+                                'index' => 'List',
+                            ];
+                            
+                            $path = '';
+                            $processedSegments = [];
+                            
+                            foreach ($routeSegments as $index => $segment) {
+                                if ($segment === 'admin') continue;
+                                
+                                // Skip numeric segments (IDs) - but keep them for context
+                                if (is_numeric($segment)) continue;
+                                
+                                $path .= ($path ? '.' : '') . $segment;
+                                
+                                // Get label
+                                $label = $routeLabels[$segment] ?? ucfirst(str_replace('-', ' ', $segment));
+                                
+                                // Check if this is the last non-numeric segment
+                                $isLast = true;
+                                for ($j = $index + 1; $j < count($routeSegments); $j++) {
+                                    if ($routeSegments[$j] !== 'admin' && !is_numeric($routeSegments[$j])) {
+                                        $isLast = false;
+                                        break;
+                                    }
+                                }
+                                
+                                // Build route name for URL
+                                $routeName = 'admin.' . $path;
+                                
+                                // Determine URL based on segment type
+                                $url = '#';
+                                if ($segment === 'index') {
+                                    // For index, link to parent
+                                    $parentPath = str_replace('.index', '', $path);
+                                    try {
+                                        $url = route('admin.' . $parentPath . '.index');
+                                    } catch (\Exception $e) {
+                                        try {
+                                            $url = route('admin.' . $parentPath);
+                                        } catch (\Exception $e2) {
+                                            $url = '#';
+                                        }
+                                    }
+                                } elseif ($segment === 'create') {
+                                    // For create, link to index
+                                    $parentPath = str_replace('.create', '', $path);
+                                    try {
+                                        $url = route('admin.' . $parentPath . '.index');
+                                    } catch (\Exception $e) {
+                                        $url = '#';
+                                    }
+                                } elseif ($segment === 'edit' || $segment === 'show') {
+                                    // For edit/show, link to index
+                                    $parentPath = str_replace(['.edit', '.show'], '', $path);
+                                    try {
+                                        $url = route('admin.' . $parentPath . '.index');
+                                    } catch (\Exception $e) {
+                                        $url = '#';
+                                    }
+                                } else {
+                                    // Try to get route URL
+                                    try {
+                                        $url = route($routeName . '.index');
+                                    } catch (\Exception $e) {
+                                        try {
+                                            $url = route($routeName);
+                                        } catch (\Exception $e2) {
+                                            $url = '#';
+                                        }
+                                    }
+                                }
+                                
+                                $breadcrumbs[] = [
+                                    'label' => $label,
+                                    'url' => $url,
+                                    'active' => $isLast
+                                ];
+                            }
+                        } elseif ($currentRoute === 'admin.dashboard') {
+                            // On dashboard, just show Home
+                            $breadcrumbs[] = [
+                                'label' => 'Home',
+                                'url' => route('admin.dashboard'),
+                                'active' => true
+                            ];
+                        }
+                    @endphp
+                    
+                    <nav class="flex items-center space-x-2 text-sm" aria-label="Breadcrumb">
+                        <ol class="flex items-center space-x-2">
+                            @foreach($breadcrumbs as $index => $crumb)
+                                <li class="flex items-center">
+                                    @if($index > 0)
+                                        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+                                    @endif
+                                    @if($crumb['active'] || $crumb['url'] === '#')
+                                        <span class="text-gray-900 font-semibold">{{ $crumb['label'] }}</span>
+                                    @else
+                                        <a href="{{ $crumb['url'] }}" class="text-gray-600 hover:text-gray-900 transition-colors">
+                                            {{ $crumb['label'] }}
+                                        </a>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ol>
+                    </nav>
                 </div>
                 <div class="flex items-center space-x-4">
                     @if (session()->has('masquerading_from_admin'))
