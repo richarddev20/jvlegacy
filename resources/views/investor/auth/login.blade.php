@@ -57,9 +57,18 @@
                         @endif
                     </div>
                     <div class="ml-4 flex-1">
-                        <h3 class="text-base font-semibold text-gray-900 mb-1">
-                            {{ $systemStatus->title }}
-                        </h3>
+                        <div class="flex items-center justify-between mb-1">
+                            <h3 class="text-base font-semibold text-gray-900">
+                                {{ $systemStatus->title }}
+                            </h3>
+                            <span class="text-xs text-gray-500">
+                                @if($systemStatus->created_on)
+                                    {{ \Carbon\Carbon::parse($systemStatus->created_on)->format('d M Y, H:i') }}
+                                @elseif($systemStatus->updated_on)
+                                    {{ \Carbon\Carbon::parse($systemStatus->updated_on)->format('d M Y, H:i') }}
+                                @endif
+                            </span>
+                        </div>
                         <div class="text-sm text-gray-700">
                             {!! $systemStatus->message !!}
                         </div>
