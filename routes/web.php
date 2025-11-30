@@ -590,10 +590,12 @@ Route::get('/run-system-status-migration', function () {
             array_map('trim', explode(';', $sql)),
             function($stmt) {
                 $stmt = trim($stmt);
+                // Keep statements that are not empty, not comments, and have meaningful content
                 return !empty($stmt) && 
                        !preg_match('/^--/', $stmt) &&
                        !preg_match('/^\/\*/', $stmt) &&
-                       strlen($stmt) > 10;
+                       !preg_match('/^\s*$/', $stmt) &&
+                       strlen($stmt) > 20; // Increased minimum length to catch actual SQL
             }
         );
         
@@ -602,15 +604,40 @@ Route::get('/run-system-status-migration', function () {
         
         foreach ($statements as $statement) {
             try {
+                // Add semicolon back if it was removed by explode
+                if (!str_ends_with(trim($statement), ';')) {
+                    $statement .= ';';
+                }
                 \DB::connection('legacy')->statement($statement);
                 $executed++;
             } catch (\Exception $e) {
                 if (str_contains($e->getMessage(), 'already exists') || 
-                    str_contains($e->getMessage(), 'Duplicate')) {
+                    str_contains($e->getMessage(), 'Duplicate') ||
+                    str_contains($e->getMessage(), 'Table \'jvsys.system_status\' already exists')) {
+                    // Table already exists - this is fine
                     $executed++;
                 } else {
                     $errors[] = $e->getMessage();
                 }
+            }
+        }
+        
+        // If no statements were executed but no errors, the table might already exist
+        if ($executed === 0 && empty($errors)) {
+            // Try to check if table exists
+            try {
+                $tableExists = \DB::connection('legacy')->select("SHOW TABLES LIKE 'system_status'");
+                if (!empty($tableExists)) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'System status table already exists!',
+                        'statements_executed' => 0,
+                        'errors' => [],
+                        'note' => 'The table was already present in the database.',
+                    ], 200, [], JSON_PRETTY_PRINT);
+                }
+            } catch (\Exception $e) {
+                // Ignore check errors
             }
         }
         
@@ -619,6 +646,10 @@ Route::get('/run-system-status-migration', function () {
             'message' => 'System status table migration completed!',
             'statements_executed' => $executed,
             'errors' => $errors,
+            'debug' => [
+                'statements_found' => count($statements),
+                'sql_length' => strlen($sql),
+            ],
         ], 200, [], JSON_PRETTY_PRINT);
         
     } catch (\Exception $e) {
