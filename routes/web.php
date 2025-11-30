@@ -205,6 +205,73 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
             ], 500, [], JSON_PRETTY_PRINT);
         }
     })->name('admin.run-email-history-migration');
+    
+    Route::get('/run-account-shares-migration', function () {
+        try {
+            $filePath = database_path('migrations_sql/007_create_account_shares.sql');
+            
+            if (!file_exists($filePath)) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'File not found: ' . $filePath,
+                ], 404);
+            }
+            
+            $sql = file_get_contents($filePath);
+            
+            // Check if table already exists
+            if (\Illuminate\Support\Facades\Schema::connection('legacy')->hasTable('account_shares')) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Account shares table already exists!',
+                    'statements_executed' => 0,
+                    'errors' => [],
+                    'note' => 'The table was already present in the database.',
+                ], 200, [], JSON_PRETTY_PRINT);
+            }
+
+            // Execute SQL directly
+            \DB::connection('legacy')->unprepared($sql);
+
+            // Verify table creation
+            if (\Illuminate\Support\Facades\Schema::connection('legacy')->hasTable('account_shares')) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Account shares table created successfully!',
+                    'statements_executed' => 1,
+                    'errors' => [],
+                    'note' => 'The table has been created. You can now use the account sharing feature.',
+                ], 200, [], JSON_PRETTY_PRINT);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'SQL executed but table was not created.',
+                    'statements_executed' => 1,
+                    'errors' => ['Table verification failed'],
+                ], 500, [], JSON_PRETTY_PRINT);
+            }
+        } catch (\Exception $e) {
+            // Check if error is because table already exists
+            if (str_contains($e->getMessage(), 'already exists') || 
+                str_contains($e->getMessage(), 'Duplicate') ||
+                str_contains($e->getMessage(), 'Table \'jvsys.account_shares\' already exists')) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Account shares table already exists!',
+                    'statements_executed' => 0,
+                    'errors' => [],
+                    'note' => 'The table was already present in the database.',
+                ], 200, [], JSON_PRETTY_PRINT);
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error creating account shares table.',
+                'statements_executed' => 0,
+                'errors' => [$e->getMessage()],
+            ], 500, [], JSON_PRETTY_PRINT);
+        }
+    })->name('admin.run-account-shares-migration');
 
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::get('/accounts/create', [AccountController::class, 'create'])->name('accounts.create');

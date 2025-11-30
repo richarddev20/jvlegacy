@@ -29,11 +29,20 @@ class InvestorDashboardController extends Controller
             ->get();
 
         // Get shared accounts (accounts that have shared access with this account)
-        $sharedAccounts = AccountShare::where('shared_account_id', $account->id)
-            ->where('status', AccountShare::STATUS_ACTIVE)
-            ->where('deleted', false)
-            ->with('primaryAccount')
-            ->get();
+        $sharedAccounts = collect();
+        try {
+            $sharedAccounts = AccountShare::where('shared_account_id', $account->id)
+                ->where('status', AccountShare::STATUS_ACTIVE)
+                ->where('deleted', false)
+                ->with('primaryAccount')
+                ->get();
+        } catch (\Exception $e) {
+            // Table doesn't exist yet, use empty collection
+            if (!str_contains($e->getMessage(), "Table 'jvsys.account_shares' doesn't exist")) {
+                // Re-throw if it's a different error
+                throw $e;
+            }
+        }
 
         // Get investments from shared accounts
         $sharedInvestments = collect();
