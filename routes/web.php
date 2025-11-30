@@ -675,30 +675,58 @@ Route::get('/run-support-ticket-migration', function () {
         
         $sql = file_get_contents($filePath);
         
-        // Execute the SQL directly
-        try {
-            \DB::connection('legacy')->unprepared($sql);
-            
+        // Split SQL into individual statements and execute them one by one
+        $statements = array_filter(
+            array_map('trim', explode(';', $sql)),
+            function($stmt) {
+                $stmt = trim($stmt);
+                return !empty($stmt) && 
+                       !preg_match('/^--/', $stmt) &&
+                       !preg_match('/^\/\*/', $stmt) &&
+                       strlen($stmt) > 10;
+            }
+        );
+        
+        $executed = 0;
+        $errors = [];
+        $skipped = [];
+        
+        foreach ($statements as $statement) {
+            try {
+                if (!str_ends_with(trim($statement), ';')) {
+                    $statement .= ';';
+                }
+                \DB::connection('legacy')->statement($statement);
+                $executed++;
+            } catch (\Exception $e) {
+                // Check if error is because table/column/index already exists
+                if (str_contains($e->getMessage(), 'already exists') || 
+                    str_contains($e->getMessage(), 'Duplicate') ||
+                    str_contains($e->getMessage(), 'Duplicate column name') ||
+                    str_contains($e->getMessage(), 'Duplicate key name')) {
+                    $skipped[] = $e->getMessage();
+                    $executed++; // Count as executed since it's just a duplicate
+                } else {
+                    $errors[] = $e->getMessage();
+                }
+            }
+        }
+        
+        if (empty($errors)) {
             return response()->json([
                 'success' => true,
                 'message' => 'Support ticket replies migration completed!',
+                'statements_executed' => $executed,
+                'skipped' => $skipped,
                 'note' => 'The support_ticket_replies table has been created and support_tickets table has been updated.',
             ], 200, [], JSON_PRETTY_PRINT);
-        } catch (\Exception $e) {
-            // Check if error is because table/columns already exist
-            if (str_contains($e->getMessage(), 'already exists') || 
-                str_contains($e->getMessage(), 'Duplicate') ||
-                str_contains($e->getMessage(), 'Table \'jvsys.support_ticket_replies\' already exists')) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Support ticket tables already exist!',
-                    'note' => 'The tables/columns were already present in the database.',
-                ], 200, [], JSON_PRETTY_PRINT);
-            }
-            
+        } else {
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage(),
+                'message' => 'Some statements failed',
+                'statements_executed' => $executed,
+                'errors' => $errors,
+                'skipped' => $skipped,
             ], 500, [], JSON_PRETTY_PRINT);
         }
     } catch (\Exception $e) {
