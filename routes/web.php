@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InvestmentController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\ProjectDocumentController;
+use App\Http\Controllers\Admin\SystemStatusController;
 use App\Http\Controllers\Admin\UpdateController;
 use App\Http\Controllers\Admin\UpdateImageController;
 use App\Http\Controllers\DocumentController;
@@ -57,6 +58,15 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
     Route::delete('/update-images/{imageId}', [UpdateImageController::class, 'delete'])->name('update-images.delete');
     Route::post('/update-images/reorder', [UpdateImageController::class, 'reorder'])->name('update-images.reorder');
     Route::put('/update-images/{imageId}/description', [UpdateImageController::class, 'updateDescription'])->name('update-images.update-description');
+    
+    // System Status
+    Route::get('/system-status', [SystemStatusController::class, 'index'])->name('system-status.index');
+    Route::get('/system-status/create', [SystemStatusController::class, 'create'])->name('system-status.create');
+    Route::post('/system-status', [SystemStatusController::class, 'store'])->name('system-status.store');
+    Route::get('/system-status/{id}/edit', [SystemStatusController::class, 'edit'])->name('system-status.edit');
+    Route::put('/system-status/{id}', [SystemStatusController::class, 'update'])->name('system-status.update');
+    Route::delete('/system-status/{id}', [SystemStatusController::class, 'destroy'])->name('system-status.destroy');
+    Route::post('/system-status/{id}/toggle', [SystemStatusController::class, 'toggle'])->name('system-status.toggle');
 
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::get('/accounts/{id}', [AccountController::class, 'show'])->name('accounts.show');

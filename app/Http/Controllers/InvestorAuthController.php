@@ -12,7 +12,17 @@ class InvestorAuthController extends Controller
 {
     public function showLogin()
     {
-        return view('investor.auth.login');
+        // Get current active system status for login page
+        try {
+            $systemStatus = \App\Models\SystemStatus::forLogin()
+                ->orderByDesc('created_on')
+                ->first();
+        } catch (\Exception $e) {
+            // Table doesn't exist yet
+            $systemStatus = null;
+        }
+        
+        return view('investor.auth.login', compact('systemStatus'));
     }
 
     public function login(Request $request)

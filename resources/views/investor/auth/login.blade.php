@@ -19,6 +19,54 @@
                 </div>
             @endif
 
+            @if($systemStatus)
+                <div class="bg-white shadow-md rounded-lg border-l-4 {{ 
+                    $systemStatus->status_type === 'error' ? 'border-red-500 bg-red-50' : 
+                    ($systemStatus->status_type === 'warning' ? 'border-yellow-500 bg-yellow-50' : 
+                    ($systemStatus->status_type === 'success' ? 'border-green-500 bg-green-50' : 
+                    ($systemStatus->status_type === 'maintenance' ? 'border-orange-500 bg-orange-50' : 
+                    'border-blue-500 bg-blue-50'))) 
+                }} mb-6">
+                    <div class="p-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                @if($systemStatus->status_type === 'error')
+                                    <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
+                                @elseif($systemStatus->status_type === 'warning')
+                                    <i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>
+                                @elseif($systemStatus->status_type === 'success')
+                                    <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                                @elseif($systemStatus->status_type === 'maintenance')
+                                    <i class="fas fa-tools text-orange-500 text-xl"></i>
+                                @else
+                                    <i class="fas fa-info-circle text-blue-500 text-xl"></i>
+                                @endif
+                            </div>
+                            <div class="ml-3 flex-1">
+                                <h3 class="text-sm font-semibold {{ 
+                                    $systemStatus->status_type === 'error' ? 'text-red-800' : 
+                                    ($systemStatus->status_type === 'warning' ? 'text-yellow-800' : 
+                                    ($systemStatus->status_type === 'success' ? 'text-green-800' : 
+                                    ($systemStatus->status_type === 'maintenance' ? 'text-orange-800' : 
+                                    'text-blue-800'))) 
+                                }}">
+                                    {{ $systemStatus->title }}
+                                </h3>
+                                <div class="mt-2 text-sm {{ 
+                                    $systemStatus->status_type === 'error' ? 'text-red-700' : 
+                                    ($systemStatus->status_type === 'warning' ? 'text-yellow-700' : 
+                                    ($systemStatus->status_type === 'success' ? 'text-green-700' : 
+                                    ($systemStatus->status_type === 'maintenance' ? 'text-orange-700' : 
+                                    'text-blue-700'))) 
+                                }}">
+                                    {!! $systemStatus->message !!}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('investor.login.post') }}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 space-y-6">
                 @csrf
                 <div>

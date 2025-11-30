@@ -78,6 +78,13 @@
                                 <i class="fas fa-users w-5 text-center mr-3 {{ str_starts_with($currentRoute, 'admin.accounts') ? 'text-teal-400' : 'text-slate-400 group-hover:text-teal-400' }}"></i>
                                 <span>Accounts</span>
                             </a>
+                            <a href="{{ route('admin.system-status.index') }}" class="group relative flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.system-status') ? 'bg-slate-800/50 text-white' : 'text-slate-300 hover:bg-slate-800/30 hover:text-white' }}">
+                                @if(str_starts_with($currentRoute, 'admin.system-status'))
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-400 rounded-r"></div>
+                                @endif
+                                <i class="fas fa-info-circle w-5 text-center mr-3 {{ str_starts_with($currentRoute, 'admin.system-status') ? 'text-teal-400' : 'text-slate-400 group-hover:text-teal-400' }}"></i>
+                                <span>System Status</span>
+                            </a>
                         </div>
                     </div>
                 @elseif($account && $account->type_id == 8)
