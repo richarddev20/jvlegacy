@@ -589,7 +589,12 @@ Route::get('/run-document-migrations', function () {
             $statements = array_filter(
                 array_map('trim', explode(';', $sql)),
                 function($stmt) {
-                    return !empty($stmt) && !preg_match('/^--/', $stmt);
+                    $stmt = trim($stmt);
+                    // Skip empty statements and comments
+                    return !empty($stmt) && 
+                           !preg_match('/^--/', $stmt) &&
+                           !preg_match('/^\/\*/', $stmt) &&
+                           strlen($stmt) > 10; // Minimum statement length
                 }
             );
             
