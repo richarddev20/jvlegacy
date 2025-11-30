@@ -14,7 +14,7 @@ ALTER TABLE `projects` ADD COLUMN `show_to_investors` tinyint(1) DEFAULT 1 AFTER
 ALTER TABLE `projects` ADD COLUMN `show_map` tinyint(1) DEFAULT 1 AFTER `show_to_investors`;
 ALTER TABLE `projects` ADD COLUMN `show_surrounding_area` tinyint(1) DEFAULT 1 AFTER `show_map`;
 ALTER TABLE `projects` ADD COLUMN `show_designs` tinyint(1) DEFAULT 1 AFTER `show_surrounding_area`;
-ALTER TABLE `projects` ADD COLUMN `show_drawings` tinyint(1) DEFAULT 1 AFTER `show_drawings`;
+ALTER TABLE `projects` ADD COLUMN `show_drawings` tinyint(1) DEFAULT 1 AFTER `show_designs`;
 ALTER TABLE `projects` ADD COLUMN `show_location_details` tinyint(1) DEFAULT 1 AFTER `show_drawings`;
 ALTER TABLE `projects` ADD COLUMN `show_neighborhood_info` tinyint(1) DEFAULT 1 AFTER `show_location_details`;
 ALTER TABLE `projects` ADD COLUMN `show_development_plans` tinyint(1) DEFAULT 1 AFTER `show_neighborhood_info`;
