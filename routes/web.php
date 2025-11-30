@@ -559,6 +559,82 @@ Route::get('/run-migrations', function () {
     }
 })->name('run.migrations');
 
+// One-time route to run document migrations (remove after use)
+Route::get('/run-document-migrations', function () {
+    try {
+        $results = [];
+        
+        // Read and execute SQL files
+        $sqlFiles = [
+            '001_create_account_documents.sql',
+            '002_create_project_documents.sql',
+            '003_create_update_images.sql',
+            '004_add_rich_content_to_projects.sql',
+        ];
+        
+        foreach ($sqlFiles as $file) {
+            $filePath = database_path('migrations_sql/' . $file);
+            
+            if (!file_exists($filePath)) {
+                $results[$file] = [
+                    'success' => false,
+                    'error' => 'File not found: ' . $filePath,
+                ];
+                continue;
+            }
+            
+            $sql = file_get_contents($filePath);
+            
+            // Split SQL into individual statements
+            $statements = array_filter(
+                array_map('trim', explode(';', $sql)),
+                function($stmt) {
+                    return !empty($stmt) && !preg_match('/^--/', $stmt);
+                }
+            );
+            
+            $executed = 0;
+            $errors = [];
+            
+            foreach ($statements as $statement) {
+                try {
+                    \DB::connection('legacy')->statement($statement);
+                    $executed++;
+                } catch (\Exception $e) {
+                    // Check if it's a "table/column already exists" error (which is fine)
+                    if (str_contains($e->getMessage(), 'already exists') || 
+                        str_contains($e->getMessage(), 'Duplicate column name')) {
+                        // This is fine, table/column already exists
+                        $executed++;
+                    } else {
+                        $errors[] = $e->getMessage();
+                    }
+                }
+            }
+            
+            $results[$file] = [
+                'success' => empty($errors),
+                'statements_executed' => $executed,
+                'errors' => $errors,
+            ];
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Document migrations completed!',
+            'results' => $results,
+            'note' => 'If you see "already exists" errors, that\'s fine - it means the tables/columns were already created.',
+        ], 200, [], JSON_PRETTY_PRINT);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ], 500, [], JSON_PRETTY_PRINT);
+    }
+})->name('run.document.migrations');
+
 // One-time route to create admin account (remove after use)
 Route::get('/create-admin-account', function () {
     $email = 'rich@rise-capital.uk';
