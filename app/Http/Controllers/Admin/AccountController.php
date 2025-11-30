@@ -46,7 +46,7 @@ class AccountController extends Controller
 
     public function show($id)
     {
-        $account = Account::on('legacy')->with(['person', 'company', 'investments.project'])->findOrFail($id);
+        $account = Account::on('legacy')->with(['person', 'company', 'investments.project', 'documents'])->findOrFail($id);
 
         $entity = $account->person ?? $account->company;
 
@@ -100,7 +100,10 @@ class AccountController extends Controller
         ->limit(3)
         ->get();
 
-        return view('admin.accounts.show', compact('account', 'entity', 'projectInvestments', 'availableProjects'));
+        // Get account documents
+        $accountDocuments = $account->documents;
+
+        return view('admin.accounts.show', compact('account', 'entity', 'projectInvestments', 'availableProjects', 'accountDocuments'));
     }
 
     public function updateType(Request $request, $id)

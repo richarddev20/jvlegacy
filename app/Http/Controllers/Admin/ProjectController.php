@@ -91,11 +91,12 @@ class ProjectController extends Controller
 
     public function show($projectId)
     {
-        $project = Project::with(['property', 'investorDocuments'])
+        $project = Project::with(['property', 'investorDocuments', 'documents'])
             ->where('project_id', $projectId)
             ->firstOrFail();
 
         // Get ALL investments (paid and unpaid) for financial summary
+        // Note: project_id in investments table refers to the internal id, not project_id
         $allInvestments = Investments::with(['account.person', 'account.company'])
             ->where('project_id', $project->id)
             ->get();
@@ -142,6 +143,9 @@ class ProjectController extends Controller
             ->limit(500)
             ->get();
 
+        // Get project documents
+        $projectDocuments = $project->documents;
+
         return view('admin.projects.show', compact(
             'project',
             'investors',
@@ -155,7 +159,8 @@ class ProjectController extends Controller
             'totalUnpaid',
             'investmentCount',
             'paidCount',
-            'unpaidCount'
+            'unpaidCount',
+            'projectDocuments'
         ));
     }
 
@@ -190,6 +195,28 @@ class ProjectController extends Controller
         $project->account_id = $validated['account_id'];
         $project->status = $validated['status'] ?? $project->status;
         $project->progress = $validated['progress'] ?? $project->progress;
+        
+        // Rich content fields
+        $project->map_embed_code = $validated['map_embed_code'] ?? null;
+        $project->latitude = $validated['latitude'] ?? null;
+        $project->longitude = $validated['longitude'] ?? null;
+        $project->surrounding_area = $validated['surrounding_area'] ?? null;
+        $project->proposed_designs = $validated['proposed_designs'] ?? null;
+        $project->drawings = $validated['drawings'] ?? null;
+        $project->location_details = $validated['location_details'] ?? null;
+        $project->neighborhood_info = $validated['neighborhood_info'] ?? null;
+        $project->development_plans = $validated['development_plans'] ?? null;
+        
+        // Visibility toggles
+        $project->show_to_investors = $validated['show_to_investors'] ?? $project->show_to_investors ?? true;
+        $project->show_map = $validated['show_map'] ?? $project->show_map ?? true;
+        $project->show_surrounding_area = $validated['show_surrounding_area'] ?? $project->show_surrounding_area ?? true;
+        $project->show_designs = $validated['show_designs'] ?? $project->show_designs ?? true;
+        $project->show_drawings = $validated['show_drawings'] ?? $project->show_drawings ?? true;
+        $project->show_location_details = $validated['show_location_details'] ?? $project->show_location_details ?? true;
+        $project->show_neighborhood_info = $validated['show_neighborhood_info'] ?? $project->show_neighborhood_info ?? true;
+        $project->show_development_plans = $validated['show_development_plans'] ?? $project->show_development_plans ?? true;
+        
         $project->updated_on = now();
         $project->save();
 

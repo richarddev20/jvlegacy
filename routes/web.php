@@ -2,8 +2,11 @@
 <?php
 
 use App\Http\Controllers\Admin\AccountController;
+use App\Http\Controllers\Admin\AccountDocumentController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InvestmentController;
 use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\ProjectDocumentController;
 use App\Http\Controllers\Admin\UpdateController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\Investor\InvestorDashboardController;
@@ -33,7 +36,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(function () {
-    Route::get('/dashboard', [InvestmentController::class, 'index'])->name('investments.index');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/investments', [InvestmentController::class, 'index'])->name('investments.index');
     Route::get('/investments/create', [InvestmentController::class, 'create'])->name('investments.create');
     Route::post('/investments', [InvestmentController::class, 'store'])->name('investments.store');
@@ -63,6 +66,15 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
     Route::get('/projects/{projectId}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
     Route::put('/projects/{projectId}', [ProjectController::class, 'update'])->name('projects.update');
     Route::post('/projects/{projectId}/resend-documents', [ProjectController::class, 'resendDocuments'])->name('projects.resend_documents');
+    
+    // Project documents
+    Route::post('/projects/{projectId}/documents', [ProjectDocumentController::class, 'store'])->name('projects.documents.store');
+    Route::delete('/project-documents/{documentId}', [ProjectDocumentController::class, 'destroy'])->name('project-documents.destroy');
+    Route::put('/project-documents/{documentId}/visibility', [ProjectDocumentController::class, 'updateVisibility'])->name('project-documents.update-visibility');
+    
+    // Account documents
+    Route::post('/accounts/{accountId}/documents', [AccountDocumentController::class, 'store'])->name('accounts.documents.store');
+    Route::delete('/account-documents/{documentId}', [AccountDocumentController::class, 'destroy'])->name('account-documents.destroy');
     
     // Document tracing for a specific project
     Route::get('/projects/{projectId}/trace-documents', function ($projectId) {

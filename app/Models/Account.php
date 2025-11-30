@@ -60,6 +60,12 @@ class Account extends Authenticatable
         return $this->belongsTo(AccountType::class, 'type_id');
     }
 
+    public function documents()
+    {
+        return $this->hasMany(AccountDocument::class, 'account_id')
+            ->where('deleted', false);
+    }
+
 
     public function getNameAttribute(): string
     {

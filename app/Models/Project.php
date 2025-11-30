@@ -73,6 +73,23 @@ class Project extends Model
         'progress',
         'created_on',
         'updated_on',
+        'map_embed_code',
+        'latitude',
+        'longitude',
+        'surrounding_area',
+        'proposed_designs',
+        'drawings',
+        'location_details',
+        'neighborhood_info',
+        'development_plans',
+        'show_to_investors',
+        'show_map',
+        'show_surrounding_area',
+        'show_designs',
+        'show_drawings',
+        'show_location_details',
+        'show_neighborhood_info',
+        'show_development_plans',
     ];
 
     protected $casts = [
@@ -105,6 +122,12 @@ class Project extends Model
     public function property()
     {
         return $this->hasOne(Property::class, 'proposal_id', 'id');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(ProjectDocument::class, 'project_id', 'id')
+            ->where('deleted', false);
     }
 
     public function getExpectedPayoutDateAttribute()
