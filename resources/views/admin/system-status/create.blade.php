@@ -2,6 +2,11 @@
 
 @section('title', 'Create System Status')
 
+@push('head')
+<!-- Quill.js CDN -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+@endpush
+
 @section('content')
     <div class="mb-4">
         <a href="{{ route('admin.system-status.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-900 font-medium">
@@ -51,10 +56,12 @@
 
                 <div class="flex items-center space-x-6">
                     <label class="flex items-center">
+                        <input type="hidden" name="is_active" value="0">
                         <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }} class="mr-2">
                         <span class="text-sm text-gray-700">Active</span>
                     </label>
                     <label class="flex items-center">
+                        <input type="hidden" name="show_on_login" value="0">
                         <input type="checkbox" name="show_on_login" value="1" {{ old('show_on_login', true) ? 'checked' : '' }} class="mr-2">
                         <span class="text-sm text-gray-700">Show on Login Page</span>
                     </label>
@@ -73,8 +80,6 @@
     </div>
 
     @push('scripts')
-    <!-- Quill.js CDN -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -106,8 +111,29 @@
             @endif
 
             // Update hidden textarea before form submit
-            document.querySelector('form').addEventListener('submit', function() {
-                document.getElementById('message-input').value = quill.root.innerHTML;
+            var form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                var content = quill.root.innerHTML;
+                var textContent = quill.getText().trim();
+                
+                // Check if editor has meaningful content
+                if (!textContent || textContent === '') {
+                    e.preventDefault();
+                    alert('Please enter a message for the system status.');
+                    return false;
+                }
+                
+                // Update hidden textarea with HTML content
+                document.getElementById('message-input').value = content;
+                
+                // Show loading state
+                var submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
+                }
+                
+                return true;
             });
         });
     </script>

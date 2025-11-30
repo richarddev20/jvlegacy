@@ -29,34 +29,54 @@ class SystemStatusController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'message' => 'required|string',
-            'status_type' => 'required|in:info,success,warning,error,maintenance',
-            'is_active' => 'nullable|boolean',
-            'show_on_login' => 'nullable|boolean',
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'message' => 'required|string',
+                'status_type' => 'required|in:info,success,warning,error,maintenance',
+                'is_active' => 'nullable|in:0,1',
+                'show_on_login' => 'nullable|in:0,1',
+            ]);
 
-        // Deactivate all other statuses if this one is active and should show on login
-        if ($validated['is_active'] && $validated['show_on_login']) {
-            SystemStatus::where('show_on_login', true)
-                ->where('is_active', true)
-                ->update(['is_active' => false]);
+            // Convert checkbox values to boolean
+            $isActive = $request->has('is_active') && $request->is_active == '1';
+            $showOnLogin = $request->has('show_on_login') && $request->show_on_login == '1';
+
+            // Deactivate all other statuses if this one is active and should show on login
+            if ($isActive && $showOnLogin) {
+                try {
+                    SystemStatus::where('show_on_login', true)
+                        ->where('is_active', true)
+                        ->update(['is_active' => false]);
+                } catch (\Exception $e) {
+                    // Table might not exist yet, ignore
+                }
+            }
+
+            $status = SystemStatus::create([
+                'title' => $validated['title'],
+                'message' => $validated['message'],
+                'status_type' => $validated['status_type'],
+                'is_active' => $isActive,
+                'show_on_login' => $showOnLogin,
+                'created_by' => auth()->id(),
+                'created_on' => now(),
+                'updated_on' => now(),
+            ]);
+
+            return redirect()->route('admin.system-status.index')
+                ->with('success', 'System status created successfully.');
+        } catch (\Exception $e) {
+            // Check if it's a table not found error
+            if (str_contains($e->getMessage(), "Table 'jvsys.system_status' doesn't exist")) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['error' => 'The system_status table does not exist yet. Please run the migration: /run-system-status-migration']);
+            }
+            
+            // Re-throw other errors
+            throw $e;
         }
-
-        $status = SystemStatus::create([
-            'title' => $validated['title'],
-            'message' => $validated['message'],
-            'status_type' => $validated['status_type'],
-            'is_active' => $validated['is_active'] ?? true,
-            'show_on_login' => $validated['show_on_login'] ?? true,
-            'created_by' => auth()->id(),
-            'created_on' => now(),
-            'updated_on' => now(),
-        ]);
-
-        return redirect()->route('admin.system-status.index')
-            ->with('success', 'System status created successfully.');
     }
 
     public function edit($id)
