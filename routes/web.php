@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\AccountDocumentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ChangelogController;
+use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\InvestmentController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\ProjectDocumentController;
@@ -406,6 +407,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:investor', 'admin.inve
     Route::get('/changelog', [ChangelogController::class, 'index'])->name('changelog.index');
     Route::get('/changelog/create', [ChangelogController::class, 'create'])->name('changelog.create');
     Route::post('/changelog', [ChangelogController::class, 'store'])->name('changelog.store');
+
+    // Email templates
+    Route::get('/email-templates', [EmailTemplateController::class, 'index'])->name('email-templates.index');
+    Route::get('/email-templates/{id}/edit', [EmailTemplateController::class, 'edit'])->name('email-templates.edit');
+    Route::put('/email-templates/{id}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
 
 });
 
@@ -1272,6 +1278,36 @@ Route::get('/run-changelog-migration', function () {
         ], 500, [], JSON_PRETTY_PRINT);
     }
 })->name('run.changelog.migration');
+
+// One-time route to create email_templates table
+Route::get('/run-email-templates-migration', function () {
+    try {
+        $schema = \Illuminate\Support\Facades\Schema::connection('legacy');
+        if (!$schema->hasTable('email_templates')) {
+            $filePath = database_path('migrations_sql/011_create_email_templates.sql');
+            if (!file_exists($filePath)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Migration file not found: ' . $filePath,
+                ], 404, [], JSON_PRETTY_PRINT);
+            }
+
+            $sql = file_get_contents($filePath);
+            \DB::connection('legacy')->unprepared($sql);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'email_templates table is ready.',
+        ], 200, [], JSON_PRETTY_PRINT);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error creating email_templates table.',
+            'error' => $e->getMessage(),
+        ], 500, [], JSON_PRETTY_PRINT);
+    }
+})->name('run.email.templates.migration');
 
 // One-time route to create admin account (remove after use)
 Route::get('/create-admin-account', function () {
