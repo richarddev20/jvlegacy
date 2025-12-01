@@ -61,68 +61,33 @@
         </div>
     </section>
 
-    <!-- Live Opportunities Section -->
+    <!-- Live Opportunities / Status Section -->
     <section class="py-20 bg-white" id="opportunities">
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex flex-wrap items-end justify-between gap-4 mb-12">
                 <div>
-                    <p class="text-sm text-gray-500 uppercase tracking-wider font-semibold mb-2">Live opportunities</p>
-                    <h2 class="text-4xl font-bold text-gray-900">Projects accepting capital</h2>
+                    <p class="text-sm text-gray-500 uppercase tracking-wider font-semibold mb-2">Platform update</p>
+                    <h2 class="text-4xl font-bold text-gray-900">Current investment opportunities</h2>
                 </div>
-                <a href="{{ route('public.projects.index') }}" class="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-2 group">
-                    View all projects <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </a>
             </div>
 
-            <div class="grid gap-8 md:grid-cols-2">
-                @forelse($highlightedProjects as $project)
-                    <div class="group border-2 border-gray-100 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all hover:border-blue-200 bg-white">
-                        <div class="flex items-start justify-between mb-4">
-                            <div>
-                                <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-1">
-                                    SPV{{ $project->project_id }}
-                                </p>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-2">
-                                    {{ $project->name }}
-                                </h3>
-                                <p class="text-sm text-gray-600">
-                                    {{ $project->property->investment_strategy ?? 'Property development' }}
-                                </p>
-                            </div>
-                            @if($project->image_path)
-                                <img src="{{ asset('storage/' . $project->image_path) }}" alt="{{ $project->name }}" class="w-20 h-20 rounded-lg object-cover">
-                            @endif
-                        </div>
-                        
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            <span class="px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
-                                <i class="fas fa-calendar-alt mr-1"></i>Term: {{ optional($project->property)->investment_turnaround_time ?? '—' }} months
-                            </span>
-                            <span class="px-4 py-1.5 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">
-                                Status: {{ \App\Models\Project::STATUS_MAP[$project->status] ?? 'In progress' }}
-                            </span>
-                        </div>
-                        
-                        <p class="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-3">
-                            {{ strip_tags(Str::limit($project->description ?? 'Full project brief available in dashboard.', 180)) }}
-                        </p>
-                        
-                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                            <a href="{{ route('public.projects.show', $project->project_id) }}" class="text-blue-600 font-bold hover:text-blue-700 text-sm flex items-center gap-2 group">
-                                View project <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                            </a>
-                            <span class="text-gray-400 text-xs">
-                                <i class="far fa-clock mr-1"></i>Updated {{ optional($project->launched_on)->diffForHumans() ?? 'recently' }}
-                            </span>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-2 text-center py-16">
-                        <i class="fas fa-folder-open text-gray-300 text-5xl mb-4"></i>
-                        <p class="text-gray-500 text-lg">No live opportunities today.</p>
-                        <p class="text-gray-400 text-sm mt-2">Join the platform to be notified when the next one launches.</p>
-                    </div>
-                @endforelse
+            <div class="max-w-3xl mx-auto bg-gray-50 border border-gray-200 rounded-2xl p-8 text-center">
+                <p class="text-lg text-gray-900 font-semibold mb-4">
+                    As of now, JaeVee is no longer acquiring new development projects.
+                </p>
+                <p class="text-gray-700 mb-3">
+                    This decision allows us to focus entirely on fulfilling our existing commitments with the same level of dedication
+                    and excellence our investors have come to expect.
+                </p>
+                <p class="text-gray-700 mb-6">
+                    We remain fully committed to completing all current projects and delivering value to our existing stakeholders.
+                </p>
+                <p class="text-gray-800 font-medium mb-6">
+                    If you are an investor, you can continue to access your dashboard below.
+                </p>
+                <a href="{{ route('investor.login') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">
+                    Investor dashboard
+                </a>
             </div>
         </div>
     </section>
