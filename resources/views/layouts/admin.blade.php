@@ -474,9 +474,15 @@
                 @yield('content')
             </main>
 
-            <footer class="border-t border-gray-200 mt-8 pt-4 text-xs text-gray-500 flex items-center justify-between">
+            <footer class="border-t border-gray-200 mt-8 pt-4 pb-6 text-xs text-gray-500 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <span>© {{ now()->year }} JaeVee.</span>
-                <span>Version {{ config('app.version', 'v2.0.0') }}</span>
+                <div class="flex items-center gap-3 justify-end">
+                    <span>Version {{ config('app.version', 'v2.0.0') }}</span>
+                    <span class="hidden sm:inline text-slate-400">•</span>
+                    <a href="{{ route('admin.changelog.index') }}" class="text-slate-500 hover:text-slate-700 hover:underline">
+                        View changelog
+                    </a>
+                </div>
             </footer>
         </div>
     </div>

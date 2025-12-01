@@ -14,6 +14,7 @@ class ChangelogEntry extends Model
         'version',
         'title',
         'body',
+        'commit_hash',
         'created_on',
         'created_by',
         'deleted',

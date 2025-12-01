@@ -1231,35 +1231,39 @@ SQL;
 Route::get('/run-changelog-migration', function () {
     try {
         $schema = \Illuminate\Support\Facades\Schema::connection('legacy');
-        if ($schema->hasTable('changelog_entries')) {
-            return response()->json([
-                'success' => true,
-                'message' => 'changelog_entries table already exists.',
-            ], 200, [], JSON_PRETTY_PRINT);
+        // Create table if missing
+        if (!$schema->hasTable('changelog_entries')) {
+            $filePath = database_path('migrations_sql/010_create_changelog_entries.sql');
+            if (!file_exists($filePath)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Migration file not found: ' . $filePath,
+                ], 404, [], JSON_PRETTY_PRINT);
+            }
+
+            $sql = file_get_contents($filePath);
+            \DB::connection('legacy')->unprepared($sql);
         }
 
-        $filePath = database_path('migrations_sql/010_create_changelog_entries.sql');
-        if (!file_exists($filePath)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Migration file not found: ' . $filePath,
-            ], 404, [], JSON_PRETTY_PRINT);
-        }
-
-        $sql = file_get_contents($filePath);
-        \DB::connection('legacy')->unprepared($sql);
-
-        if ($schema->hasTable('changelog_entries')) {
-            return response()->json([
-                'success' => true,
-                'message' => 'changelog_entries table created successfully.',
-            ], 200, [], JSON_PRETTY_PRINT);
+        // Ensure commit_hash column exists for git sync
+        if (!$schema->hasColumn('changelog_entries', 'commit_hash')) {
+            try {
+                \DB::connection('legacy')->statement("
+                    ALTER TABLE `changelog_entries`
+                    ADD COLUMN `commit_hash` varchar(64) DEFAULT NULL,
+                    ADD KEY `idx_commit_hash` (`commit_hash`)
+                ");
+            } catch (\Exception $e) {
+                if (!str_contains($e->getMessage(), 'Duplicate column name')) {
+                    throw $e;
+                }
+            }
         }
 
         return response()->json([
-            'success' => false,
-            'message' => 'SQL executed but changelog_entries table still not found.',
-        ], 500, [], JSON_PRETTY_PRINT);
+            'success' => true,
+            'message' => 'changelog_entries table and commit_hash column are ready.',
+        ], 200, [], JSON_PRETTY_PRINT);
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
