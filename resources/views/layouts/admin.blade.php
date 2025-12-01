@@ -98,6 +98,13 @@
                                 <i class="fas fa-info-circle w-5 text-center mr-3 {{ str_starts_with($currentRoute, 'admin.system-status') ? 'text-teal-400' : 'text-slate-400 group-hover:text-teal-400' }}"></i>
                                 <span>System Status</span>
                             </a>
+                            <a href="{{ route('admin.changelog.index') }}" class="group relative flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{ str_starts_with($currentRoute, 'admin.changelog') ? 'bg-slate-800/50 text-white' : 'text-slate-300 hover:bg-slate-800/30 hover:text-white' }}">
+                                @if(str_starts_with($currentRoute, 'admin.changelog'))
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-400 rounded-r"></div>
+                                @endif
+                                <i class="fas fa-history w-5 text-center mr-3 {{ str_starts_with($currentRoute, 'admin.changelog') ? 'text-teal-400' : 'text-slate-400 group-hover:text-teal-400' }}"></i>
+                                <span>Changelog</span>
+                            </a>
                         </div>
                     </div>
                 @elseif($account && $account->type_id == 8)
@@ -466,6 +473,11 @@
 
                 @yield('content')
             </main>
+
+            <footer class="border-t border-gray-200 mt-8 pt-4 text-xs text-gray-500 flex items-center justify-between">
+                <span>© {{ now()->year }} JaeVee.</span>
+                <span>Version {{ config('app.version', 'v2.0.0') }}</span>
+            </footer>
         </div>
     </div>
 

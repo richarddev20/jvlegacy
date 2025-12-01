@@ -4,6 +4,7 @@
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\AccountDocumentController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ChangelogController;
 use App\Http\Controllers\Admin\InvestmentController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\ProjectDocumentController;
@@ -37,7 +38,7 @@ Route::get('/', function () {
     return view('home', compact('highlightedProjects'));
 })->name('home');
 
-Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth:investor', 'admin.investor'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/investments', [InvestmentController::class, 'index'])->name('investments.index');
     Route::get('/investments/create', [InvestmentController::class, 'create'])->name('investments.create');
@@ -400,6 +401,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
 
     // Selective Email
     Route::post('/updates/{update}/selective-email', [UpdateController::class, 'sendSelectiveEmails'])->name('updates.selective_email');
+
+    // Changelog
+    Route::get('/changelog', [ChangelogController::class, 'index'])->name('changelog.index');
+    Route::get('/changelog/create', [ChangelogController::class, 'create'])->name('changelog.create');
+    Route::post('/changelog', [ChangelogController::class, 'store'])->name('changelog.store');
 
 });
 
@@ -1220,6 +1226,48 @@ SQL;
         ], 500, [], JSON_PRETTY_PRINT);
     }
 })->name('run.update.images.table.fix');
+
+// One-time route to create changelog_entries table
+Route::get('/run-changelog-migration', function () {
+    try {
+        $schema = \Illuminate\Support\Facades\Schema::connection('legacy');
+        if ($schema->hasTable('changelog_entries')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'changelog_entries table already exists.',
+            ], 200, [], JSON_PRETTY_PRINT);
+        }
+
+        $filePath = database_path('migrations_sql/010_create_changelog_entries.sql');
+        if (!file_exists($filePath)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Migration file not found: ' . $filePath,
+            ], 404, [], JSON_PRETTY_PRINT);
+        }
+
+        $sql = file_get_contents($filePath);
+        \DB::connection('legacy')->unprepared($sql);
+
+        if ($schema->hasTable('changelog_entries')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'changelog_entries table created successfully.',
+            ], 200, [], JSON_PRETTY_PRINT);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'SQL executed but changelog_entries table still not found.',
+        ], 500, [], JSON_PRETTY_PRINT);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error creating changelog_entries table.',
+            'error' => $e->getMessage(),
+        ], 500, [], JSON_PRETTY_PRINT);
+    }
+})->name('run.changelog.migration');
 
 // One-time route to create admin account (remove after use)
 Route::get('/create-admin-account', function () {

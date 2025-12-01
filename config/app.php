@@ -15,6 +15,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    // Application semantic version for display in UI and changelog
+    'version' => env('APP_VERSION', 'v2.0.0'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

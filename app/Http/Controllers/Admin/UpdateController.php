@@ -44,7 +44,7 @@ class UpdateController extends Controller
 
     public function show($id)
     {
-        $update = Update::with('project')->findOrFail($id);
+        $update = Update::with(['project', 'images'])->findOrFail($id);
         return view('admin.updates.show', compact('update'));
     }
 

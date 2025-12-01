@@ -88,8 +88,9 @@
                 </ul>
             </div>
         </div>
-        <div class="border-t border-gray-700 text-center text-xs py-6 text-gray-400">
-            © {{ now()->year }} JaeVee. Capital at risk. Investments are illiquid and not covered by the FSCS.
+        <div class="border-t border-gray-700 text-center text-xs py-6 text-gray-400 space-y-1">
+            <div>© {{ now()->year }} JaeVee. Capital at risk. Investments are illiquid and not covered by the FSCS.</div>
+            <div>Platform version {{ config('app.version', 'v2.0.0') }}</div>
         </div>
     </footer>
 </body>

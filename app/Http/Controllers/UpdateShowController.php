@@ -9,7 +9,7 @@ class UpdateShowController extends Controller
 {
     public function __invoke(Request $request, $id)
     {
-        $update = Update::on('legacy')->findOrFail($id);
+        $update = Update::on('legacy')->with('images')->findOrFail($id);
         // Optionally, add authorization logic here
         return response()->json([
             'id' => $update->id,
@@ -17,6 +17,13 @@ class UpdateShowController extends Controller
             'sent_on' => $update->sent_on ? $update->sent_on->format('d M Y H:i') : null,
             'comment' => $update->comment,
             'category' => $update->category,
+            'images' => $update->images->map(function ($image) {
+                return [
+                    'url' => $image->url,
+                    'thumbnail_url' => $image->thumbnail_url,
+                    'description' => $image->description,
+                ];
+            }),
         ]);
     }
 }

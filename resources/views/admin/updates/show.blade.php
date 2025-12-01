@@ -42,6 +42,24 @@
                     {!! $update->comment !!}
                 </div>
             </div>
+
+            @if($update->images && $update->images->count())
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Images</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        @foreach($update->images as $image)
+                            <div class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                                <img src="{{ $image->thumbnail_url }}" alt="{{ $image->file_name }}" class="w-full h-32 object-cover">
+                                @if($image->description)
+                                    <div class="px-3 py-2 text-xs text-gray-700 border-t border-gray-200">
+                                        {{ $image->description }}
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="mt-6 pt-6 border-t border-gray-200">
