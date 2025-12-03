@@ -1,5 +1,11 @@
 // ... existing code ...
 
+// Define a home route for links like route('home')
+// For now this simply sends users to the investor login screen.
+Route::get('/', function () {
+    return redirect()->route('investor.login');
+})->name('home');
+
 // Add this route to test email configuration
 Route::get('/admin/test-email-config', function () {
     return response()->json([
