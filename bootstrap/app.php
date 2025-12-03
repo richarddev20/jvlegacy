@@ -11,7 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Custom route middleware
+        // Custom route middleware aliases
         $middleware->alias([
             'admin.investor' => \App\Http\Middleware\AdminInvestorMiddleware::class,
         ]);

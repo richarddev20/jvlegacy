@@ -330,10 +330,11 @@ class UpdateController extends Controller
             );
         }
 
-        // Count emails sent (excluding Ben and Scott)
-        $emailcount = max(count($emails) - 2, 0);
+        // Count emails sent (including internal recipients)
+        $investorCount = $investorAccounts->count();
+        $internalCount = count($internalEmails);
 
-        return $emailcount;
+        return $investorCount + $internalCount;
     }
 
     // Function to send update email to just Ben, Scott and Chris
@@ -410,7 +411,10 @@ class UpdateController extends Controller
             Mail::to('chris@jaevee.co.uk')->send(
                 new ProjectUpdateMail($dummyAccount, $dummyProject, $dummyUpdate)
             );
-
-        return 'Test email sent.';
+            return 'Test email sent.';
+        } catch (\Exception $e) {
+            \Log::error('Failed to send test update email: ' . $e->getMessage());
+            return 'Failed to send test email.';
+        }
     }
 }

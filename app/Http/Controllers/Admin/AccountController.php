@@ -276,11 +276,19 @@ class AccountController extends Controller
 
             \DB::connection('legacy')->commit();
 
-            // Send welcome email
+            // Send welcome email - reload account with relationships
             try {
-                Mail::to($account->email)->send(new WelcomeInvestorMail($account));
+                $account->load(['person', 'company']);
+                \Log::info('Sending welcome email to: ' . $account->email);
+                \Log::info('Mail driver: ' . config('mail.default'));
+                \Log::info('Postmark token configured: ' . (config('services.postmark.token') ? 'Yes' : 'No'));
+                
+                // Explicitly use the postmark mailer
+                Mail::mailer('postmark')->to($account->email)->send(new WelcomeInvestorMail($account));
+                \Log::info('Welcome email sent successfully to: ' . $account->email);
             } catch (\Exception $e) {
-                \Log::error('Failed to send welcome email: ' . $e->getMessage());
+                \Log::error('Failed to send welcome email to ' . $account->email . ': ' . $e->getMessage());
+                \Log::error('Stack trace: ' . $e->getTraceAsString());
             }
 
             return redirect()->route('admin.accounts.show', $account->id)
