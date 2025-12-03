@@ -14,8 +14,8 @@
                 Your investments and documents are still exactly where they should be.
             </p>
             <div class="flex flex-wrap justify-center gap-4">
-                <a href="{{ route('home') }}" class="px-6 py-3 bg-white text-blue-700 font-semibold rounded-lg hover:bg-blue-50 transition">
-                    Back to homepage
+                <a href="{{ route('investor.login') }}" class="px-6 py-3 bg-white text-blue-700 font-semibold rounded-lg hover:bg-blue-50 transition">
+                    Back to login
                 </a>
                 <a href="{{ route('investor.login') }}" class="px-6 py-3 border-2 border-white/40 text-white font-semibold rounded-lg hover:bg-white/10 transition">
                     Investor dashboard
