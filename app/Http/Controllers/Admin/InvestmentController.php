@@ -160,28 +160,30 @@ class InvestmentController extends Controller
         // Convert empty strings, 0, and potentially invalid 1 values to null BEFORE validation
         $data = $request->all();
         
-        // Handle transfer_id - convert empty/0 to null, and validate 1 exists if provided
+        // Handle transfer_id - convert empty/0 to null, and validate exists if provided
         if (isset($data['transfer_id'])) {
             if ($data['transfer_id'] === '' || $data['transfer_id'] === '0' || $data['transfer_id'] === 0 || $data['transfer_id'] === null) {
                 $data['transfer_id'] = null;
-            } elseif ($data['transfer_id'] == 1) {
-                // Check if transfer_id 1 actually exists in mp_transfers
-                $exists = \DB::connection('legacy')->table('mp_transfers')->where('id', 1)->exists();
+            } else {
+                // Check if transfer_id actually exists in mp_transfers
+                $transferId = (int)$data['transfer_id'];
+                $exists = \DB::connection('legacy')->table('mp_transfers')->where('id', $transferId)->exists();
                 if (!$exists) {
-                    $data['transfer_id'] = null; // Convert invalid 1 to null
+                    $data['transfer_id'] = null; // Convert invalid ID to null
                 }
             }
         }
         
-        // Handle pay_in_id - convert empty/0 to null, and validate 1 exists if provided
+        // Handle pay_in_id - convert empty/0 to null, and validate exists if provided
         if (isset($data['pay_in_id'])) {
             if ($data['pay_in_id'] === '' || $data['pay_in_id'] === '0' || $data['pay_in_id'] === 0 || $data['pay_in_id'] === null) {
                 $data['pay_in_id'] = null;
-            } elseif ($data['pay_in_id'] == 1) {
-                // Check if pay_in_id 1 actually exists in mp_pay_ins
-                $exists = \DB::connection('legacy')->table('mp_pay_ins')->where('id', 1)->exists();
+            } else {
+                // Check if pay_in_id actually exists in mp_pay_ins
+                $payInId = (int)$data['pay_in_id'];
+                $exists = \DB::connection('legacy')->table('mp_pay_ins')->where('id', $payInId)->exists();
                 if (!$exists) {
-                    $data['pay_in_id'] = null; // Convert invalid 1 to null
+                    $data['pay_in_id'] = null; // Convert invalid ID to null
                 }
             }
         }
@@ -247,28 +249,30 @@ class InvestmentController extends Controller
         // Convert empty strings, 0, and potentially invalid 1 values to null BEFORE validation
         $data = $request->all();
         
-        // Handle transfer_id - convert empty/0 to null, and validate 1 exists if provided
+        // Handle transfer_id - convert empty/0 to null, and validate exists if provided
         if (isset($data['transfer_id'])) {
             if ($data['transfer_id'] === '' || $data['transfer_id'] === '0' || $data['transfer_id'] === 0 || $data['transfer_id'] === null) {
                 $data['transfer_id'] = null;
-            } elseif ($data['transfer_id'] == 1) {
-                // Check if transfer_id 1 actually exists in mp_transfers
-                $exists = \DB::connection('legacy')->table('mp_transfers')->where('id', 1)->exists();
+            } else {
+                // Check if transfer_id actually exists in mp_transfers
+                $transferId = (int)$data['transfer_id'];
+                $exists = \DB::connection('legacy')->table('mp_transfers')->where('id', $transferId)->exists();
                 if (!$exists) {
-                    $data['transfer_id'] = null; // Convert invalid 1 to null
+                    $data['transfer_id'] = null; // Convert invalid ID to null
                 }
             }
         }
         
-        // Handle pay_in_id - convert empty/0 to null, and validate 1 exists if provided
+        // Handle pay_in_id - convert empty/0 to null, and validate exists if provided
         if (isset($data['pay_in_id'])) {
             if ($data['pay_in_id'] === '' || $data['pay_in_id'] === '0' || $data['pay_in_id'] === 0 || $data['pay_in_id'] === null) {
                 $data['pay_in_id'] = null;
-            } elseif ($data['pay_in_id'] == 1) {
-                // Check if pay_in_id 1 actually exists in mp_pay_ins
-                $exists = \DB::connection('legacy')->table('mp_pay_ins')->where('id', 1)->exists();
+            } else {
+                // Check if pay_in_id actually exists in mp_pay_ins
+                $payInId = (int)$data['pay_in_id'];
+                $exists = \DB::connection('legacy')->table('mp_pay_ins')->where('id', $payInId)->exists();
                 if (!$exists) {
-                    $data['pay_in_id'] = null; // Convert invalid 1 to null
+                    $data['pay_in_id'] = null; // Convert invalid ID to null
                 }
             }
         }
