@@ -49,12 +49,18 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         @foreach($update->images as $image)
                             <div class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
-                                <img src="{{ $image->thumbnail_url }}" alt="{{ $image->file_name }}" class="w-full h-32 object-cover">
+                                <img src="{{ $image->thumbnail_url }}" 
+                                     alt="{{ $image->file_name }}" 
+                                     class="w-full h-32 object-cover"
+                                     onerror="this.onerror=null; this.src='{{ $image->url }}';">
                                 @if($image->description)
                                     <div class="px-3 py-2 text-xs text-gray-700 border-t border-gray-200">
                                         {{ $image->description }}
                                     </div>
                                 @endif
+                                <div class="px-3 py-1 text-xs text-gray-500 border-t border-gray-200">
+                                    {{ $image->file_name }}
+                                </div>
                             </div>
                         @endforeach
                     </div>

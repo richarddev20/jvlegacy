@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class UpdateImage extends Model
 {
@@ -34,6 +35,12 @@ class UpdateImage extends Model
 
     public function getUrlAttribute(): string
     {
+        // Use Storage::url() which handles the public disk correctly
+        if (Storage::disk('public')->exists($this->file_path)) {
+            return Storage::disk('public')->url($this->file_path);
+        }
+        
+        // Fallback to asset() if Storage::url() doesn't work
         return asset('storage/' . $this->file_path);
     }
 
@@ -43,10 +50,12 @@ class UpdateImage extends Model
         $pathInfo = pathinfo($this->file_path);
         $thumbnailPath = $pathInfo['dirname'] . '/thumb_' . $pathInfo['basename'];
         
-        if (file_exists(storage_path('app/public/' . $thumbnailPath))) {
-            return asset('storage/' . $thumbnailPath);
+        // Check if thumbnail exists using Storage
+        if (Storage::disk('public')->exists($thumbnailPath)) {
+            return Storage::disk('public')->url($thumbnailPath);
         }
         
+        // Fallback to original image
         return $this->url;
     }
 }
