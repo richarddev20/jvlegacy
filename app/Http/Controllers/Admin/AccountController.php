@@ -84,16 +84,57 @@ class AccountController extends Controller
                     ];
                 }
                 
-                $project = $investments->first()->project;
+                $firstInvestment = $investments->first();
+                $project = $firstInvestment->project;
+                
                 // If project is null, try to load it directly using project_id from investment
-                if (!$project && $investments->first()->project_id) {
-                    $project = \App\Models\Project::where('id', $investments->first()->project_id)->first();
+                if (!$project && $firstInvestment->project_id) {
+                    // Try loading with legacy connection explicitly
+                    $project = \App\Models\Project::on('legacy')
+                        ->where('id', $firstInvestment->project_id)
+                        ->first();
+                    
+                    // If still null, try loading by external project_id as fallback
+                    if (!$project) {
+                        $project = \App\Models\Project::on('legacy')
+                            ->where('project_id', $firstInvestment->project_id)
+                            ->first();
+                    }
+                }
+                
+                // If project relationship loaded but name is empty, reload it
+                if ($project && empty($project->name) && $firstInvestment->project_id) {
+                    $project = \App\Models\Project::on('legacy')
+                        ->where('id', $firstInvestment->project_id)
+                        ->first();
+                }
+                
+                // Determine project name with fallbacks
+                $projectName = 'Unknown Project';
+                $projectExternalId = null;
+                
+                if ($project) {
+                    $projectExternalId = $project->project_id ?? null;
+                    // Try multiple fallbacks for project name
+                    $name = trim($project->name ?? '');
+                    if (!empty($name)) {
+                        $projectName = $name;
+                    } elseif ($projectExternalId) {
+                        $projectName = 'Project #' . $projectExternalId;
+                    } elseif ($project->id) {
+                        $projectName = 'Project (ID: ' . $project->id . ')';
+                    } else {
+                        $projectName = 'Project (ID: ' . ($firstInvestment->project_id ?? 'Unknown') . ')';
+                    }
+                } elseif ($firstInvestment->project_id) {
+                    // Project doesn't exist but we have project_id - show it
+                    $projectName = 'Project #' . $firstInvestment->project_id . ' (Not Found)';
                 }
                 
                 return [
                     'project' => $project,
-                    'project_id' => $project ? ($project->project_id ?? null) : null,
-                    'project_name' => $project ? ($project->name ?? 'Project #' . ($project->project_id ?? $project->id)) : 'Unknown Project',
+                    'project_id' => $projectExternalId,
+                    'project_name' => $projectName,
                     'total_invested' => $investments->sum('amount'),
                     'total_paid' => $investments->where('paid', 1)->sum('amount'),
                     'total_unpaid' => $investments->where('paid', 0)->sum('amount'),
