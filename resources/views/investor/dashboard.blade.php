@@ -891,69 +891,125 @@
                     @if($hasEmailHistory)
                         <div class="divide-y divide-gray-200">
                             @foreach($emailHistory as $email)
-                                <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
-                                    <div class="flex items-start gap-4">
-                                        <div class="flex-shrink-0 mt-1">
-                                            <i class="{{ $email->icon ?? 'fas fa-envelope' }} text-xl"></i>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <div class="flex items-start justify-between gap-4">
-                                                <div class="flex-1">
-                                                    <div class="flex items-center gap-2 mb-1">
-                                                        <span class="px-2 py-0.5 text-xs font-medium rounded-full {{ 
-                                                            ($email->email_type ?? '') === 'document' ? 'bg-blue-100 text-blue-800' : 
-                                                            (($email->email_type ?? '') === 'project_update' ? 'bg-green-100 text-green-800' : 
-                                                            (($email->email_type ?? '') === 'support_ticket' ? 'bg-purple-100 text-purple-800' : 
-                                                            (($email->email_type ?? '') === 'payout' ? 'bg-emerald-100 text-emerald-800' : 
-                                                            'bg-gray-100 text-gray-800'))) 
-                                                        }}">
-                                                            {{ $email->type_label ?? 'Email' }}
-                                                        </span>
-                                                        @if(isset($email->project) && $email->project)
-                                                            <span class="text-xs text-gray-500">• {{ $email->project->name ?? 'Unknown Project' }}</span>
-                                                        @endif
+                                <div class="border-b border-gray-200 last:border-b-0" x-data="{ expanded: false }">
+                                    <button 
+                                        @click="expanded = !expanded"
+                                        class="w-full px-6 py-4 hover:bg-gray-50 transition-colors text-left"
+                                        type="button"
+                                    >
+                                        <div class="flex items-start gap-4">
+                                            <div class="flex-shrink-0 mt-1">
+                                                <i class="{{ $email->icon ?? 'fas fa-envelope' }} text-xl"></i>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-start justify-between gap-4">
+                                                    <div class="flex-1">
+                                                        <div class="flex items-center gap-2 mb-1">
+                                                            <span class="px-2 py-0.5 text-xs font-medium rounded-full {{ 
+                                                                ($email->email_type ?? '') === 'document' ? 'bg-blue-100 text-blue-800' : 
+                                                                (($email->email_type ?? '') === 'project_update' ? 'bg-green-100 text-green-800' : 
+                                                                (($email->email_type ?? '') === 'support_ticket' ? 'bg-purple-100 text-purple-800' : 
+                                                                (($email->email_type ?? '') === 'payout' ? 'bg-emerald-100 text-emerald-800' : 
+                                                                'bg-gray-100 text-gray-800'))) 
+                                                            }}">
+                                                                {{ $email->type_label ?? 'Email' }}
+                                                            </span>
+                                                            @if(isset($email->project) && $email->project)
+                                                                <span class="text-xs text-gray-500">• {{ $email->project->name ?? 'Unknown Project' }}</span>
+                                                            @endif
+                                                        </div>
+                                                        <h4 class="text-sm font-semibold text-gray-900 mb-1">
+                                                            {{ $email->subject ?? 'No subject' }}
+                                                        </h4>
+                                                        <p class="text-xs text-gray-500">
+                                                            To: {{ $email->recipient ?? 'N/A' }}
+                                                        </p>
                                                     </div>
-                                                    <h4 class="text-sm font-semibold text-gray-900 mb-1">
-                                                        {{ $email->subject ?? 'No subject' }}
-                                                    </h4>
-                                                    <p class="text-xs text-gray-500">
-                                                        To: {{ $email->recipient ?? 'N/A' }}
-                                                    </p>
-                                                </div>
-                                                <div class="flex-shrink-0 text-right">
-                                                    <p class="text-xs text-gray-500 whitespace-nowrap">
-                                                        @php
-                                                            $sentAt = $email->sent_at ?? null;
-                                                            if ($sentAt) {
-                                                                if (is_string($sentAt)) {
-                                                                    try {
-                                                                        $sentAt = \Carbon\Carbon::parse($sentAt);
-                                                                    } catch (\Exception $e) {
-                                                                        $sentAt = null;
+                                                    <div class="flex-shrink-0 text-right flex items-center gap-3">
+                                                        <div>
+                                                            <p class="text-xs text-gray-500 whitespace-nowrap">
+                                                                @php
+                                                                    $sentAt = $email->sent_at ?? null;
+                                                                    if ($sentAt) {
+                                                                        if (is_string($sentAt)) {
+                                                                            try {
+                                                                                $sentAt = \Carbon\Carbon::parse($sentAt);
+                                                                            } catch (\Exception $e) {
+                                                                                $sentAt = null;
+                                                                            }
+                                                                        }
+                                                                        if ($sentAt && ($sentAt instanceof \Carbon\Carbon || $sentAt instanceof \DateTime)) {
+                                                                            echo $sentAt->format('d M Y, H:i');
+                                                                        } else {
+                                                                            echo 'Unknown date';
+                                                                        }
+                                                                    } else {
+                                                                        echo 'Unknown date';
                                                                     }
-                                                                }
-                                                                if ($sentAt && ($sentAt instanceof \Carbon\Carbon || $sentAt instanceof \DateTime)) {
-                                                                    echo $sentAt->format('d M Y, H:i');
-                                                                } else {
-                                                                    echo 'Unknown date';
-                                                                }
-                                                            } else {
-                                                                echo 'Unknown date';
-                                                            }
-                                                        @endphp
-                                                    </p>
-                                                    @if(isset($email->sent_at) && $email->sent_at)
-                                                        @php
-                                                            try {
-                                                                $diffForHumans = is_string($email->sent_at) ? \Carbon\Carbon::parse($email->sent_at)->diffForHumans() : $email->sent_at->diffForHumans();
-                                                                echo '<p class="text-xs text-gray-400 mt-1">' . $diffForHumans . '</p>';
-                                                            } catch (\Exception $e) {
-                                                                // Silently fail
-                                                            }
-                                                        @endphp
-                                                    @endif
+                                                                @endphp
+                                                            </p>
+                                                            @if(isset($email->sent_at) && $email->sent_at)
+                                                                @php
+                                                                    try {
+                                                                        $diffForHumans = is_string($email->sent_at) ? \Carbon\Carbon::parse($email->sent_at)->diffForHumans() : $email->sent_at->diffForHumans();
+                                                                        echo '<p class="text-xs text-gray-400 mt-1">' . $diffForHumans . '</p>';
+                                                                    } catch (\Exception $e) {
+                                                                        // Silently fail
+                                                                    }
+                                                                @endphp
+                                                            @endif
+                                                        </div>
+                                                        <i class="fas fa-chevron-down text-gray-400 transition-transform" :class="{ 'rotate-180': expanded }"></i>
+                                                    </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </button>
+                                    <div x-show="expanded" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="px-6 pb-4">
+                                        <div class="ml-10 pt-2 border-t border-gray-200">
+                                            @if(($email->email_type ?? '') === 'document')
+                                                <div class="text-sm text-gray-700">
+                                                    <p class="font-medium mb-2">Documents included in this email:</p>
+                                                    @if(isset($email->documents) && $email->documents->count() > 0)
+                                                        <ul class="list-disc list-inside space-y-1 text-gray-600">
+                                                            @foreach($email->documents as $doc)
+                                                                <li>{{ $doc->name ?? 'Document' }}</li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @else
+                                                        <p class="text-gray-600">{{ $email->content ?? 'Documents were sent to you via email.' }}</p>
+                                                    @endif
+                                                </div>
+                                            @elseif(($email->email_type ?? '') === 'project_update')
+                                                <div class="text-sm text-gray-700 prose prose-sm max-w-none">
+                                                    {!! nl2br(e($email->content ?? '')) !!}
+                                                </div>
+                                                @if(isset($email->images) && $email->images->count() > 0)
+                                                    <div class="mt-4 grid grid-cols-2 gap-3">
+                                                        @foreach($email->images as $image)
+                                                            <div class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                                                                <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
+                                                                @if($image->description)
+                                                                    <div class="px-2 py-1 text-xs text-gray-600">{{ $image->description }}</div>
+                                                                @endif
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            @elseif(($email->email_type ?? '') === 'support_ticket')
+                                                <div class="text-sm text-gray-700">
+                                                    @if(isset($email->ticket_id))
+                                                        <p class="font-medium mb-2">Ticket ID: <span class="font-mono">{{ $email->ticket_id }}</span></p>
+                                                    @endif
+                                                    <div class="prose prose-sm max-w-none">
+                                                        {!! nl2br(e($email->content ?? '')) !!}
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="text-sm text-gray-700 prose prose-sm max-w-none">
+                                                    {!! nl2br(e($email->content ?? 'Email content not available.')) !!}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

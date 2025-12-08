@@ -221,21 +221,33 @@ class InvestorDashboardController extends Controller
             // Get document emails
             $documentEmails = collect();
             try {
-                $documentEmails = DocumentEmailLog::where('account_id', $account->id)
+                // Group document emails by project and sent_at to get all documents sent together
+                $documentLogs = DocumentEmailLog::where('account_id', $account->id)
                     ->with('project')
+                    ->orderBy('sent_at', 'desc')
                     ->get()
-                    ->map(function($log) {
-                        return (object)[
-                            'id' => 'doc_' . $log->id,
-                            'email_type' => EmailHistory::TYPE_DOCUMENT,
-                            'type_label' => 'Document Email',
-                            'icon' => 'fas fa-file-alt text-blue-500',
-                            'subject' => 'Your documents for ' . ($log->project->name ?? 'your investment'),
-                            'recipient' => $log->recipient ?? $account->email,
-                            'project' => $log->project,
-                            'sent_at' => $log->sent_at,
-                        ];
+                    ->groupBy(function($log) {
+                        return ($log->project_id ?? 'no-project') . '_' . ($log->sent_at ? $log->sent_at->format('Y-m-d H:i:s') : 'no-date');
                     });
+                
+                $documentEmails = collect();
+                foreach ($documentLogs as $groupKey => $logs) {
+                    $firstLog = $logs->first();
+                    $documentNames = $logs->pluck('document_name')->filter()->unique()->values();
+                    
+                    $documentEmails->push((object)[
+                        'id' => 'doc_group_' . $firstLog->id,
+                        'email_type' => EmailHistory::TYPE_DOCUMENT,
+                        'type_label' => 'Document Email',
+                        'icon' => 'fas fa-file-alt text-blue-500',
+                        'subject' => 'Your documents for ' . ($firstLog->project->name ?? 'your investment'),
+                        'recipient' => $firstLog->recipient ?? $account->email,
+                        'project' => $firstLog->project,
+                        'sent_at' => $firstLog->sent_at,
+                        'content' => $documentNames->join(', ') ?: 'Documents were sent to you via email.',
+                        'documents' => $documentNames->map(fn($name) => (object)['name' => $name]),
+                    ]);
+                }
             } catch (\Exception $e) {
                 // Table might not exist or query failed
                 \Log::warning('Failed to load document emails: ' . $e->getMessage());
@@ -249,7 +261,7 @@ class InvestorDashboardController extends Controller
                     })
                     ->where('category', 3)
                     ->where('sent', 1)
-                    ->with('project')
+                    ->with('project', 'images')
                     ->get()
                     ->map(function($update) use ($account) {
                         return (object)[
@@ -261,6 +273,8 @@ class InvestorDashboardController extends Controller
                             'recipient' => $account->email,
                             'project' => $update->project,
                             'sent_at' => $update->sent_on,
+                            'content' => $update->comment ?? '',
+                            'images' => $update->images ?? collect(),
                         ];
                     });
             } catch (\Exception $e) {
@@ -284,6 +298,8 @@ class InvestorDashboardController extends Controller
                             'recipient' => $ticket->account->email ?? $account->email,
                             'project' => $ticket->project,
                             'sent_at' => $ticket->created_on,
+                            'content' => $ticket->message ?? '',
+                            'ticket_id' => $ticket->ticket_id ?? null,
                         ];
                     });
             } catch (\Exception $e) {
