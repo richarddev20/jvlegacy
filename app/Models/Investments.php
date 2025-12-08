@@ -16,6 +16,14 @@ class Investments extends Model
         'amount', 'type', 'paid', 'paid_on', 'reserved_until',
     ];
 
+    protected $casts = [
+        'paid_on' => 'datetime',
+        'reserved_until' => 'datetime',
+        'amount' => 'integer',
+        'type' => 'integer',
+        'paid' => 'boolean',
+    ];
+
     // Removed read-only protection to allow admin management
 
     public function account()

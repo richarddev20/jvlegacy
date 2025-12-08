@@ -286,40 +286,56 @@ class InvestorDashboardController extends Controller
     protected function buildTimeline(Project $project): array
     {
         $currentStatus = $project->status;
+        
+        // Helper to ensure date is Carbon instance or null
+        $ensureDate = function($date) {
+            if (!$date) {
+                return null;
+            }
+            if (is_string($date)) {
+                try {
+                    return \Carbon\Carbon::parse($date);
+                } catch (\Exception $e) {
+                    return null;
+                }
+            }
+            return $date;
+        };
+        
         $stagesConfig = [
             [
                 'label' => 'Due diligence complete',
-                'date' => $project->submitted_on,
+                'date' => $ensureDate($project->submitted_on),
                 'status' => Project::STATUS_PENDING_REVIEW,
             ],
             [
                 'label' => 'Under review',
-                'date' => $project->under_review_on,
+                'date' => $ensureDate($project->under_review_on),
                 'status' => Project::STATUS_UNDER_REVIEW,
             ],
             [
                 'label' => 'AIP signed',
-                'date' => $project->aip_signed_on,
+                'date' => $ensureDate($project->aip_signed_on),
                 'status' => Project::STATUS_AIP_SIGNED,
             ],
             [
                 'label' => 'Set up complete',
-                'date' => $project->set_up_completed_on,
+                'date' => $ensureDate($project->set_up_completed_on),
                 'status' => Project::STATUS_PENDING_COMPLIANCE,
             ],
             [
                 'label' => 'Launched to investors',
-                'date' => $project->launched_on,
+                'date' => $ensureDate($project->launched_on),
                 'status' => Project::STATUS_PENDING_EQUITY,
             ],
             [
                 'label' => 'Purchase complete',
-                'date' => optional($project->property)->purchase_completion_date,
+                'date' => $ensureDate(optional($project->property)->purchase_completion_date),
                 'status' => Project::STATUS_PENDING_CONSTRUCTION,
             ],
             [
                 'label' => 'Project complete',
-                'date' => $project->completed_on,
+                'date' => $ensureDate($project->completed_on),
                 'status' => Project::STATUS_SOLD,
             ],
         ];
@@ -330,9 +346,19 @@ class InvestorDashboardController extends Controller
             $stages[] = $stage;
         }
 
+        // Ensure expected_payout_date is Carbon instance
+        $expectedPayout = $project->expected_payout_date;
+        if ($expectedPayout && is_string($expectedPayout)) {
+            try {
+                $expectedPayout = \Carbon\Carbon::parse($expectedPayout);
+            } catch (\Exception $e) {
+                $expectedPayout = null;
+            }
+        }
+
         return [
             'stages' => $stages,
-            'expected_payout' => $project->expected_payout_date,
+            'expected_payout' => $expectedPayout,
             'investment_term' => optional($project->property)->investment_turnaround_time,
         ];
     }

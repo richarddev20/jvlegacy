@@ -253,7 +253,17 @@
                                         <i class="fas fa-bullhorn text-blue-500 mt-1 mr-3"></i>
                                         <div class="flex-1">
                                             <p class="text-sm font-medium text-gray-900">Project Update</p>
-                                            <p class="text-xs text-gray-500 mt-1">{{ $update->sent_on ? $update->sent_on->format('d M Y') : '' }}</p>
+                                            <p class="text-xs text-gray-500 mt-1">
+                                                @if($update->sent_on)
+                                                    @php
+                                                        $sentOn = $update->sent_on;
+                                                        if (is_string($sentOn)) {
+                                                            $sentOn = \Carbon\Carbon::parse($sentOn);
+                                                        }
+                                                    @endphp
+                                                    {{ $sentOn->format('d M Y') }}
+                                                @endif
+                                            </p>
                                         </div>
                                     </div>
                                 @endforeach
@@ -334,7 +344,17 @@
                                             <div class="bg-white p-3 rounded border border-blue-100">
                                                 <div class="flex items-start justify-between">
                                                     <div class="flex-1">
-                                                        <p class="text-xs text-gray-500 mb-1">{{ $update->sent_on ? $update->sent_on->format('d M Y') : '' }}</p>
+                                                        <p class="text-xs text-gray-500 mb-1">
+                                                            @if($update->sent_on)
+                                                                @php
+                                                                    $sentOn = $update->sent_on;
+                                                                    if (is_string($sentOn)) {
+                                                                        $sentOn = \Carbon\Carbon::parse($sentOn);
+                                                                    }
+                                                                @endphp
+                                                                {{ $sentOn->format('d M Y') }}
+                                                            @endif
+                                                        </p>
                                                         <p class="text-sm text-gray-900">{!! nl2br(e(Str::limit($update->comment_preview ?? '', 150))) !!}</p>
                                                     </div>
                                                     <button 
@@ -362,7 +382,13 @@
                                             <p class="text-xs text-gray-500 uppercase">Forecast Payout</p>
                                             <p class="text-lg font-bold text-gray-900">
                                                 @if($timeline['expected_payout'])
-                                                    {{ $timeline['expected_payout']->format('d M Y') }}
+                                                    @php
+                                                        $payoutDate = $timeline['expected_payout'];
+                                                        if (is_string($payoutDate)) {
+                                                            $payoutDate = \Carbon\Carbon::parse($payoutDate);
+                                                        }
+                                                    @endphp
+                                                    {{ $payoutDate->format('d M Y') }}
                                                 @else
                                                     TBC
                                                 @endif
@@ -374,7 +400,19 @@
                                             <div class="flex items-center justify-between px-3 py-2 bg-white rounded border {{ $stage['completed'] ? 'border-green-300' : 'border-gray-200' }}">
                                                 <div>
                                                     <p class="text-sm font-medium {{ $stage['completed'] ? 'text-green-800' : 'text-gray-700' }}">{{ $stage['label'] }}</p>
-                                                    <p class="text-xs text-gray-500">{{ $stage['date'] ? $stage['date']->format('d M Y') : 'Pending' }}</p>
+                                                    <p class="text-xs text-gray-500">
+                                                        @if($stage['date'])
+                                                            @php
+                                                                $stageDate = $stage['date'];
+                                                                if (is_string($stageDate)) {
+                                                                    $stageDate = \Carbon\Carbon::parse($stageDate);
+                                                                }
+                                                            @endphp
+                                                            {{ $stageDate->format('d M Y') }}
+                                                        @else
+                                                            Pending
+                                                        @endif
+                                                    </p>
                                                 </div>
                                                 @if($stage['completed'])
                                                     <i class="fas fa-check-circle text-green-600"></i>
@@ -414,7 +452,19 @@
                                         @foreach($projectInvestments as $investment)
                                             <tr>
                                                 <td class="px-4 py-3 text-sm font-medium text-gray-900">{!! money($investment->amount) !!}</td>
-                                                <td class="px-4 py-3 text-sm text-gray-500">{{ $investment->paid_on ? $investment->paid_on->format('d M Y') : '—' }}</td>
+                                                <td class="px-4 py-3 text-sm text-gray-500">
+                                                    @if($investment->paid_on)
+                                                        @php
+                                                            $paidOn = $investment->paid_on;
+                                                            if (is_string($paidOn)) {
+                                                                $paidOn = \Carbon\Carbon::parse($paidOn);
+                                                            }
+                                                        @endphp
+                                                        {{ $paidOn->format('d M Y') }}
+                                                    @else
+                                                        —
+                                                    @endif
+                                                </td>
                                                 <td class="px-4 py-3 text-sm">
                                                     <span class="px-2 py-1 rounded text-xs font-medium {{ $investment->type == 1 ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
                                                         {{ $investment->type_label }}
@@ -494,7 +544,18 @@
                                 </form>
                                 @if($documentLogs->count())
                                     <span class="text-xs text-gray-500">
-                                        Last emailed: {{ $documentLogs->first()->sent_at?->format('d M Y H:i') ?? 'Never' }}
+                                        Last emailed: 
+                                        @php
+                                            $sentAt = $documentLogs->first()->sent_at ?? null;
+                                            if ($sentAt) {
+                                                if (is_string($sentAt)) {
+                                                    $sentAt = \Carbon\Carbon::parse($sentAt);
+                                                }
+                                                echo $sentAt->format('d M Y H:i');
+                                            } else {
+                                                echo 'Never';
+                                            }
+                                        @endphp
                                     </span>
                                 @endif
                             </div>
@@ -542,7 +603,17 @@
                                             @foreach($payouts as $payout)
                                                 <tr class="hover:bg-gray-50">
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        {{ optional($payout->quarterlyUpdate)->due_on ? $payout->quarterlyUpdate->due_on->format('d M Y') : '—' }}
+                                                        @php
+                                                            $dueOn = optional($payout->quarterlyUpdate)->due_on;
+                                                            if ($dueOn) {
+                                                                if (is_string($dueOn)) {
+                                                                    $dueOn = \Carbon\Carbon::parse($dueOn);
+                                                                }
+                                                                echo $dueOn->format('d M Y');
+                                                            } else {
+                                                                echo '—';
+                                                            }
+                                                        @endphp
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-gray-900">
                                                         {!! money($payout->amount ?? 0) !!}
@@ -550,7 +621,15 @@
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         @if($payout->paid)
                                                             <span class="px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
-                                                                Paid {{ $payout->paid_on ? $payout->paid_on->format('d M Y') : '' }}
+                                                                @if($payout->paid_on)
+                                                                    @php
+                                                                        $paidOn = $payout->paid_on;
+                                                                        if (is_string($paidOn)) {
+                                                                            $paidOn = \Carbon\Carbon::parse($paidOn);
+                                                                        }
+                                                                    @endphp
+                                                                    Paid {{ $paidOn->format('d M Y') }}
+                                                                @endif
                                                             </span>
                                                         @else
                                                             <span class="px-3 py-1 text-sm font-medium rounded-full bg-yellow-100 text-yellow-800">
@@ -610,7 +689,17 @@
                                                 </div>
                                                 <div class="flex-shrink-0 text-right">
                                                     <p class="text-xs text-gray-500 whitespace-nowrap">
-                                                        {{ $email->sent_at?->format('d M Y, H:i') ?? 'Unknown date' }}
+                                                        @php
+                                                            $sentAt = $email->sent_at ?? null;
+                                                            if ($sentAt) {
+                                                                if (is_string($sentAt)) {
+                                                                    $sentAt = \Carbon\Carbon::parse($sentAt);
+                                                                }
+                                                                echo $sentAt->format('d M Y, H:i');
+                                                            } else {
+                                                                echo 'Unknown date';
+                                                            }
+                                                        @endphp
                                                     </p>
                                                     <p class="text-xs text-gray-400 mt-1">
                                                         {{ $email->sent_at?->diffForHumans() ?? '' }}
@@ -974,7 +1063,15 @@
                                                         {{ $update->account->name ?? 'System' }}
                                                     </span>
                                                     <span class="text-gray-500">
-                                                        {{ $update->created_on?->format('d M Y, H:i') ?? '' }}
+                                                        @php
+                                                            $createdOn = $update->created_on ?? null;
+                                                            if ($createdOn) {
+                                                                if (is_string($createdOn)) {
+                                                                    $createdOn = \Carbon\Carbon::parse($createdOn);
+                                                                }
+                                                                echo $createdOn->format('d M Y, H:i');
+                                                            }
+                                                        @endphp
                                                     </span>
                                                     @if($update->is_fixed)
                                                         <span class="px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded flex items-center gap-1">
