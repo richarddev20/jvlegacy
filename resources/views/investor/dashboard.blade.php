@@ -291,9 +291,19 @@
                     @php 
                         $firstInv = $projectInvestments->first();
                         $project = $firstInv && $firstInv->project ? $firstInv->project : null;
-                        // If project is null but we have project_id, try to load it
+                        // If project is null but we have project_id, try to load it with legacy connection
                         if (!$project && $firstInv && $firstInv->project_id) {
-                            $project = \App\Models\Project::where('id', $firstInv->project_id)->first();
+                            $projectIdValue = (int) $firstInv->project_id;
+                            $project = \App\Models\Project::on('legacy')
+                                ->where('id', $projectIdValue)
+                                ->first();
+                            
+                            // If still null, try loading by external project_id as fallback
+                            if (!$project) {
+                                $project = \App\Models\Project::on('legacy')
+                                    ->where('project_id', $projectIdValue)
+                                    ->first();
+                            }
                         }
                     @endphp
                     @php $timeline = $projectTimelines[$projectId] ?? null; @endphp
@@ -556,9 +566,19 @@
                     @php 
                         $firstInv = $projectInvestments->first();
                         $project = $firstInv && $firstInv->project ? $firstInv->project : null;
-                        // If project is null but we have project_id, try to load it
+                        // If project is null but we have project_id, try to load it with legacy connection
                         if (!$project && $firstInv && $firstInv->project_id) {
-                            $project = \App\Models\Project::where('id', $firstInv->project_id)->first();
+                            $projectIdValue = (int) $firstInv->project_id;
+                            $project = \App\Models\Project::on('legacy')
+                                ->where('id', $projectIdValue)
+                                ->first();
+                            
+                            // If still null, try loading by external project_id as fallback
+                            if (!$project) {
+                                $project = \App\Models\Project::on('legacy')
+                                    ->where('project_id', $projectIdValue)
+                                    ->first();
+                            }
                         }
                     @endphp
                     @php $documents = $projectDocuments[$projectId] ?? collect(); @endphp
@@ -620,9 +640,19 @@
                     @php 
                         $firstInv = $projectInvestments->first();
                         $project = $firstInv && $firstInv->project ? $firstInv->project : null;
-                        // If project is null but we have project_id, try to load it
+                        // If project is null but we have project_id, try to load it with legacy connection
                         if (!$project && $firstInv && $firstInv->project_id) {
-                            $project = \App\Models\Project::where('id', $firstInv->project_id)->first();
+                            $projectIdValue = (int) $firstInv->project_id;
+                            $project = \App\Models\Project::on('legacy')
+                                ->where('id', $projectIdValue)
+                                ->first();
+                            
+                            // If still null, try loading by external project_id as fallback
+                            if (!$project) {
+                                $project = \App\Models\Project::on('legacy')
+                                    ->where('project_id', $projectIdValue)
+                                    ->first();
+                            }
                         }
                     @endphp
                     @php $payouts = $projectPayouts[$projectId] ?? collect(); @endphp

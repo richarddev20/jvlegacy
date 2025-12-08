@@ -77,13 +77,41 @@ class InvestorDashboardController extends Controller
         $projectTimelines = [];
         $perPage = 5;
         foreach ($investments as $projectId => $projectInvestments) {
-            $project = $projectInvestments->first()->project;
+            $firstInvestment = $projectInvestments->first();
+            $project = $firstInvestment->project;
+            
             // If project is null, try to load it directly using project_id from investment
-            if (!$project && $projectInvestments->first()->project_id) {
-                $project = Project::where('id', $projectInvestments->first()->project_id)->first();
+            if (!$project && $firstInvestment->project_id) {
+                // Cast project_id to integer to ensure proper matching
+                $projectIdValue = (int) $firstInvestment->project_id;
+                
+                // Try loading with legacy connection explicitly using internal id
+                $project = Project::on('legacy')
+                    ->where('id', $projectIdValue)
+                    ->first();
+                
+                // If still null, try loading by external project_id as fallback
+                if (!$project) {
+                    $project = Project::on('legacy')
+                        ->where('project_id', $projectIdValue)
+                        ->first();
+                }
             }
             
+            // If project relationship loaded but name is empty, reload it
+            if ($project && empty(trim($project->name ?? '')) && $firstInvestment->project_id) {
+                $projectIdValue = (int) $firstInvestment->project_id;
+                $project = Project::on('legacy')
+                    ->where('id', $projectIdValue)
+                    ->first();
+            }
+            
+            // Set the project back on all investments in this group so the view can access it
             if ($project) {
+                foreach ($projectInvestments as $investment) {
+                    $investment->setRelation('project', $project);
+                }
+                
                 $project->loadMissing('investorDocuments', 'property');
 
                 // Use a unique page parameter for each project
