@@ -245,7 +245,7 @@
                                 foreach ($projectUpdates as $updates) {
                                     $recentUpdates = $recentUpdates->merge($updates->items());
                                 }
-                                $recentUpdates = $recentUpdates->sortByDesc('sent_on')->take(3);
+                                $recentUpdates = $recentUpdates->sortByDesc('sent_on')->take(1);
                                 // Load project relationships for all updates
                                 foreach ($recentUpdates as $update) {
                                     if (!$update->relationLoaded('project') && $update->project_id) {
@@ -408,7 +408,7 @@
                                 <div class="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
                                     <h4 class="font-semibold mb-3 text-blue-900">Project Updates</h4>
                                     <div class="space-y-3" x-data="{ expandedUpdates: {} }">
-                                        @foreach($updates->take(3) as $update)
+                                        @foreach($updates->take(1) as $update)
                                             <div class="bg-white p-3 rounded border border-blue-100" x-data="{ expanded: false }">
                                                 <div class="flex items-start justify-between">
                                                     <div class="flex-1">
@@ -479,68 +479,6 @@
                                 </div>
                             @endif
 
-                            @if($timeline)
-                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h4 class="font-semibold text-gray-900">Payment Timeline</h4>
-                                        <div class="text-right">
-                                            <p class="text-xs text-gray-500 uppercase">Forecast Payout</p>
-                                            <p class="text-lg font-bold text-gray-900">
-                                                @if($timeline['expected_payout'])
-                                                    @php
-                                                        $payoutDate = $timeline['expected_payout'] ?? null;
-                                                        if ($payoutDate) {
-                                                            if (is_string($payoutDate)) {
-                                                                $payoutDate = \Carbon\Carbon::parse($payoutDate);
-                                                            }
-                                                            echo $payoutDate->format('d M Y');
-                                                        } else {
-                                                            echo 'TBC';
-                                                        }
-                                                    @endphp
-                                                @else
-                                                    TBC
-                                                @endif
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                        @foreach($timeline['stages'] as $stage)
-                                            <div class="flex items-center justify-between px-3 py-2 bg-white rounded border {{ $stage['completed'] ? 'border-green-300' : 'border-gray-200' }}">
-                                                <div>
-                                                    <p class="text-sm font-medium {{ $stage['completed'] ? 'text-green-800' : 'text-gray-700' }}">{{ $stage['label'] }}</p>
-                                                    <p class="text-xs text-gray-500">
-                                                        @if($stage['date'])
-                                                            @php
-                                                                $stageDate = $stage['date'];
-                                                                if ($stageDate) {
-                                                                    if (is_string($stageDate)) {
-                                                                        $stageDate = \Carbon\Carbon::parse($stageDate);
-                                                                    }
-                                                                    if ($stageDate instanceof \Carbon\Carbon || $stageDate instanceof \DateTime) {
-                                                                        echo $stageDate->format('d M Y');
-                                                                    } else {
-                                                                        echo 'Invalid date';
-                                                                    }
-                                                                } else {
-                                                                    echo 'Pending';
-                                                                }
-                                                            @endphp
-                                                        @else
-                                                            Pending
-                                                        @endif
-                                                    </p>
-                                                </div>
-                                                @if($stage['completed'])
-                                                    <i class="fas fa-check-circle text-green-600"></i>
-                                                @else
-                                                    <i class="fas fa-circle text-gray-300"></i>
-                                                @endif
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
                         </div>
                     </div>
                     @else
@@ -702,14 +640,21 @@
                                     }
                                 }
                             @endphp
-                            @php $documents = $projectDocuments[$projectId] ?? collect(); @endphp
+                            @php 
+                                $allDocuments = $projectDocuments[$projectId] ?? collect();
+                                // Filter to only show investment memorandums
+                                $documents = $allDocuments->filter(function($doc) {
+                                    $name = strtolower($doc->name ?? '');
+                                    return str_contains($name, 'memorandum') || str_contains($name, 'investment memorandum');
+                                });
+                            @endphp
                             @php $documentLogs = $projectDocumentLogs[$projectId] ?? collect(); @endphp
                             
                             <div class="bg-white border border-gray-200 rounded-lg p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div>
                                         <h3 class="text-xl font-semibold text-gray-900">{{ $project ? ($project->name ?? 'Project #' . ($project->project_id ?? $project->id)) : 'Unknown Project' }}</h3>
-                                        <p class="text-sm text-gray-500 mt-1">Project documents shared with all investors</p>
+                                        <p class="text-sm text-gray-500 mt-1">Investment memorandums for this project</p>
                                     </div>
                                 </div>
                                 
@@ -761,8 +706,8 @@
                                 @else
                                     <div class="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                                         <i class="fas fa-folder-open text-gray-400 text-5xl mb-4"></i>
-                                        <p class="text-gray-600 font-medium mb-2">No project documents available</p>
-                                        <p class="text-sm text-gray-500">Project documents such as shareholder agreements and loan agreements will appear here once they are available.</p>
+                                        <p class="text-gray-600 font-medium mb-2">No investment memorandums available</p>
+                                        <p class="text-sm text-gray-500">Investment memorandums for this project will appear here once they are available.</p>
                                     </div>
                                 @endif
                             </div>
