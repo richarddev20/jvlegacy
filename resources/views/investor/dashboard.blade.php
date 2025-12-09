@@ -8,22 +8,22 @@
             <h1 class="text-3xl font-bold text-gray-900">Welcome, {{ $account->name }}</h1>
             <p class="text-gray-600 mt-1">Manage your investments and track your portfolio</p>
         </div>
-        <button onclick="document.getElementById('profile-edit-form').classList.toggle('hidden')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+        <button onclick="document.getElementById('profile-edit-form').classList.toggle('hidden')" class="px-4 py-2 bg-brand-magenta text-white rounded-lg hover:bg-brand-magenta-dark font-medium">
             <i class="fas fa-user-edit mr-2"></i>Edit Profile
         </button>
     </div>
 
     <!-- Masquerading Banner -->
     @if (session()->has('masquerading_as'))
-        <div class="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
+        <div class="mb-6 bg-brand-teal-light border-l-4 border-brand-teal p-4 rounded-lg">
             <div class="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                    <p class="text-blue-800 font-semibold">Masquerading as account #{{ session('masquerading_as') }}</p>
-                    <p class="text-sm text-blue-700">Any actions you take will affect this investor.</p>
+                    <p class="text-brand-teal-dark font-semibold">Masquerading as account #{{ session('masquerading_as') }}</p>
+                    <p class="text-sm text-brand-teal-dark">Any actions you take will affect this investor.</p>
                 </div>
                 <form method="POST" action="{{ route('admin.investor.stopMasquerade') }}">
                     @csrf
-                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-teal rounded-lg hover:bg-brand-teal-dark">
                         Stop Masquerading
                     </button>
                 </form>
@@ -81,7 +81,7 @@
             </div>
 
             <div class="flex gap-2">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Changes</button>
+                <button type="submit" class="px-4 py-2 bg-brand-magenta text-white rounded hover:bg-brand-magenta-dark">Save Changes</button>
                 <button type="button" onclick="document.getElementById('profile-edit-form').classList.add('hidden')" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">Cancel</button>
             </div>
         </form>
@@ -93,42 +93,42 @@
             <nav class="flex -mb-px" aria-label="Tabs">
                 <button 
                     @click="activeTab = 'overview'"
-                    :class="activeTab === 'overview' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    :class="activeTab === 'overview' ? 'border-brand-teal text-brand-teal' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                     class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors"
                 >
                     <i class="fas fa-home mr-2"></i>Overview
                 </button>
                 <button 
                     @click="activeTab = 'investments'"
-                    :class="activeTab === 'investments' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    :class="activeTab === 'investments' ? 'border-brand-teal text-brand-teal' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                     class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors"
                 >
                     <i class="fas fa-chart-line mr-2"></i>Investments
                 </button>
                 <button 
                     @click="activeTab = 'documents'"
-                    :class="activeTab === 'documents' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    :class="activeTab === 'documents' ? 'border-brand-teal text-brand-teal' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                     class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors"
                 >
                     <i class="fas fa-file-alt mr-2"></i>Documents
                 </button>
                 <button 
                     @click="activeTab = 'payouts'"
-                    :class="activeTab === 'payouts' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    :class="activeTab === 'payouts' ? 'border-brand-teal text-brand-teal' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                     class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors"
                 >
                     <i class="fas fa-pound-sign mr-2"></i>Payouts
                 </button>
                 <button 
                     @click="activeTab = 'email-history'"
-                    :class="activeTab === 'email-history' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    :class="activeTab === 'email-history' ? 'border-brand-teal text-brand-teal' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                     class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors"
                 >
                     <i class="fas fa-envelope mr-2"></i>Email History
                 </button>
                 <button 
                     @click="activeTab = 'helpdesk'"
-                    :class="activeTab === 'helpdesk' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    :class="activeTab === 'helpdesk' ? 'border-brand-teal text-brand-teal' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                     class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors relative"
                 >
                     <i class="fas fa-headset mr-2"></i>Helpdesk
@@ -140,7 +140,7 @@
                 </button>
                 <button 
                     @click="activeTab = 'sharing'"
-                    :class="activeTab === 'sharing' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    :class="activeTab === 'sharing' ? 'border-brand-teal text-brand-teal' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                     class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors"
                 >
                     <i class="fas fa-share-alt mr-2"></i>Account Sharing
@@ -153,25 +153,25 @@
             <!-- Overview Tab -->
             <div x-show="activeTab === 'overview'" x-transition>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 border border-blue-200">
+                    <div class="bg-gradient-to-br from-brand-magenta-light to-brand-purple-light rounded-lg p-6 border border-brand-magenta">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-blue-600 mb-1">Total Invested</p>
-                                <p class="text-2xl font-bold text-blue-900">
+                                <p class="text-sm font-medium text-brand-magenta mb-1">Total Invested</p>
+                                <p class="text-2xl font-bold text-brand-magenta-dark">
                                     @php
                                         $totalInvested = collect($investments)->flatten()->sum('amount');
                                     @endphp
                                     {!! money($totalInvested) !!}
                                 </p>
                             </div>
-                            <i class="fas fa-chart-pie text-blue-400 text-3xl"></i>
+                            <i class="fas fa-chart-pie text-brand-magenta text-3xl"></i>
                         </div>
                     </div>
-                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 border border-green-200">
+                    <div class="bg-gradient-to-br from-brand-orange-light to-brand-teal-light rounded-lg p-6 border border-brand-orange">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-green-600 mb-1">Total Paid</p>
-                                <p class="text-2xl font-bold text-green-900">
+                                <p class="text-sm font-medium text-brand-orange mb-1">Total Paid</p>
+                                <p class="text-2xl font-bold text-brand-orange-dark">
                                     @php
                                         $allPayouts = collect($projectPayouts)->flatten();
                                         $totalPaid = $allPayouts->where('paid', 1)->sum('amount');
@@ -179,31 +179,31 @@
                                     {!! money($totalPaid) !!}
                                 </p>
                             </div>
-                            <i class="fas fa-check-circle text-green-400 text-3xl"></i>
+                            <i class="fas fa-check-circle text-brand-orange text-3xl"></i>
                         </div>
                     </div>
-                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6 border border-purple-200">
+                    <div class="bg-gradient-to-br from-brand-purple-light to-brand-teal-light rounded-lg p-6 border border-brand-purple">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-purple-600 mb-1">Active Projects</p>
-                                <p class="text-2xl font-bold text-purple-900">{{ count($investments) }}</p>
+                                <p class="text-sm font-medium text-brand-purple mb-1">Active Projects</p>
+                                <p class="text-2xl font-bold text-brand-purple-dark">{{ count($investments) }}</p>
                             </div>
-                            <i class="fas fa-folder-open text-purple-400 text-3xl"></i>
+                            <i class="fas fa-folder-open text-brand-purple text-3xl"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-6 mb-6">
+                <div class="bg-gradient-to-br from-brand-teal-light to-brand-purple-light rounded-lg border border-brand-teal p-6 mb-6">
                     <h3 class="text-lg font-semibold mb-3 text-gray-900">Welcome to Your Dashboard</h3>
                     <p class="text-gray-700 mb-4">
                         Your central hub for managing investments, accessing documents, tracking payouts, and getting support. 
                         Everything you need is just a click away.
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <a href="#investments" @click="activeTab = 'investments'" class="p-4 bg-white rounded-lg border border-blue-100 hover:border-blue-300 hover:shadow-md transition-all">
+                        <a href="#investments" @click="activeTab = 'investments'" class="p-4 bg-white rounded-lg border border-brand-teal hover:border-brand-teal-dark hover:shadow-md transition-all">
                             <div class="flex items-center">
-                                <div class="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                                    <i class="fas fa-chart-line text-blue-600"></i>
+                                <div class="h-10 w-10 bg-brand-teal-light rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-chart-line text-brand-teal"></i>
                                 </div>
                                 <div>
                                     <p class="font-semibold text-gray-900 text-sm">Investments</p>
@@ -270,7 +270,7 @@
                                             class="w-full flex items-start p-3 hover:bg-gray-100 transition-colors text-left"
                                             type="button"
                                         >
-                                            <i class="fas fa-bullhorn text-blue-500 mt-1 mr-3 flex-shrink-0"></i>
+                                            <i class="fas fa-bullhorn text-brand-purple mt-1 mr-3 flex-shrink-0"></i>
                                             <div class="flex-1 min-w-0">
                                                 <p class="text-sm font-medium text-gray-900">{{ $projectName }}</p>
                                                 <p class="text-xs text-gray-500 mt-1">
@@ -358,11 +358,11 @@
                     
                     @if($project)
                     <div class="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden">
-                        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
+                        <div class="bg-gradient-to-r from-brand-magenta to-brand-purple p-6 text-white">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-2xl font-bold mb-2">{{ $project->name ?? 'Project #' . ($project->project_id ?? $project->id) }}</h3>
-                                    <p class="text-blue-100">Project ID: {{ $project->project_id ?? 'N/A' }}</p>
+                                    <p class="text-white opacity-90">Project ID: {{ $project->project_id ?? 'N/A' }}</p>
                                 </div>
                                 <button
                                     class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
@@ -393,7 +393,7 @@
                                                     {{ human_date($inv->paid_on) }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap">
-                                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-brand-teal-light text-brand-teal-dark">
                                                         {{ $inv->type_label }}
                                                     </span>
                                                 </td>
@@ -405,11 +405,11 @@
 
                             @php $updates = $projectUpdates[$projectId] ?? null; @endphp
                             @if($updates && $updates->count())
-                                <div class="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
-                                    <h4 class="font-semibold mb-3 text-blue-900">Project Updates</h4>
+                                <div class="mb-6 bg-brand-purple-light border-l-4 border-brand-purple p-4 rounded">
+                                    <h4 class="font-semibold mb-3 text-brand-purple-dark">Project Updates</h4>
                                     <div class="space-y-3" x-data="{ expandedUpdates: {} }">
                                         @foreach($updates->take(1) as $update)
-                                            <div class="bg-white p-3 rounded border border-blue-100" x-data="{ expanded: false }">
+                                            <div class="bg-white p-3 rounded border border-brand-purple-light" x-data="{ expanded: false }">
                                                 <div class="flex items-start justify-between">
                                                     <div class="flex-1">
                                                         <p class="text-xs text-gray-500 mb-1">
@@ -462,7 +462,7 @@
                                                         </div>
                                                     </div>
                                                     <button 
-                                                        class="ml-3 text-blue-600 hover:text-blue-800 text-xs font-medium whitespace-nowrap" 
+                                                        class="ml-3 text-brand-teal hover:text-brand-teal-dark text-xs font-medium whitespace-nowrap" 
                                                         @click="expanded = !expanded"
                                                         type="button"
                                                         x-text="expanded ? 'Read less' : 'Read more'"
@@ -472,7 +472,7 @@
                                         @endforeach
                                     </div>
                                     @if($updates->count() > 3 && $project && $project->project_id)
-                                        <a href="{{ route('public.projects.show', $project->project_id) }}" class="mt-3 inline-block text-sm text-blue-600 hover:underline">
+                                        <a href="{{ route('public.projects.show', $project->project_id) }}" class="mt-3 inline-block text-sm text-brand-teal hover:underline">
                                             View all {{ $updates->count() }} updates
                                         </a>
                                     @endif
@@ -531,7 +531,7 @@
                                                     @endif
                                                 </td>
                                                 <td class="px-4 py-3 text-sm">
-                                                    <span class="px-2 py-1 rounded text-xs font-medium {{ $investment->type == 1 ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
+                                                    <span class="px-2 py-1 rounded text-xs font-medium {{ $investment->type == 1 ? 'bg-brand-teal-light text-brand-teal-dark' : 'bg-brand-purple-light text-brand-purple-dark' }}">
                                                         {{ $investment->type_label }}
                                                     </span>
                                                 </td>
@@ -565,7 +565,7 @@
                             </div>
                             <div class="p-4 border-t flex justify-end gap-3 bg-gray-50 rounded-b-lg">
                                 <button type="button" class="px-4 py-2 text-sm text-gray-600" onclick="document.getElementById('support-modal-{{ $projectId }}').close()">Cancel</button>
-                                <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700">Send request</button>
+                                <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-magenta rounded hover:bg-brand-magenta-dark">Send request</button>
                             </div>
                         </form>
                     </dialog>
@@ -588,9 +588,9 @@
                         @if(isset($accountDocuments) && $accountDocuments->count() > 0)
                             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                                 @foreach($accountDocuments as $document)
-                                    <a href="{{ $document->url }}" target="_blank" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition-all group">
+                                    <a href="{{ $document->url }}" target="_blank" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-brand-teal transition-all group">
                                         @php
-                                            $iconClass = 'fas fa-file-alt text-blue-500';
+                                            $iconClass = 'fas fa-file-alt text-brand-teal';
                                             $category = strtolower($document->category ?? '');
                                             if (str_contains($category, 'share') || str_contains($category, 'certificate')) {
                                                 $iconClass = 'fas fa-certificate text-yellow-600';
@@ -661,8 +661,8 @@
                                 @if($documents->count() > 0)
                                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-4">
                                         @foreach($documents as $document)
-                                            <a href="{{ $document->url }}" target="_blank" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition-all group">
-                                                <i class="{{ $document->icon }} text-4xl mb-2 group-hover:scale-110 transition-transform {{ $document->status_type === 'pdf' ? 'text-red-500' : ($document->status_type === 'word' ? 'text-blue-500' : 'text-gray-500') }}"></i>
+                                            <a href="{{ $document->url }}" target="_blank" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-brand-teal transition-all group">
+                                                <i class="{{ $document->icon }} text-4xl mb-2 group-hover:scale-110 transition-transform {{ $document->status_type === 'pdf' ? 'text-red-500' : ($document->status_type === 'word' ? 'text-brand-teal' : 'text-gray-500') }}"></i>
                                                 <span class="text-xs text-gray-600 group-hover:text-gray-900 text-center font-medium">
                                                     {{ Str::limit($document->name ?? 'Document', 20) }}
                                                 </span>
@@ -673,7 +673,7 @@
                                         @if($project)
                                             <form method="POST" action="{{ route('investor.documents.email', $project->project_id) }}" class="inline">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
+                                                <button type="submit" class="px-4 py-2 bg-brand-magenta text-white rounded-lg hover:bg-brand-magenta-dark text-sm font-medium">
                                                     <i class="fas fa-envelope mr-2"></i>Email me these documents
                                                 </button>
                                             </form>
@@ -865,7 +865,7 @@
                                                     <div class="flex-1">
                                                         <div class="flex items-center gap-2 mb-1">
                                                             <span class="px-2 py-0.5 text-xs font-medium rounded-full {{ 
-                                                                ($email->email_type ?? '') === 'document' ? 'bg-blue-100 text-blue-800' : 
+                                                                ($email->email_type ?? '') === 'document' ? 'bg-brand-teal-light text-brand-teal-dark' : 
                                                                 (($email->email_type ?? '') === 'project_update' ? 'bg-green-100 text-green-800' : 
                                                                 (($email->email_type ?? '') === 'support_ticket' ? 'bg-purple-100 text-purple-800' : 
                                                                 (($email->email_type ?? '') === 'payout' ? 'bg-emerald-100 text-emerald-800' : 
@@ -1012,7 +1012,7 @@
                         </div>
                         <button 
                             @click="showCreateForm = !showCreateForm"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                            class="px-4 py-2 bg-brand-magenta text-white rounded-lg hover:bg-brand-magenta-dark font-medium"
                         >
                             <i class="fas fa-plus mr-2"></i>New Ticket
                         </button>
@@ -1061,7 +1061,7 @@
                                 <button 
                                     type="submit" 
                                     :disabled="creatingTicket"
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium"
+                                    class="px-4 py-2 bg-brand-magenta text-white rounded-md hover:bg-brand-magenta-dark disabled:opacity-50 font-medium"
                                 >
                                     <span x-show="!creatingTicket">Submit Ticket</span>
                                     <span x-show="creatingTicket">Creating...</span>
@@ -1094,7 +1094,7 @@
                         <template x-for="ticket in tickets" :key="ticket.id">
                             <div 
                                 @click="selectedTicket = ticket"
-                                :class="selectedTicket?.id === ticket.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+                                :class="selectedTicket?.id === ticket.id ? 'border-brand-teal bg-brand-teal-light' : 'border-gray-200 hover:border-gray-300'"
                                 class="p-4 bg-white border rounded-lg cursor-pointer transition-all"
                             >
                                 <div class="flex items-start justify-between">
@@ -1117,7 +1117,7 @@
                                     <div class="ml-4">
                                         <span 
                                             x-show="ticket.replies && ticket.replies.length > 0"
-                                            class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
+                                            class="px-2 py-1 text-xs font-medium bg-brand-teal-light text-brand-teal-dark rounded-full"
                                             x-text="ticket.replies.length + ' replies'"
                                         ></span>
                                     </div>
@@ -1141,12 +1141,12 @@
                         <div class="max-h-96 overflow-y-auto space-y-4 mb-4">
                             <template x-for="reply in (selectedTicket?.replies || [])" :key="reply.id">
                                 <div 
-                                    :class="reply.is_from_support ? 'ml-12 bg-blue-50' : 'mr-12 bg-gray-50'"
+                                    :class="reply.is_from_support ? 'ml-12 bg-brand-purple-light' : 'mr-12 bg-gray-50'"
                                     class="p-3 rounded-lg"
                                 >
                                     <div class="flex items-start justify-between mb-1">
                                         <span 
-                                            :class="reply.is_from_support ? 'text-blue-800 font-semibold' : 'text-gray-800 font-semibold'"
+                                            :class="reply.is_from_support ? 'text-brand-purple-dark font-semibold' : 'text-gray-800 font-semibold'"
                                             class="text-sm"
                                             x-text="reply.is_from_support ? 'Support Team' : 'You'"
                                         ></span>
@@ -1167,7 +1167,7 @@
                             <button 
                                 type="submit"
                                 :disabled="sendingReply === selectedTicket.ticket_id"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                class="px-4 py-2 bg-brand-magenta text-white rounded-md hover:bg-brand-magenta-dark disabled:opacity-50"
                             >
                                 <i class="fas fa-paper-plane"></i>
                             </button>
@@ -1183,7 +1183,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg p-6">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-semibold">Share Your Access</h3>
-                            <i class="fas fa-share-alt text-blue-500"></i>
+                            <i class="fas fa-share-alt text-brand-teal"></i>
                         </div>
                         <p class="text-sm text-gray-600 mb-4">Allow another account to view your investments, documents, and payouts.</p>
                         
@@ -1195,14 +1195,14 @@
                                     x-model="shareEmail" 
                                     required
                                     placeholder="Enter email address"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-teal focus:border-brand-teal"
                                 />
                                 <p class="text-xs text-gray-500 mt-1">The account must already exist in the system</p>
                             </div>
                             <button 
                                 type="submit" 
                                 :disabled="sharing"
-                                class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                                class="w-full px-4 py-2 bg-brand-magenta text-white rounded-md hover:bg-brand-magenta-dark disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                             >
                                 <span x-show="!sharing">Share Access</span>
                                 <span x-show="sharing">Sharing...</span>
@@ -1258,12 +1258,12 @@
                         </div>
                         <div class="space-y-3">
                             <template x-for="share in sharedWithMe" :key="share.id">
-                                <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+                                <div class="p-4 bg-gradient-to-r from-brand-teal-light to-brand-purple-light border border-brand-teal rounded-lg">
                                     <div class="flex items-start justify-between">
                                         <div class="flex-1">
                                             <div class="flex items-center gap-2 mb-1">
                                                 <p class="text-sm font-semibold" x-text="share.primary_account?.name || share.primary_account?.email"></p>
-                                                <span class="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded">Shared</span>
+                                                <span class="px-2 py-0.5 text-xs font-medium bg-brand-teal-light text-brand-teal-dark rounded">Shared</span>
                                             </div>
                                             <p class="text-xs text-gray-600 mb-2" x-text="share.primary_account?.email"></p>
                                             <p class="text-xs text-gray-500" x-text="'Access granted on ' + formatDate(share.accepted_on || share.invited_on)"></p>
@@ -1298,7 +1298,7 @@
                     @elseif($systemStatus->status_type === 'maintenance')
                         <i class="fas fa-tools text-orange-500 text-2xl"></i>
                     @else
-                        <i class="fas fa-info-circle text-blue-500 text-2xl"></i>
+                        <i class="fas fa-info-circle text-brand-teal text-2xl"></i>
                     @endif
                 </div>
                 <div class="ml-4 flex-1">

@@ -57,3 +57,47 @@ aside nav a {
 aside nav a:hover {
     transform: translateX(2px);
 }
+
+/* Brand Colors - JaeVee */
+:root {
+    --brand-magenta: #E91E63;      /* Vibrant magenta/fuchsia */
+    --brand-orange: #FF6B35;       /* Orange/golden-yellow */
+    --brand-purple: #9C27B0;       /* Purple/lavender */
+    --brand-teal: #00BCD4;         /* Teal/light blue */
+    
+    /* Variations */
+    --brand-magenta-light: #F8BBD0;
+    --brand-magenta-dark: #C2185B;
+    --brand-orange-light: #FFB3A0;
+    --brand-orange-dark: #E64A19;
+    --brand-purple-light: #E1BEE7;
+    --brand-purple-dark: #7B1FA2;
+    --brand-teal-light: #B2EBF2;
+    --brand-teal-dark: #0097A7;
+}
+
+/* Brand color utility classes */
+.bg-brand-magenta { background-color: var(--brand-magenta); }
+.bg-brand-orange { background-color: var(--brand-orange); }
+.bg-brand-purple { background-color: var(--brand-purple); }
+.bg-brand-teal { background-color: var(--brand-teal); }
+
+.bg-brand-magenta-light { background-color: var(--brand-magenta-light); }
+.bg-brand-orange-light { background-color: var(--brand-orange-light); }
+.bg-brand-purple-light { background-color: var(--brand-purple-light); }
+.bg-brand-teal-light { background-color: var(--brand-teal-light); }
+
+.text-brand-magenta { color: var(--brand-magenta); }
+.text-brand-orange { color: var(--brand-orange); }
+.text-brand-purple { color: var(--brand-purple); }
+.text-brand-teal { color: var(--brand-teal); }
+
+.border-brand-magenta { border-color: var(--brand-magenta); }
+.border-brand-orange { border-color: var(--brand-orange); }
+.border-brand-purple { border-color: var(--brand-purple); }
+.border-brand-teal { border-color: var(--brand-teal); }
+
+.hover\:bg-brand-magenta:hover { background-color: var(--brand-magenta-dark); }
+.hover\:bg-brand-orange:hover { background-color: var(--brand-orange-dark); }
+.hover\:bg-brand-purple:hover { background-color: var(--brand-purple-dark); }
+.hover\:bg-brand-teal:hover { background-color: var(--brand-teal-dark); }
