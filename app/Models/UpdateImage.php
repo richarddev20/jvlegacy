@@ -40,28 +40,39 @@ class UpdateImage extends Model
      */
     private function getFileExtension(string $filePath): string
     {
-        if (empty($filePath) || !is_string($filePath)) {
+        try {
+            if (empty($filePath) || !is_string($filePath)) {
+                return '';
+            }
+
+            $filePath = trim($filePath);
+            if ($filePath === '' || strlen($filePath) === 0) {
+                return '';
+            }
+
+            // Find last dot position
+            $lastDot = strrpos($filePath, '.');
+            if ($lastDot === false || $lastDot === 0 || $lastDot >= strlen($filePath) - 1) {
+                return '';
+            }
+
+            // Get extension after last dot - ensure we have valid parameters
+            $startPos = (int)$lastDot + 1;
+            $fileLength = strlen($filePath);
+            
+            if ($startPos >= $fileLength || $startPos < 0) {
+                return '';
+            }
+
+            $extension = substr($filePath, $startPos);
+            if ($extension === false || !is_string($extension) || empty($extension)) {
+                return '';
+            }
+
+            return strtolower($extension);
+        } catch (\Throwable $e) {
             return '';
         }
-
-        // Find last dot position
-        $lastDot = strrpos($filePath, '.');
-        if ($lastDot === false || $lastDot === 0) {
-            return '';
-        }
-
-        // Get extension after last dot - ensure we have valid parameters
-        $startPos = $lastDot + 1;
-        if ($startPos >= strlen($filePath)) {
-            return '';
-        }
-
-        $extension = substr($filePath, $startPos);
-        if ($extension === false || !is_string($extension) || empty($extension)) {
-            return '';
-        }
-
-        return strtolower($extension);
     }
 
     /**
@@ -71,42 +82,56 @@ class UpdateImage extends Model
     {
         $result = ['dirname' => '', 'basename' => ''];
         
-        if (empty($filePath) || !is_string($filePath)) {
-            return $result;
-        }
+        try {
+            if (empty($filePath) || !is_string($filePath)) {
+                return $result;
+            }
 
-        // Find last slash position
-        $lastSlash = strrpos($filePath, '/');
-        
-        if ($lastSlash === false) {
-            // No directory separator, basename is the whole path
-            $result['basename'] = $filePath;
-            $result['dirname'] = '.';
-        } else {
-            // Get dirname (everything before last slash)
-            if ($lastSlash > 0) {
-                $dirname = substr($filePath, 0, $lastSlash);
-                if ($dirname !== false && is_string($dirname)) {
-                    $result['dirname'] = $dirname;
+            $filePath = trim($filePath);
+            if ($filePath === '' || strlen($filePath) === 0) {
+                return $result;
+            }
+
+            // Find last slash position
+            $lastSlash = strrpos($filePath, '/');
+            
+            if ($lastSlash === false) {
+                // No directory separator, basename is the whole path
+                $result['basename'] = $filePath;
+                $result['dirname'] = '.';
+            } else {
+                $fileLength = strlen($filePath);
+                $lastSlash = (int)$lastSlash;
+                
+                // Get dirname (everything before last slash)
+                if ($lastSlash > 0 && $lastSlash < $fileLength) {
+                    $dirname = substr($filePath, 0, $lastSlash);
+                    if ($dirname !== false && is_string($dirname)) {
+                        $result['dirname'] = $dirname;
+                    } else {
+                        $result['dirname'] = '.';
+                    }
                 } else {
                     $result['dirname'] = '.';
                 }
-            } else {
-                $result['dirname'] = '.';
-            }
-            
-            // Get basename (everything after last slash)
-            $startPos = $lastSlash + 1;
-            if ($startPos < strlen($filePath)) {
-                $basename = substr($filePath, $startPos);
-                if ($basename !== false && is_string($basename)) {
-                    $result['basename'] = $basename;
+                
+                // Get basename (everything after last slash)
+                $startPos = $lastSlash + 1;
+                if ($startPos > 0 && $startPos < $fileLength) {
+                    $basename = substr($filePath, $startPos);
+                    if ($basename !== false && is_string($basename) && $basename !== '') {
+                        $result['basename'] = $basename;
+                    } else {
+                        $result['basename'] = $filePath;
+                    }
                 } else {
                     $result['basename'] = $filePath;
                 }
-            } else {
-                $result['basename'] = $filePath;
             }
+        } catch (\Throwable $e) {
+            // Return safe defaults on any error
+            $result['dirname'] = '.';
+            $result['basename'] = is_string($filePath) ? $filePath : '';
         }
 
         return $result;
@@ -115,12 +140,15 @@ class UpdateImage extends Model
     public function getUrlAttribute(): string
     {
         try {
-            if (empty($this->file_path) || !is_string($this->file_path)) {
+            // Ensure file_path is a string and not null/array
+            $filePath = $this->attributes['file_path'] ?? $this->file_path ?? null;
+            
+            if ($filePath === null || !is_string($filePath)) {
                 return '';
             }
             
-            $filePath = trim($this->file_path);
-            if ($filePath === '') {
+            $filePath = trim($filePath);
+            if ($filePath === '' || strlen($filePath) === 0) {
                 return '';
             }
             
