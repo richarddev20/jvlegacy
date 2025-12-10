@@ -48,33 +48,46 @@ class UpdateImage extends Model
     public function getThumbnailUrlAttribute(): string
     {
         // Only create thumbnails for images - use file_type_category to be more reliable
-        $fileTypeCategory = $this->file_type_category;
-        if ($fileTypeCategory !== 'image') {
+        try {
+            $fileTypeCategory = $this->file_type_category;
+            if ($fileTypeCategory !== 'image') {
+                return $this->url;
+            }
+        } catch (\Exception $e) {
+            return $this->url;
+        } catch (\Error $e) {
             return $this->url;
         }
         
         // Return resized version if it exists, otherwise original
-        if (empty($this->file_path) || !is_string($this->file_path) || trim($this->file_path) === '') {
+        if (empty($this->file_path) || !is_string($this->file_path)) {
+            return $this->url;
+        }
+        
+        $filePath = trim($this->file_path);
+        if ($filePath === '') {
             return $this->url;
         }
         
         try {
-            $pathInfo = pathinfo($this->file_path);
-            // Ensure pathinfo returned a valid array with required keys
+            // Use @ to suppress warnings and check result carefully
+            $pathInfo = @pathinfo($filePath);
+            
+            // Ensure pathinfo returned a valid array
             if (!is_array($pathInfo)) {
                 return $this->url;
             }
             
-            // Check for required keys before accessing
-            if (!isset($pathInfo['dirname']) || !isset($pathInfo['basename'])) {
+            // Check for required keys before accessing - use array_key_exists for safety
+            if (!array_key_exists('dirname', $pathInfo) || !array_key_exists('basename', $pathInfo)) {
                 return $this->url;
             }
             
-            // Ensure values are strings
-            $dirname = is_string($pathInfo['dirname']) ? $pathInfo['dirname'] : '';
-            $basename = is_string($pathInfo['basename']) ? $pathInfo['basename'] : '';
+            // Ensure values are strings and not empty
+            $dirname = isset($pathInfo['dirname']) && is_string($pathInfo['dirname']) ? $pathInfo['dirname'] : '';
+            $basename = isset($pathInfo['basename']) && is_string($pathInfo['basename']) ? $pathInfo['basename'] : '';
             
-            if (empty($dirname) || empty($basename)) {
+            if ($dirname === '' || $basename === '') {
                 return $this->url;
             }
             
@@ -86,6 +99,8 @@ class UpdateImage extends Model
             }
         } catch (\Exception $e) {
             // If anything goes wrong, fall back to original URL
+        } catch (\Error $e) {
+            // Also catch PHP errors
         }
         
         // Fallback to original image
@@ -105,24 +120,23 @@ class UpdateImage extends Model
         $mimeType = $this->mime_type ?? '';
         $extension = '';
         
-        if (!empty($this->file_path) && is_string($this->file_path) && trim($this->file_path) !== '') {
-            try {
-                $pathInfo = pathinfo($this->file_path);
-                // pathinfo() can return different structures, ensure we get extension safely
-                if (is_array($pathInfo) && isset($pathInfo['extension'])) {
-                    $extension = strtolower((string)$pathInfo['extension']);
-                } elseif (is_string($pathInfo)) {
-                    // If pathinfo returns string (when using PATHINFO_EXTENSION), use it directly
-                    $extension = strtolower($pathInfo);
-                } else {
-                    // Try PATHINFO_EXTENSION flag as fallback
-                    $ext = pathinfo($this->file_path, PATHINFO_EXTENSION);
-                    if (is_string($ext)) {
+        // Safely extract extension from file_path
+        if (!empty($this->file_path) && is_string($this->file_path)) {
+            $filePath = trim($this->file_path);
+            if ($filePath !== '') {
+                try {
+                    // Use PATHINFO_EXTENSION flag directly to get just the extension
+                    $ext = @pathinfo($filePath, PATHINFO_EXTENSION);
+                    if (is_string($ext) && $ext !== '') {
                         $extension = strtolower($ext);
                     }
+                } catch (\Exception $e) {
+                    // Silently fail and use empty extension
+                    $extension = '';
+                } catch (\Error $e) {
+                    // Also catch PHP errors
+                    $extension = '';
                 }
-            } catch (\Exception $e) {
-                $extension = '';
             }
         }
         
@@ -131,24 +145,39 @@ class UpdateImage extends Model
             $extension = '';
         }
         
-        if (str_starts_with($mimeType, 'image/') || in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'], true)) {
-            return 'image';
+        // Check mime type first, then extension
+        if (!empty($mimeType) && is_string($mimeType)) {
+            if (str_starts_with($mimeType, 'image/')) {
+                return 'image';
+            }
+            if (str_starts_with($mimeType, 'application/pdf')) {
+                return 'pdf';
+            }
+            if (str_contains($mimeType, 'word')) {
+                return 'word';
+            }
+            if (str_contains($mimeType, 'excel') || str_contains($mimeType, 'spreadsheet')) {
+                return 'excel';
+            }
         }
         
-        if (str_starts_with($mimeType, 'application/pdf') || $extension === 'pdf') {
-            return 'pdf';
-        }
-        
-        if (str_contains($mimeType, 'word') || in_array($extension, ['doc', 'docx'], true)) {
-            return 'word';
-        }
-        
-        if (str_contains($mimeType, 'excel') || str_contains($mimeType, 'spreadsheet') || in_array($extension, ['xls', 'xlsx'], true)) {
-            return 'excel';
-        }
-        
-        if (in_array($extension, ['txt', 'csv'], true)) {
-            return 'text';
+        // Check extension if we have one
+        if ($extension !== '') {
+            if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'], true)) {
+                return 'image';
+            }
+            if ($extension === 'pdf') {
+                return 'pdf';
+            }
+            if (in_array($extension, ['doc', 'docx'], true)) {
+                return 'word';
+            }
+            if (in_array($extension, ['xls', 'xlsx'], true)) {
+                return 'excel';
+            }
+            if (in_array($extension, ['txt', 'csv'], true)) {
+                return 'text';
+            }
         }
         
         return 'document';
