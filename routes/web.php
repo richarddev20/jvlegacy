@@ -259,6 +259,31 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
         }
     })->name('admin.run-update-images-file-type-migration');
     
+    Route::get('/clear-cache', function () {
+        try {
+            \Artisan::call('view:clear');
+            \Artisan::call('cache:clear');
+            \Artisan::call('config:clear');
+            \Artisan::call('route:clear');
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Cache cleared successfully.',
+                'commands_run' => [
+                    'view:clear',
+                    'cache:clear',
+                    'config:clear',
+                    'route:clear',
+                ],
+            ], 200, [], JSON_PRETTY_PRINT);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], 500, [], JSON_PRETTY_PRINT);
+        }
+    })->name('admin.clear-cache');
+    
     Route::get('/run-account-shares-migration', function () {
         try {
             $filePath = database_path('migrations_sql/007_create_account_shares.sql');
