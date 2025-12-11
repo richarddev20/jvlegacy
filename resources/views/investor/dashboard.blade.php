@@ -1375,7 +1375,29 @@
                 <div>
                     <div class="mb-2 text-xs text-gray-500" x-text="update.sent_on"></div>
                     <div class="font-bold mb-2 text-gray-900">Project Update</div>
-                    <div class="prose mb-2 text-gray-900" x-html="update.comment"></div>
+                    <div class="prose mb-4 text-gray-900" x-html="update.comment"></div>
+                    
+                    <!-- Images and Files -->
+                    <template x-if="update.images && update.images.length > 0">
+                        <div class="mt-4 grid grid-cols-2 gap-3">
+                            <template x-for="img in update.images" :key="img.id">
+                                <a :href="img.url" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
+                                    <template x-if="img.is_image">
+                                        <img :src="img.thumbnail_url || img.url" :alt="img.description || ''" class="w-full h-24 object-cover" @error="$el.src = img.url">
+                                    </template>
+                                    <template x-if="!img.is_image">
+                                        <div class="flex flex-col items-center justify-center h-24 bg-white">
+                                            <i :class="img.icon || 'fas fa-file text-gray-400'" class="text-2xl mb-1"></i>
+                                            <span class="text-xs text-gray-600 text-center px-2 truncate w-full" x-text="(img.file_name || 'File').substring(0, 15)"></span>
+                                        </div>
+                                    </template>
+                                    <template x-if="img.description">
+                                        <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200" x-text="img.description"></div>
+                                    </template>
+                                </a>
+                            </template>
+                        </div>
+                    </template>
                 </div>
             </template>
         </div>
