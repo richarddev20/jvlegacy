@@ -340,7 +340,7 @@
                     
                     @if($project)
                     <div class="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden">
-                        <div class="bg-brand-purple p-6">
+                        <div class="bg-slate-700 p-6">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-2xl font-bold mb-2 text-white">{{ $project->name ?? 'Project #' . ($project->project_id ?? $project->id) }}</h3>
@@ -387,8 +387,8 @@
 
                             @php $updates = $projectUpdates[$projectId] ?? null; @endphp
                             @if($updates && $updates->count())
-                                <div class="mb-6 bg-brand-purple-light border-l-4 border-brand-purple p-4 rounded">
-                                    <h4 class="font-semibold mb-3 text-brand-purple-dark">Project Updates</h4>
+                                <div class="mb-6 bg-slate-50 border-l-4 border-slate-400 p-4 rounded">
+                                    <h4 class="font-semibold mb-3 text-slate-700">Project Updates</h4>
                                     <div class="space-y-3" x-data="{ expandedUpdates: {} }">
                                         @foreach($updates->take(1) as $update)
                                             <div class="bg-white p-3 rounded border border-slate-200" x-data="{ expanded: false }">
@@ -468,7 +468,7 @@
                     @else
                     <!-- Project not found - show investments anyway -->
                     <div class="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden">
-                        <div class="bg-brand-purple p-6">
+                        <div class="bg-slate-700 p-6">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-2xl font-bold mb-2 text-white">Project Not Found</h3>
