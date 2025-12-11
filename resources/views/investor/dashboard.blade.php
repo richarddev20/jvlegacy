@@ -340,7 +340,7 @@
                     
                     @if($project)
                     <div class="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden">
-                        <div class="bg-gradient-to-r from-brand-magenta to-brand-purple p-6">
+                        <div class="bg-brand-purple p-6">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-2xl font-bold mb-2 text-white">{{ $project->name ?? 'Project #' . ($project->project_id ?? $project->id) }}</h3>
