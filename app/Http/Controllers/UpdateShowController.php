@@ -19,17 +19,44 @@ class UpdateShowController extends Controller
             'category' => $update->category,
             'images' => $update->images->map(function ($image) {
                 try {
+                    // Safely access all properties with fallbacks
+                    $url = '';
+                    $thumbnailUrl = '';
+                    $isImage = false;
+                    
+                    try {
+                        $url = $image->url ?? '';
+                    } catch (\Throwable $e) {
+                        $url = '';
+                    }
+                    
+                    try {
+                        $thumbnailUrl = $image->thumbnail_url ?? '';
+                    } catch (\Throwable $e) {
+                        $thumbnailUrl = $url;
+                    }
+                    
+                    try {
+                        $isImage = $image->is_image ?? false;
+                    } catch (\Throwable $e) {
+                        $isImage = false;
+                    }
+                    
                     return [
-                        'url' => $image->url ?? '',
-                        'thumbnail_url' => $image->thumbnail_url ?? '',
+                        'url' => is_string($url) ? $url : '',
+                        'thumbnail_url' => is_string($thumbnailUrl) ? $thumbnailUrl : $url,
                         'description' => $image->description ?? '',
                         'file_name' => $image->file_name ?? '',
                         'file_type' => $image->file_type ?? '',
-                        'is_image' => $image->is_image ?? false,
+                        'is_image' => (bool)$isImage,
                         'icon' => $image->icon ?? 'fas fa-file text-gray-400',
                     ];
-                } catch (\Exception $e) {
-                    // If there's an error accessing image properties, return safe defaults
+                } catch (\Throwable $e) {
+                    // If there's any error accessing image properties, return safe defaults
+                    \Log::warning('Error mapping update image: ' . $e->getMessage(), [
+                        'image_id' => $image->id ?? null,
+                        'update_id' => $update->id ?? null,
+                    ]);
                     return [
                         'url' => '',
                         'thumbnail_url' => '',
@@ -42,7 +69,7 @@ class UpdateShowController extends Controller
                 }
             })->filter(function ($image) {
                 // Filter out images with no URL
-                return !empty($image['url']);
+                return !empty($image['url']) && is_string($image['url']);
             })->values(),
         ]);
     }
