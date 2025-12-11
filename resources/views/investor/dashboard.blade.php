@@ -468,7 +468,7 @@
                     @else
                     <!-- Project not found - show investments anyway -->
                     <div class="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden">
-                        <div class="bg-gradient-to-r from-gray-600 to-gray-700 p-6">
+                        <div class="bg-brand-purple p-6">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-2xl font-bold mb-2 text-white">Project Not Found</h3>
