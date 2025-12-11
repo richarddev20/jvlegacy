@@ -13,7 +13,6 @@ use App\Models\ProjectQuarterlyIncomePayee;
 use App\Models\SupportTicket;
 use App\Models\SystemStatus;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class InvestorDashboardController extends Controller
 {
@@ -275,63 +274,6 @@ class InvestorDashboardController extends Controller
                             'project' => $update->project,
                             'sent_at' => $update->sent_on,
                             'content' => $update->comment ?? '',
-                            'images' => $update->images->filter(function($img) {
-                                // Only return actual images - filter by file_type
-                                try {
-                                    $fileType = $img->file_type ?? '';
-                                    // If file_type is set and it's not 'image', skip it
-                                    if ($fileType !== '' && $fileType !== 'image') {
-                                        return false;
-                                    }
-                                    // If file_type is empty, assume it's an image (legacy behavior)
-                                    $filePath = $img->attributes['file_path'] ?? $img->file_path ?? null;
-                                    return !empty($filePath) && is_string($filePath);
-                                } catch (\Throwable $e) {
-                                    return false;
-                                }
-                            })->map(function($img) {
-                                try {
-                                    // Build URLs directly from file_path without using accessor methods
-                                    $filePath = $img->attributes['file_path'] ?? $img->file_path ?? null;
-                                    
-                                    if (empty($filePath) || !is_string($filePath)) {
-                                        return null;
-                                    }
-                                    
-                                    $filePath = trim($filePath);
-                                    if ($filePath === '') {
-                                        return null;
-                                    }
-                                    
-                                    $url = asset('storage/' . $filePath);
-                                    
-                                    // Build thumbnail URL manually
-                                    $thumbnailUrl = $url; // Default to regular URL
-                                    $lastSlash = strrpos($filePath, '/');
-                                    if ($lastSlash !== false) {
-                                        $dirname = substr($filePath, 0, $lastSlash);
-                                        $basename = substr($filePath, $lastSlash + 1);
-                                        if ($dirname !== false && $basename !== false && is_string($dirname) && is_string($basename)) {
-                                            $thumbnailPath = $dirname . '/thumb_' . $basename;
-                                            if (Storage::disk('public')->exists($thumbnailPath)) {
-                                                $thumbnailUrl = asset('storage/' . $thumbnailPath);
-                                            }
-                                        }
-                                    }
-                                    
-                                    return (object)[
-                                        'url' => $url,
-                                        'thumbnail_url' => $thumbnailUrl,
-                                        'description' => $img->description ?? '',
-                                    ];
-                                } catch (\Throwable $e) {
-                                    \Log::warning('Error mapping update image: ' . $e->getMessage());
-                                    return null;
-                                }
-                            })->filter(function($img) {
-                                // Filter out null values and images with no URL
-                                return $img !== null && !empty($img->url) && is_string($img->url);
-                            })->values() ?? collect(),
                         ];
                     });
             } catch (\Exception $e) {

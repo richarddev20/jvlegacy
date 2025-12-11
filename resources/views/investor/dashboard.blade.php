@@ -1374,16 +1374,6 @@
                     <div class="mb-2 text-xs text-gray-500" x-text="update.sent_on"></div>
                     <div class="font-bold mb-2">Project Update</div>
                     <div class="prose mb-2" x-html="update.comment"></div>
-                    <template x-if="update.images && update.images.length">
-                        <div class="mt-4 grid grid-cols-2 gap-3">
-                            <template x-for="img in update.images" :key="img.url">
-                                <a :href="img.url" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
-                                    <img :src="img.thumbnail_url || img.url" alt="" class="w-full h-24 object-cover" @error="$el.src = img.url">
-                                    <div class="px-2 py-1 text-[11px] text-gray-600 border-t border-gray-200" x-show="img.description" x-text="img.description"></div>
-                                </a>
-                            </template>
-                        </div>
-                    </template>
                 </div>
             </template>
         </div>
