@@ -416,11 +416,13 @@
                                                             @endif
                                                         </p>
                                                         <div x-show="!expanded">
-                                                            <p class="text-sm text-gray-900">{!! nl2br(e(Str::limit($update->comment_preview ?? $update->comment ?? '', 150))) !!}</p>
+                                                            <div class="text-sm text-gray-900 prose prose-sm max-w-none">
+                                                                {!! Str::limit(strip_tags($update->comment_preview ?? $update->comment ?? '', '<p><strong><em><br><ul><ol><li>'), 150) !!}
+                                                            </div>
                                                         </div>
                                                         <div x-show="expanded" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
                                                             <div class="text-sm text-gray-900 prose prose-sm max-w-none">
-                                                                {!! nl2br(e($update->comment ?? $update->comment_preview ?? '')) !!}
+                                                                {!! $update->comment ?? $update->comment_preview ?? '' !!}
                                                             </div>
                                                             @if($update->images && $update->images->count() > 0)
                                                                 <div class="mt-4 grid grid-cols-2 gap-3">
