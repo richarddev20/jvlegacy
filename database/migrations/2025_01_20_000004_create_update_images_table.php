@@ -13,6 +13,8 @@ return new class extends Migration
             $table->unsignedBigInteger('update_id'); // project_log id
             $table->string('file_path');
             $table->string('file_name')->nullable();
+            $table->string('file_type', 50)->nullable(); // image, pdf, word, excel, etc
+            $table->string('mime_type', 100)->nullable(); // MIME type of the file
             $table->integer('file_size')->nullable();
             $table->text('description')->nullable();
             $table->integer('display_order')->default(0);
