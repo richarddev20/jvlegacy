@@ -284,9 +284,12 @@
                                                 <div class="text-sm text-gray-700 prose prose-sm max-w-none">
                                                     {!! nl2br(e($update->comment ?? $update->comment_preview ?? '')) !!}
                                                 </div>
-                                                @if($update->images && $update->images->where('is_image', true)->count() > 0)
+                                                @php
+                                                    $updateImages = $update->images ? $update->images->filter(function($img) { return $img->is_image == true; }) : collect();
+                                                @endphp
+                                                @if($updateImages->count() > 0)
                                                     <div class="mt-4 grid grid-cols-2 gap-3">
-                                                        @foreach($update->images->where('is_image', true) as $image)
+                                                        @foreach($updateImages as $image)
                                                             <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
                                                                 <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
                                                                 @if($image->description)
@@ -417,9 +420,12 @@
                                                             <div class="text-sm text-gray-900 prose prose-sm max-w-none">
                                                                 {!! $update->comment ?? $update->comment_preview ?? '' !!}
                                                             </div>
-                                                            @if($update->images && $update->images->where('is_image', true)->count() > 0)
+                                                            @php
+                                                                $updateImages = $update->images ? $update->images->filter(function($img) { return $img->is_image == true; }) : collect();
+                                                            @endphp
+                                                            @if($updateImages->count() > 0)
                                                                 <div class="mt-4 grid grid-cols-2 gap-3">
-                                                                    @foreach($update->images->where('is_image', true) as $image)
+                                                                    @foreach($updateImages as $image)
                                                                         <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
                                                                             <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
                                                                             @if($image->description)
@@ -913,9 +919,12 @@
                                                 <div class="text-sm text-gray-700 prose prose-sm max-w-none">
                                                     {!! nl2br(e($email->content ?? '')) !!}
                                                 </div>
-                                                @if(isset($email->images) && $email->images->where('is_image', true)->count() > 0)
+                                                @php
+                                                    $emailImages = isset($email->images) ? $email->images->filter(function($img) { return ($img->is_image ?? false) == true; }) : collect();
+                                                @endphp
+                                                @if($emailImages->count() > 0)
                                                     <div class="mt-4 grid grid-cols-2 gap-3">
-                                                        @foreach($email->images->where('is_image', true) as $image)
+                                                        @foreach($emailImages as $image)
                                                             <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
                                                                 <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
                                                                 @if(isset($image->description) && $image->description)
