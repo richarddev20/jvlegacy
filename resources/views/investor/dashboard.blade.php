@@ -1684,5 +1684,8 @@ function sharingData() {
     }
 }
 </script>
+
 @endpush
+
 @endsection
+
