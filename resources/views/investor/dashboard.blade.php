@@ -284,18 +284,17 @@
                                                 <div class="text-sm text-gray-700 prose prose-sm max-w-none">
                                                     {!! nl2br(e($update->comment ?? $update->comment_preview ?? '')) !!}
                                                 </div>
-                                                @php
-                                                    $updateImages = $update->images ? $update->images->filter(function($img) { return $img->is_image == true; }) : collect();
-                                                @endphp
-                                                @if($updateImages->count() > 0)
+                                                @if($update->images && $update->images->count() > 0)
                                                     <div class="mt-4 grid grid-cols-2 gap-3">
-                                                        @foreach($updateImages as $image)
+                                                        @foreach($update->images as $image)
+                                                            @if($image->is_image)
                                                             <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
                                                                 <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
                                                                 @if($image->description)
                                                                     <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200">{{ $image->description }}</div>
                                                                 @endif
                                                             </a>
+                                                            @endif
                                                         @endforeach
                                                     </div>
                                                 @endif
@@ -420,18 +419,17 @@
                                                             <div class="text-sm text-gray-900 prose prose-sm max-w-none">
                                                                 {!! $update->comment ?? $update->comment_preview ?? '' !!}
                                                             </div>
-                                                            @php
-                                                                $updateImages = $update->images ? $update->images->filter(function($img) { return $img->is_image == true; }) : collect();
-                                                            @endphp
-                                                            @if($updateImages->count() > 0)
+                                                            @if($update->images && $update->images->count() > 0)
                                                                 <div class="mt-4 grid grid-cols-2 gap-3">
-                                                                    @foreach($updateImages as $image)
+                                                                    @foreach($update->images as $image)
+                                                                        @if($image->is_image)
                                                                         <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
                                                                             <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
                                                                             @if($image->description)
                                                                                 <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200">{{ $image->description }}</div>
                                                                             @endif
                                                                         </a>
+                                                                        @endif
                                                                     @endforeach
                                                                 </div>
                                                             @endif
@@ -919,18 +917,17 @@
                                                 <div class="text-sm text-gray-700 prose prose-sm max-w-none">
                                                     {!! nl2br(e($email->content ?? '')) !!}
                                                 </div>
-                                                @php
-                                                    $emailImages = isset($email->images) ? $email->images->filter(function($img) { return ($img->is_image ?? false) == true; }) : collect();
-                                                @endphp
-                                                @if($emailImages->count() > 0)
+                                                @if(isset($email->images) && $email->images->count() > 0)
                                                     <div class="mt-4 grid grid-cols-2 gap-3">
-                                                        @foreach($emailImages as $image)
+                                                        @foreach($email->images as $image)
+                                                            @if(isset($image->is_image) && $image->is_image)
                                                             <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
                                                                 <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
                                                                 @if(isset($image->description) && $image->description)
                                                                     <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200">{{ $image->description }}</div>
                                                                 @endif
                                                             </a>
+                                                            @endif
                                                         @endforeach
                                                     </div>
                                                 @endif
