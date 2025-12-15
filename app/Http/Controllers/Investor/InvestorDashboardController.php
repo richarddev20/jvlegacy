@@ -118,7 +118,14 @@ class InvestorDashboardController extends Controller
                 // Use a unique page parameter for each project
                 $pageParam = 'updates_page_' . $projectId;
                 $page = request()->input($pageParam, 1);
-                $updatesQuery = $project->updates()->with('project', 'images')->where('category', 3)->orderByDesc('sent_on');
+                // Only show updates that were sent (sent = 1), not deleted, category 3, and have a sent_on date
+                $updatesQuery = $project->updates()
+                    ->with('project', 'images')
+                    ->where('category', 3)
+                    ->where('sent', 1)
+                    ->where('deleted', 0)
+                    ->whereNotNull('sent_on')
+                    ->orderByDesc('sent_on');
                 $projectUpdates[$projectId] = $updatesQuery->paginate($perPage, ['*'], $pageParam, $page);
 
                 $projectDocuments[$projectId] = $project->investorDocuments;
