@@ -284,20 +284,6 @@
                                                 <div class="text-sm text-gray-700 prose prose-sm max-w-none">
                                                     {!! nl2br(e($update->comment ?? $update->comment_preview ?? '')) !!}
                                                 </div>
-                                                @if($update->images && $update->images->count() > 0)
-                                                    <div class="mt-4 grid grid-cols-2 gap-3">
-                                                        @foreach($update->images as $image)
-                                                            @if($image->is_image)
-                                                            <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
-                                                                <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
-                                                                @if($image->description)
-                                                                    <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200">{{ $image->description }}</div>
-                                                                @endif
-                                                            </a>
-                                                            @endif
-                                                        @endforeach
-                                                    </div>
-                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -419,20 +405,6 @@
                                                             <div class="text-sm text-gray-900 prose prose-sm max-w-none">
                                                                 {!! $update->comment ?? $update->comment_preview ?? '' !!}
                                                             </div>
-                                                            @if($update->images && $update->images->count() > 0)
-                                                                <div class="mt-4 grid grid-cols-2 gap-3">
-                                                                    @foreach($update->images as $image)
-                                                                        @if($image->is_image)
-                                                                        <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
-                                                                            <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
-                                                                            @if($image->description)
-                                                                                <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200">{{ $image->description }}</div>
-                                                                            @endif
-                                                                        </a>
-                                                                        @endif
-                                                                    @endforeach
-                                                                </div>
-                                                            @endif
                                                         </div>
                                                     </div>
                                                     <button 
@@ -1361,20 +1333,6 @@
                     <div class="mb-2 text-xs text-gray-500" x-text="update.sent_on"></div>
                     <div class="font-bold mb-2 text-gray-900">Project Update</div>
                     <div class="prose mb-4 text-gray-900" x-html="update.comment"></div>
-                    
-                    <!-- Images -->
-                    <template x-if="update.images && update.images.filter(img => img.is_image).length > 0">
-                        <div class="mt-4 grid grid-cols-2 gap-3">
-                            <template x-for="img in update.images.filter(img => img.is_image)" :key="img.id">
-                                <a :href="img.url" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
-                                    <img :src="img.thumbnail_url || img.url" :alt="img.description || ''" class="w-full h-24 object-cover" @error="$el.src = img.url">
-                                    <template x-if="img.description">
-                                        <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200" x-text="img.description"></div>
-                                    </template>
-                                </a>
-                            </template>
-                        </div>
-                    </template>
                 </div>
             </template>
         </div>
