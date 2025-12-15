@@ -134,15 +134,19 @@
         <div class="p-6">
             <!-- Overview Tab -->
             <div x-show="activeTab === 'overview'" x-transition>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                @php
+                    $totalInvested = collect($investments)->flatten()->sum('amount');
+                    $allPayouts = collect($projectPayouts)->flatten();
+                    $totalPaid = $allPayouts->where('paid', 1)->sum('amount');
+                    $outstanding = max($totalInvested - $totalPaid, 0);
+                    $roiPercent = $totalInvested > 0 ? round(($totalPaid / $totalInvested) * 100, 1) : 0;
+                @endphp
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                     <div class="bg-gradient-to-br from-brand-magenta-light to-brand-purple-light rounded-lg p-6 border border-brand-magenta">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-brand-magenta mb-1">Total Invested</p>
                                 <p class="text-2xl font-bold text-brand-magenta-dark">
-                                    @php
-                                        $totalInvested = collect($investments)->flatten()->sum('amount');
-                                    @endphp
                                     {!! money($totalInvested) !!}
                                 </p>
                             </div>
@@ -154,10 +158,6 @@
                             <div>
                                 <p class="text-sm font-medium text-brand-orange mb-1">Total Paid</p>
                                 <p class="text-2xl font-bold text-brand-orange-dark">
-                                    @php
-                                        $allPayouts = collect($projectPayouts)->flatten();
-                                        $totalPaid = $allPayouts->where('paid', 1)->sum('amount');
-                                    @endphp
                                     {!! money($totalPaid) !!}
                                 </p>
                             </div>
@@ -171,6 +171,20 @@
                                 <p class="text-2xl font-bold text-brand-purple-dark">{{ count($investments) }}</p>
                             </div>
                             <i class="fas fa-folder-open text-brand-purple text-3xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-emerald-100 to-emerald-300 rounded-lg p-6 border border-emerald-400">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-emerald-700 mb-1">Portfolio ROI</p>
+                                <p class="text-2xl font-bold text-emerald-900">
+                                    {{ $roiPercent }}%
+                                </p>
+                                <p class="text-xs text-emerald-800 mt-1">
+                                    Outstanding: {!! money($outstanding) !!}
+                                </p>
+                            </div>
+                            <i class="fas fa-percentage text-emerald-800 text-3xl"></i>
                         </div>
                     </div>
                 </div>
@@ -289,7 +303,11 @@
                                     </div>
                                 @endforeach
                             @else
-                                <p class="text-sm text-gray-500">No recent activity</p>
+                                <div class="text-center py-8">
+                                    <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                    <p class="text-sm text-gray-600 font-medium mb-1">No recent activity</p>
+                                    <p class="text-xs text-gray-500">Project updates and notifications will appear here when available.</p>
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -320,7 +338,22 @@
                     @php $timeline = $projectTimelines[$projectId] ?? null; @endphp
                     
                     @if($project)
-                    <div class="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    @php
+                        $projectInvested = $projectInvestments->sum('amount');
+                        $projectPayoutsForProject = $projectPayouts[$projectId] ?? collect();
+                        $projectPaid = $projectPayoutsForProject->where('paid', 1)->sum('amount');
+                        $projectOutstanding = max($projectInvested - $projectPaid, 0);
+                        $projectROI = $projectInvested > 0 ? round(($projectPaid / $projectInvested) * 100, 1) : 0;
+                        $nextPayout = $projectPayoutsForProject->where('paid', 0)->sortBy(function($p) {
+                            $dueOn = optional($p->quarterlyUpdate)->due_on;
+                            if (!$dueOn) return PHP_INT_MAX;
+                            if (is_string($dueOn)) {
+                                try { return \Carbon\Carbon::parse($dueOn)->timestamp; } catch (\Exception $e) { return PHP_INT_MAX; }
+                            }
+                            return $dueOn->timestamp ?? PHP_INT_MAX;
+                        })->first();
+                    @endphp
+                    <div class="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden" data-project-id="{{ $projectId }}">
                         <div class="bg-slate-700 p-6">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -337,6 +370,40 @@
                         </div>
 
                         <div class="p-6">
+                            <!-- Project Performance Summary -->
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <p class="text-xs text-gray-600 mb-1">Invested</p>
+                                    <p class="text-lg font-semibold text-gray-900">{!! money($projectInvested) !!}</p>
+                                </div>
+                                <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                                    <p class="text-xs text-green-700 mb-1">Paid</p>
+                                    <p class="text-lg font-semibold text-green-900">{!! money($projectPaid) !!}</p>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                                    <p class="text-xs text-blue-700 mb-1">Outstanding</p>
+                                    <p class="text-lg font-semibold text-blue-900">{!! money($projectOutstanding) !!}</p>
+                                </div>
+                                <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                                    <p class="text-xs text-purple-700 mb-1">ROI</p>
+                                    <p class="text-lg font-semibold text-purple-900">{{ $projectROI }}%</p>
+                                    @if($nextPayout)
+                                        <p class="text-xs text-purple-600 mt-1">
+                                            @php
+                                                $dueOn = optional($nextPayout->quarterlyUpdate)->due_on;
+                                                if ($dueOn) {
+                                                    if (is_string($dueOn)) {
+                                                        try { $dueOn = \Carbon\Carbon::parse($dueOn); } catch (\Exception $e) { $dueOn = null; }
+                                                    }
+                                                    if ($dueOn && ($dueOn instanceof \Carbon\Carbon || $dueOn instanceof \DateTime)) {
+                                                        echo 'Next: ' . $dueOn->format('d M Y');
+                                                    }
+                                                }
+                                            @endphp
+                                        </p>
+                                    @endif
+                                </div>
+                            </div>
                             <div class="overflow-x-auto mb-6">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
@@ -560,7 +627,10 @@
                             <div class="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                                 <i class="fas fa-file-alt text-gray-400 text-5xl mb-4"></i>
                                 <p class="text-gray-600 font-medium mb-2">No personal documents available</p>
-                                <p class="text-sm text-gray-500">Your share certificates, loan agreements, and other personal documents will appear here once they are uploaded.</p>
+                                <p class="text-sm text-gray-500 mb-3">Your share certificates, loan agreements, and other personal documents will appear here once they are uploaded.</p>
+                                <button @click="activeTab = 'helpdesk'" class="text-sm text-brand-teal hover:text-brand-teal-dark font-medium">
+                                    <i class="fas fa-question-circle mr-1"></i>Need help accessing documents?
+                                </button>
                             </div>
                         @endif
                     </div>
@@ -663,7 +733,10 @@
                             <div class="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                                 <i class="fas fa-folder-open text-gray-400 text-5xl mb-4"></i>
                                 <p class="text-gray-600 font-medium mb-2">No investments found</p>
-                                <p class="text-sm text-gray-500">Project documents will appear here once you have investments in active projects.</p>
+                                <p class="text-sm text-gray-500 mb-3">Project documents will appear here once you have investments in active projects.</p>
+                                <button @click="activeTab = 'helpdesk'" class="text-sm text-brand-teal hover:text-brand-teal-dark font-medium">
+                                    <i class="fas fa-question-circle mr-1"></i>Questions about your investments?
+                                </button>
                             </div>
                         </div>
                     @endif
@@ -672,6 +745,94 @@
 
             <!-- Payouts Tab -->
             <div x-show="activeTab === 'payouts'" x-transition style="display: none;">
+                @php
+                    $upcomingPayouts = collect();
+                    foreach ($projectPayouts as $projectId => $payoutsForProject) {
+                        $firstInv = ($investments[$projectId] ?? collect())->first();
+                        $project = $firstInv && $firstInv->project ? $firstInv->project : null;
+                        foreach ($payoutsForProject as $payout) {
+                            $dueOn = optional($payout->quarterlyUpdate)->due_on;
+                            if ($dueOn && !$payout->paid) {
+                                if (is_string($dueOn)) {
+                                    try {
+                                        $dueOn = \Carbon\Carbon::parse($dueOn);
+                                    } catch (\Exception $e) {
+                                        $dueOn = null;
+                                    }
+                                }
+                                if ($dueOn && ($dueOn instanceof \Carbon\Carbon || $dueOn instanceof \DateTime)) {
+                                    $upcomingPayouts->push([
+                                        'project' => $project,
+                                        'payout' => $payout,
+                                        'due_on' => $dueOn,
+                                        'projectId' => $projectId,
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                    $upcomingPayouts = $upcomingPayouts->sortBy('due_on')->take(10);
+                @endphp
+
+                <div class="mb-6 bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-bold text-white">Upcoming Payouts</h3>
+                            <p class="text-sm text-emerald-100">Next 10 scheduled payouts</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        @if($upcomingPayouts->count())
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Project</th>
+                                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Due On</th>
+                                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        @foreach($upcomingPayouts as $row)
+                                            @php
+                                                $project = $row['project'];
+                                                $payout = $row['payout'];
+                                                $dueOn = $row['due_on'];
+                                            @endphp
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    {{ $project ? ($project->name ?? 'Project #' . ($project->project_id ?? $project->id)) : 'Unknown Project' }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    {{ $dueOn->format('d M Y') }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-gray-900">
+                                                    {!! money($payout->amount ?? 0) !!}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center py-12">
+                                <i class="fas fa-calendar-check text-gray-300 text-5xl mb-4"></i>
+                                <p class="text-gray-600 font-medium mb-2">No upcoming payouts scheduled</p>
+                                <p class="text-sm text-gray-500 mb-3">Completed payouts remain visible in your investments and email history.</p>
+                                <div class="flex gap-3 justify-center">
+                                    <button @click="activeTab = 'investments'" class="text-sm text-brand-teal hover:text-brand-teal-dark font-medium">
+                                        <i class="fas fa-chart-line mr-1"></i>View Investments
+                                    </button>
+                                    <span class="text-gray-300">|</span>
+                                    <button @click="activeTab = 'email-history'" class="text-sm text-brand-teal hover:text-brand-teal-dark font-medium">
+                                        <i class="fas fa-envelope mr-1"></i>Check Email History
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
                 @foreach ($investments as $projectId => $projectInvestments)
                     @php 
                         $firstInv = $projectInvestments->first();
