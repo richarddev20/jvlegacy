@@ -355,21 +355,32 @@ class InvestorDashboardController extends Controller
         }
 
         // #region agent log
-        $logPath = storage_path('../.cursor/debug.log');
+        $logPath = storage_path('logs/blade-debug.log');
         try {
+            $viewPath = resource_path('views/investor/dashboard.blade.php');
+            $viewContent = file_exists($viewPath) ? file_get_contents($viewPath) : 'FILE NOT FOUND';
+            $ifCount = preg_match_all('/@if\s*\(/', $viewContent);
+            $endifCount = preg_match_all('/@endif/', $viewContent);
+            
             $logEntry = json_encode([
                 'id' => 'log_' . time() . '_' . uniqid(),
                 'timestamp' => (int)(microtime(true) * 1000),
                 'location' => 'InvestorDashboardController.php:357',
-                'message' => 'Rendering investor.dashboard view',
+                'message' => 'Rendering investor.dashboard view - SERVER SIDE',
                 'data' => [
                     'view_name' => 'investor.dashboard',
-                    'view_path' => resource_path('views/investor/dashboard.blade.php'),
-                    'view_exists' => file_exists(resource_path('views/investor/dashboard.blade.php')),
+                    'view_path' => $viewPath,
+                    'view_exists' => file_exists($viewPath),
+                    'file_size' => file_exists($viewPath) ? filesize($viewPath) : 0,
+                    'total_lines' => file_exists($viewPath) ? substr_count($viewContent, "\n") + 1 : 0,
+                    'if_count' => $ifCount,
+                    'endif_count' => $endifCount,
+                    'balance_ok' => $ifCount === $endifCount,
+                    'last_100_chars' => substr($viewContent, -100),
                 ],
                 'sessionId' => 'debug-session',
-                'runId' => 'runtime',
-                'hypothesisId' => 'R',
+                'runId' => 'server-runtime',
+                'hypothesisId' => 'S',
             ], JSON_PRETTY_PRINT) . "\n";
             @file_put_contents($logPath, $logEntry, FILE_APPEND);
         } catch (\Exception $e) {
@@ -396,20 +407,27 @@ class InvestorDashboardController extends Controller
         } catch (\Exception $e) {
             // #region agent log
             try {
+                $viewPath = resource_path('views/investor/dashboard.blade.php');
+                $viewContent = file_exists($viewPath) ? file_get_contents($viewPath) : 'FILE NOT FOUND';
                 $errorLog = json_encode([
                     'id' => 'log_' . time() . '_' . uniqid(),
                     'timestamp' => (int)(microtime(true) * 1000),
                     'location' => 'InvestorDashboardController.php:357',
-                    'message' => 'View rendering error',
+                    'message' => 'View rendering error - SERVER SIDE',
                     'data' => [
                         'error' => $e->getMessage(),
+                        'error_class' => get_class($e),
                         'file' => $e->getFile(),
                         'line' => $e->getLine(),
                         'trace' => $e->getTraceAsString(),
+                        'view_path' => $viewPath,
+                        'view_exists' => file_exists($viewPath),
+                        'view_size' => file_exists($viewPath) ? filesize($viewPath) : 0,
+                        'view_lines' => file_exists($viewPath) ? substr_count($viewContent, "\n") + 1 : 0,
                     ],
                     'sessionId' => 'debug-session',
-                    'runId' => 'runtime',
-                    'hypothesisId' => 'R',
+                    'runId' => 'server-runtime-error',
+                    'hypothesisId' => 'S',
                 ], JSON_PRETTY_PRINT) . "\n";
                 @file_put_contents($logPath, $errorLog, FILE_APPEND);
             } catch (\Exception $logErr) {
