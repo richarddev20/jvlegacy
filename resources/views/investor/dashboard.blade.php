@@ -1,4 +1,4 @@
-@extends('layouts.app')
+
 
 @section('content')
 <div class="mx-auto mt-10" x-data="{ activeTab: 'overview' }">
@@ -1661,7 +1661,7 @@ function sharingData() {
             return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
         }
     }
-}
+
 </script>
 
 
