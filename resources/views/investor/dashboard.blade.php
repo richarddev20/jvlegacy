@@ -1377,29 +1377,21 @@
                     <div class="mb-2 text-xs text-gray-500" x-text="update.sent_on"></div>
                     <div class="font-bold mb-2 text-gray-900">Project Update</div>
                     <div class="prose mb-4 text-gray-900" x-html="update.comment"></div>
-                    <template x-if="update.images && update.images.length > 0">
-                        <div class="mt-4 grid grid-cols-2 gap-3">
-                            <template x-for="img in update.images" :key="img.id">
-                                <template x-if="img.is_image">
-                                    <a :href="img.url" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
-                                        <img :src="img.thumbnail_url || img.url" :alt="img.description || img.file_name || ''" class="w-full h-24 object-cover" @error="$el.src = img.url">
-                                        <template x-if="img.description">
-                                            <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200" x-text="img.description"></div>
-                                        </template>
-                                    </a>
-                                </template>
-                                <template x-if="!img.is_image">
-                                    <a :href="img.url" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-md transition-shadow block flex flex-col items-center justify-center h-24">
-                                        <i :class="(img.icon || 'fas fa-file') + ' text-3xl mb-1 ' + (img.file_type_category === 'pdf' ? 'text-red-500' : (img.file_type_category === 'word' ? 'text-brand-teal' : 'text-gray-500'))"></i>
-                                        <span class="text-xs text-gray-600 text-center px-2" x-text="(img.file_name || 'File').substring(0, 15)"></span>
-                                        <template x-if="img.description">
-                                            <div class="px-2 py-1 text-xs text-gray-500 border-t border-gray-200 w-full text-center" x-text="(img.description || '').substring(0, 20)"></div>
-                                        </template>
-                                    </a>
-                                </template>
-                            </template>
-                        </div>
-                    </template>
+                    <div x-show="update.images && update.images.length > 0" class="mt-4 grid grid-cols-2 gap-3">
+                        <template x-for="img in (update.images || [])" :key="img.id">
+                            <div>
+                                <a x-show="img.is_image" :href="img.url" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
+                                    <img :src="img.thumbnail_url || img.url" :alt="img.description || img.file_name || ''" class="w-full h-24 object-cover" @error="$el.src = img.url">
+                                    <div x-show="img.description" class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200" x-text="img.description"></div>
+                                </a>
+                                <a x-show="!img.is_image" :href="img.url" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-md transition-shadow block flex flex-col items-center justify-center h-24">
+                                    <i :class="(img.icon || 'fas fa-file') + ' text-3xl mb-1 ' + (img.file_type_category === 'pdf' ? 'text-red-500' : (img.file_type_category === 'word' ? 'text-brand-teal' : 'text-gray-500'))"></i>
+                                    <span class="text-xs text-gray-600 text-center px-2" x-text="(img.file_name || 'File').substring(0, 15)"></span>
+                                    <div x-show="img.description" class="px-2 py-1 text-xs text-gray-500 border-t border-gray-200 w-full text-center" x-text="(img.description || '').substring(0, 20)"></div>
+                                </a>
+                            </div>
+                        </template>
+                    </div>
                 </div>
             </template>
         </div>
