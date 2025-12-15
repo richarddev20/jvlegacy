@@ -284,6 +284,28 @@
                                                 <div class="text-sm text-gray-700 prose prose-sm max-w-none">
                                                     {!! nl2br(e($update->comment ?? $update->comment_preview ?? '')) !!}
                                                 </div>
+                                                @if($update->images && $update->images->count() > 0)
+                                                    <div class="mt-4 grid grid-cols-2 gap-3">
+                                                        @foreach($update->images as $image)
+                                                            @if($image->is_image)
+                                                                <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
+                                                                    <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? $image->file_name ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
+                                                                    @if($image->description)
+                                                                        <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200">{{ $image->description }}</div>
+                                                                    @endif
+                                                                </a>
+                                                            @else
+                                                                <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-md transition-shadow block flex flex-col items-center justify-center h-24">
+                                                                    <i class="{{ $image->icon ?? 'fas fa-file' }} text-3xl mb-1 {{ $image->file_type_category === 'pdf' ? 'text-red-500' : ($image->file_type_category === 'word' ? 'text-brand-teal' : 'text-gray-500') }}"></i>
+                                                                    <span class="text-xs text-gray-600 text-center px-2">{{ Str::limit($image->file_name ?? 'File', 15) }}</span>
+                                                                    @if($image->description)
+                                                                        <div class="px-2 py-1 text-xs text-gray-500 border-t border-gray-200 w-full text-center">{{ Str::limit($image->description, 20) }}</div>
+                                                                    @endif
+                                                                </a>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -405,6 +427,28 @@
                                                             <div class="text-sm text-gray-900 prose prose-sm max-w-none">
                                                                 {!! $update->comment ?? $update->comment_preview ?? '' !!}
                                                             </div>
+                                                            @if($update->images && $update->images->count() > 0)
+                                                                <div class="mt-4 grid grid-cols-2 gap-3">
+                                                                    @foreach($update->images as $image)
+                                                                        @if($image->is_image)
+                                                                            <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
+                                                                                <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? $image->file_name ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
+                                                                                @if($image->description)
+                                                                                    <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200">{{ $image->description }}</div>
+                                                                                @endif
+                                                                            </a>
+                                                                        @else
+                                                                            <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-md transition-shadow block flex flex-col items-center justify-center h-24">
+                                                                                <i class="{{ $image->icon ?? 'fas fa-file' }} text-3xl mb-1 {{ $image->file_type_category === 'pdf' ? 'text-red-500' : ($image->file_type_category === 'word' ? 'text-brand-teal' : 'text-gray-500') }}"></i>
+                                                                                <span class="text-xs text-gray-600 text-center px-2">{{ Str::limit($image->file_name ?? 'File', 15) }}</span>
+                                                                                @if($image->description)
+                                                                                    <div class="px-2 py-1 text-xs text-gray-500 border-t border-gray-200 w-full text-center">{{ Str::limit($image->description, 20) }}</div>
+                                                                                @endif
+                                                                            </a>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                     <button 
@@ -1333,6 +1377,29 @@
                     <div class="mb-2 text-xs text-gray-500" x-text="update.sent_on"></div>
                     <div class="font-bold mb-2 text-gray-900">Project Update</div>
                     <div class="prose mb-4 text-gray-900" x-html="update.comment"></div>
+                    <template x-if="update.images && update.images.length > 0">
+                        <div class="mt-4 grid grid-cols-2 gap-3">
+                            <template x-for="img in update.images" :key="img.id">
+                                <template x-if="img.is_image">
+                                    <a :href="img.url" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
+                                        <img :src="img.thumbnail_url || img.url" :alt="img.description || img.file_name || ''" class="w-full h-24 object-cover" @error="$el.src = img.url">
+                                        <template x-if="img.description">
+                                            <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200" x-text="img.description"></div>
+                                        </template>
+                                    </a>
+                                </template>
+                                <template x-if="!img.is_image">
+                                    <a :href="img.url" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-md transition-shadow block flex flex-col items-center justify-center h-24">
+                                        <i :class="(img.icon || 'fas fa-file') + ' text-3xl mb-1 ' + (img.file_type_category === 'pdf' ? 'text-red-500' : (img.file_type_category === 'word' ? 'text-brand-teal' : 'text-gray-500'))"></i>
+                                        <span class="text-xs text-gray-600 text-center px-2" x-text="(img.file_name || 'File').substring(0, 15)"></span>
+                                        <template x-if="img.description">
+                                            <div class="px-2 py-1 text-xs text-gray-500 border-t border-gray-200 w-full text-center" x-text="(img.description || '').substring(0, 20)"></div>
+                                        </template>
+                                    </a>
+                                </template>
+                            </template>
+                        </div>
+                    </template>
                 </div>
             </template>
         </div>
