@@ -316,6 +316,15 @@
                                                 <div class="text-sm text-gray-700 prose prose-sm max-w-none">
                                                     {!! nl2br(e($update->comment ?? $update->comment_preview ?? '')) !!}
                                                 </div>
+                                                <div class="mt-3">
+                                                    <form method="POST" action="{{ route('investor.updates.resend', $update->id) }}" class="inline" onsubmit="return confirm('Resend this update email to {{ auth('investor')->user()->email }}?');">
+                                                        @csrf
+                                                        <button type="submit" class="text-xs text-brand-purple hover:text-brand-purple-dark font-medium inline-flex items-center" title="Resend update email to me">
+                                                            <i class="fas fa-envelope mr-1"></i>
+                                                            Resend to me
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
