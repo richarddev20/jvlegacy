@@ -1074,18 +1074,24 @@
                                                 <div class="text-sm text-gray-700 prose prose-sm max-w-none">
                                                     {!! nl2br(e($email->content ?? '')) !!}
                                                 </div>
-                                                @if(isset($email->images) && $email->images->count() > 0)
-                                                    <div class="mt-4 grid grid-cols-2 gap-3">
-                                                        @foreach($email->images as $image)
-                                                            @if(isset($image->is_image) && $image->is_image)
-                                                            <a href="{{ $image->url }}" target="_blank" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow block">
-                                                                <img src="{{ $image->thumbnail_url ?? $image->url }}" alt="{{ $image->description ?? '' }}" class="w-full h-24 object-cover" onerror="this.onerror=null;this.src='{{ $image->url }}';">
-                                                                @if(isset($image->description) && $image->description)
-                                                                    <div class="px-2 py-1 text-xs text-gray-600 border-t border-gray-200">{{ $image->description }}</div>
-                                                                @endif
-                                                            </a>
-                                                            @endif
-                                                        @endforeach
+                                                @php
+                                                    $emailImages = $email->images ?? collect();
+                                                @endphp
+                                                @if($emailImages->count() > 0)
+                                                    <div class="mt-3 pt-3 border-t border-gray-200">
+                                                        <p class="text-xs font-medium text-gray-600 mb-2">Attachments:</p>
+                                                        <div class="flex flex-wrap gap-2">
+                                                            @foreach($emailImages as $file)
+                                                                <a href="{{ $file->url }}" target="_blank" class="inline-flex items-center px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded border border-gray-300 text-gray-700 transition-colors">
+                                                                    @if($file->is_image)
+                                                                        <i class="fas fa-image mr-1.5 text-blue-500"></i>
+                                                                    @else
+                                                                        <i class="{{ $file->icon }} mr-1.5"></i>
+                                                                    @endif
+                                                                    <span class="max-w-[150px] truncate">{{ $file->file_name ?? 'File' }}</span>
+                                                                </a>
+                                                            @endforeach
+                                                        </div>
                                                     </div>
                                                 @endif
                                             @elseif(($email->email_type ?? '') === 'support_ticket')
