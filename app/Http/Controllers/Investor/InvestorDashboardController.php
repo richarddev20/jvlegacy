@@ -281,6 +281,7 @@ class InvestorDashboardController extends Controller
                             'project' => $update->project,
                             'sent_at' => $update->sent_on,
                             'content' => $update->comment ?? '',
+                            'images' => $update->images ?? collect(), // Include images for email history display
                         ];
                     });
             } catch (\Exception $e) {

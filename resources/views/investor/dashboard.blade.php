@@ -473,6 +473,26 @@
                                                                 {!! $update->comment ?? $update->comment_preview ?? '' !!}
                                                             </div>
                                                         </div>
+                                                        @php
+                                                            $updateImages = $update->images ?? collect();
+                                                        @endphp
+                                                        @if($updateImages->count() > 0)
+                                                            <div class="mt-3 pt-3 border-t border-gray-200">
+                                                                <p class="text-xs font-medium text-gray-600 mb-2">Attachments:</p>
+                                                                <div class="flex flex-wrap gap-2">
+                                                                    @foreach($updateImages as $file)
+                                                                        <a href="{{ $file->url }}" target="_blank" class="inline-flex items-center px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded border border-gray-300 text-gray-700 transition-colors">
+                                                                            @if($file->is_image)
+                                                                                <i class="fas fa-image mr-1.5 text-blue-500"></i>
+                                                                            @else
+                                                                                <i class="{{ $file->icon }} mr-1.5"></i>
+                                                                            @endif
+                                                                            <span class="max-w-[150px] truncate">{{ $file->file_name ?? 'File' }}</span>
+                                                                        </a>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                     <button 
                                                         class="ml-3 text-slate-600 hover:text-slate-800 text-xs font-medium whitespace-nowrap" 

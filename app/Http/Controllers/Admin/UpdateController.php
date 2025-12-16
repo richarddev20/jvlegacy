@@ -315,6 +315,11 @@ class UpdateController extends Controller
             return 0;
         }
 
+        // Load images for the update before sending emails
+        if (!$update->relationLoaded('images')) {
+            $update->load('images');
+        }
+
         // Send to investors using Postmark mailer
         foreach ($investorAccounts as $investorAccount) {
             try {
