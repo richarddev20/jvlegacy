@@ -7,6 +7,9 @@
 		<div style="font-size: 16px; color: #334155; margin-bottom: 24px;">
 			{!! $content !!}
 		</div>
+		@if(isset($attachments_html) && !empty($attachments_html))
+			{!! $attachments_html !!}
+		@endif
 		<div style="text-align: center; margin-bottom: 24px;">
 			<a href="{{ $url }}" style="display: inline-block; background: #cea926; color: #fff; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: bold;">View Project in your Dashboard</a>
 		</div>
