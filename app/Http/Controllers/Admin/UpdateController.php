@@ -392,14 +392,24 @@ class UpdateController extends Controller
 
         // Send to investors using Postmark mailer
         $sentCount = 0;
-        foreach ($investorAccounts as $investorAccount) {
-            if (!$investorAccount || !$investorAccount->email) {
-                \Log::warning("Skipping investor account with no email");
+        $skippedCount = 0;
+        foreach ($investorAccounts as $index => $investorAccount) {
+            \Log::info("Processing investor account #{$index}: " . ($investorAccount ? "ID {$investorAccount->id}" : "NULL"));
+            
+            if (!$investorAccount) {
+                \Log::warning("Skipping null investor account at index {$index}");
+                $skippedCount++;
+                continue;
+            }
+            
+            if (!$investorAccount->email) {
+                \Log::warning("Skipping investor account ID {$investorAccount->id} - no email address (email is: " . var_export($investorAccount->email, true) . ")");
+                $skippedCount++;
                 continue;
             }
             
             try {
-                \Log::info("Attempting to send update email to {$investorAccount->email} via Postmark");
+                \Log::info("Attempting to send update email to {$investorAccount->email} (Account ID: {$investorAccount->id}) via Postmark");
                 Mail::mailer('postmark')->to($investorAccount->email)->send(
                     new ProjectUpdateMail($investorAccount, $project, $update)
                 );
@@ -410,6 +420,8 @@ class UpdateController extends Controller
                 \Log::error("Stack trace: " . $e->getTraceAsString());
             }
         }
+        
+        \Log::info("Email sending summary: {$sentCount} sent, {$skippedCount} skipped, " . $investorAccounts->count() . " total accounts found");
         
         \Log::info("Total emails sent: {$sentCount} out of " . $investorAccounts->count() . " investors");
 
