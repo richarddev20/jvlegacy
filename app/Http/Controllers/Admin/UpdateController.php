@@ -486,8 +486,6 @@ class UpdateController extends Controller
         }
         
         \Log::info("Email sending summary: {$sentCount} sent, {$failedCount} failed, {$skippedCount} skipped, {$attemptedCount} attempted, " . $investorAccounts->count() . " total accounts found");
-        
-        \Log::info("Total emails sent: {$sentCount} out of " . $investorAccounts->count() . " investors");
 
         // Also send to Ben and Scott (internal) using Postmark mailer
         // Track how many internal emails we send so we can include them in the total count
