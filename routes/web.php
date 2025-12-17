@@ -70,6 +70,13 @@ Route::prefix('admin')->name('admin.')->middleware('auth:investor')->group(funct
     Route::get('/changelog/create', [ChangelogController::class, 'create'])->name('changelog.create');
     Route::post('/changelog', [ChangelogController::class, 'store'])->name('changelog.store');
     
+    // Email Logs
+    Route::get('/email-logs', [EmailLogController::class, 'index'])->name('email-logs.index');
+    Route::get('/email-logs/{id}', [EmailLogController::class, 'show'])->name('email-logs.show');
+    Route::post('/email-logs/{id}/update-status', [EmailLogController::class, 'updateStatus'])->name('email-logs.update-status');
+    Route::post('/email-logs/{id}/resend', [EmailLogController::class, 'resend'])->name('email-logs.resend');
+    Route::post('/email-logs/bulk-update-status', [EmailLogController::class, 'bulkUpdateStatus'])->name('email-logs.bulk-update-status');
+    
     // Email Templates
     Route::get('/email-templates', [\App\Http\Controllers\Admin\EmailTemplateController::class, 'index'])->name('email-templates.index');
     Route::get('/email-templates/{id}', [\App\Http\Controllers\Admin\EmailTemplateController::class, 'show'])->name('email-templates.show');
