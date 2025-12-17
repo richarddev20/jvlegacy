@@ -8,9 +8,16 @@
             <h1 class="text-3xl font-bold text-gray-900">Welcome, {{ $account->name }}</h1>
             <p class="text-gray-600 mt-1">Manage your investments and track your portfolio</p>
         </div>
-        <button onclick="document.getElementById('profile-edit-form').classList.toggle('hidden')" class="px-4 py-2 bg-brand-magenta text-white rounded-lg hover:bg-brand-magenta-dark font-medium">
-            <i class="fas fa-user-edit mr-2"></i>Edit Profile
-        </button>
+        <div class="flex items-center gap-3">
+            @if(in_array($account->type_id, [1, 2, 3]))
+                <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors">
+                    <i class="fas fa-cog mr-2"></i>Admin Panel
+                </a>
+            @endif
+            <button onclick="document.getElementById('profile-edit-form').classList.toggle('hidden')" class="px-4 py-2 bg-brand-magenta text-white rounded-lg hover:bg-brand-magenta-dark font-medium">
+                <i class="fas fa-user-edit mr-2"></i>Edit Profile
+            </button>
+        </div>
     </div>
 
     @if (session('status'))
