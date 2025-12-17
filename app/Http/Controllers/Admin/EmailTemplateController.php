@@ -158,17 +158,28 @@ class EmailTemplateController extends Controller
         try {
             $preview = EmailTemplateService::getTemplate($template->key, $sampleVariables);
 
-            Mail::mailer('postmark')->to($request->test_email)->send(
-                new \Illuminate\Mail\Message(function ($message) use ($preview) {
-                    $message->subject($preview['subject']);
+            if (!$preview) {
+                return redirect()->route('admin.email-templates.show', $id)
+                    ->with('error', 'Template not found or could not be rendered.');
+            }
+
+            Mail::mailer('postmark')->send([], [], function ($message) use ($preview, $request) {
+                $message->to($request->test_email)
+                    ->subject($preview['subject']);
+                
+                if (!empty($preview['html'])) {
                     $message->html($preview['html']);
+                }
+                
+                if (!empty($preview['text'])) {
                     $message->text($preview['text']);
-                })
-            );
+                }
+            });
 
             return redirect()->route('admin.email-templates.show', $id)
                 ->with('success', "Test email sent to {$request->test_email}");
         } catch (\Exception $e) {
+            \Log::error("Failed to send test email: " . $e->getMessage());
             return redirect()->route('admin.email-templates.show', $id)
                 ->with('error', 'Failed to send test email: ' . $e->getMessage());
         }
