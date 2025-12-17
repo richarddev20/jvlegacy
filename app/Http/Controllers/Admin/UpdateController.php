@@ -173,9 +173,30 @@ class UpdateController extends Controller
         }
         
         $emailcount = $this->dispatchBulkEmails($update);
+        
+        // Provide more informative feedback when creating updates
+        if ($emailcount == 0) {
+            $project = Project::where('project_id', $update->project_id)->first();
+            if (!$project) {
+                return redirect()->route('admin.updates.index', ['project_id' => $update->project_id])
+                    ->with('warning', 'Update posted but not sent: Project not found.');
+            }
+            
+            $investorCount = Investments::where('project_id', $project->id)
+                ->where('paid', 1)
+                ->count();
+            
+            if ($investorCount == 0) {
+                return redirect()->route('admin.updates.index', ['project_id' => $update->project_id])
+                    ->with('warning', 'Update posted but not sent: No investors with paid investments found for this project.');
+            } else {
+                return redirect()->route('admin.updates.index', ['project_id' => $update->project_id])
+                    ->with('warning', 'Update posted but not sent: No valid investor emails found.');
+            }
+        }
 
         return redirect()->route('admin.updates.index', ['project_id' => $update->project_id])
-            ->with('success', 'Update posted and ' . $emailcount . ' investors notified.');
+            ->with('success', 'Update posted and ' . $emailcount . ' investor' . ($emailcount !== 1 ? 's' : '') . ' notified.');
     }
 
     protected function processUpdateImage($updateId, $imageFile, $description = null, $order = 0)
