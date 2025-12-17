@@ -5,6 +5,23 @@
 
 @section('content')
     <div class="mb-6">
+        @if(session('success'))
+            <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            </div>
+        @endif
+        
         <div class="flex items-center justify-between mb-6">
             <div>
                 <p class="text-sm text-gray-500">Create and manage project updates for investors</p>
