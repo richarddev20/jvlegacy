@@ -60,7 +60,7 @@ class EmailLog extends Model
         return $this->belongsTo(Project::class, 'project_id', 'project_id');
     }
 
-    public function update()
+    public function updateRelation()
     {
         return $this->belongsTo(Update::class, 'update_id');
     }

@@ -43,7 +43,7 @@ class EmailLogController extends Controller
         }
 
         $emailLogs = $query->orderByDesc('sent_at')
-            ->with(['recipientAccount', 'project', 'update', 'sentByUser'])
+            ->with(['recipientAccount', 'project', 'updateRelation', 'sentByUser'])
             ->paginate(50);
 
         // Get unique email types for filter
@@ -61,7 +61,7 @@ class EmailLogController extends Controller
 
     public function show($id)
     {
-        $emailLog = EmailLog::with(['recipientAccount', 'project', 'update', 'sentByUser'])
+        $emailLog = EmailLog::with(['recipientAccount', 'project', 'updateRelation', 'sentByUser'])
             ->findOrFail($id);
 
         // Try to fetch latest status from Postmark if we have a message ID

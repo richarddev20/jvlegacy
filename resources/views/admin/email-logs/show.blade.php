@@ -166,12 +166,12 @@
                         </dd>
                     </div>
                 @endif
-                @if($emailLog->update)
+                @if($emailLog->updateRelation)
                     <div class="p-3 bg-gray-50 rounded border border-gray-200">
                         <dt class="text-xs font-medium text-gray-500">Update</dt>
                         <dd class="mt-1 text-sm text-gray-900">
-                            <a href="{{ route('admin.updates.show', $emailLog->update->id) }}" class="text-blue-600 hover:underline">
-                                Update #{{ $emailLog->update->id }}
+                            <a href="{{ route('admin.updates.show', $emailLog->updateRelation->id) }}" class="text-blue-600 hover:underline">
+                                Update #{{ $emailLog->updateRelation->id }}
                             </a>
                         </dd>
                     </div>
