@@ -772,14 +772,268 @@ This section contains every single commit from the project's inception on August
 
 ---
 
-**Note:** For detailed commit information from November 29, 2025 onwards with full file change statistics, see the "Detailed Commit Log" section above. All 232 commits by Rich Copestake from November 17, 2025 through December 19, 2025 are documented with complete file change details in that section.
+## Complete Commit Reference Table (All 247 Commits)
 
-To view the complete file change details for any commit, use:
+This table provides a complete chronological reference to all commits from project start. For detailed file change information, see the "Detailed Commit Log" section above or use `git show <commit-hash> --stat`.
+
+| # | Commit Hash | Author | Email | Date | Message |
+|---|------------|--------|-------|------|---------|
+| 1 | `15b6b35be853` | Chris Rouxel | chris@... | 2025-08-19 | initial commit |
+| 2 | `66105d6e71e0` | Chris Rouxel | chris@... | 2025-08-19 | Update table names |
+| 3 | `c8fc66ad4086` | Chris Rouxel | chris@... | 2025-08-19 | add in document notice |
+| 4 | `e21094aafdbe` | Chris Rouxel | chris@... | 2025-08-19 | add in mailgun |
+| 5 | `a4faaa23827d` | Chris Rouxel | chris@... | 2025-08-19 | add in logo |
+| 6 | `91c903b9d2c7` | Chris Rouxel | chris@... | 2025-08-19 | correct routes |
+| 7 | `6041e63b14a4` | Chris Rouxel | chris@... | 2025-08-19 | add in logo |
+| 8 | `eac582093dde` | Chris Rouxel | chris@... | 2025-08-29 | Reverse labels of Mazzanine and Debt |
+| 9 | `df14c594cbcf` | Chris Rouxel | chris@... | 2025-08-29 | Mail Testing |
+| 10 | `0168285c73e3` | Chris Rouxel | chris@... | 2025-08-29 | Update bulk sending |
+| 11 | `f0e2c2ce3790` | Chris Rouxel | chris@... | 2025-08-29 | Update bulk sending |
+| 12 | `2a3a9cb003a1` | Chris Rouxel | chris@... | 2025-08-30 | Fix Comment HTML |
+| 13 | `cdcc06f8dba3` | Rich Copestake | richard@... | 2025-11-17 | Fix admin update emails |
+| 14 | `f1774f02046d` | Rich Copestake | richard@... | 2025-11-28 | Complete investor dashboard overhaul and admin updates management |
+| 15 | `dfa46a5cbdb3` | Rich Copestake | richard@... | 2025-11-29 | Fix: Add missing status constants to Project model |
+| 16 | `2c1926944012` | Rich Copestake | richard@... | 2025-11-29 | Fix: Add STATUS_MAP constant to Project model |
+| 17 | `e438e1ac875e` | Rich Copestake | richard@... | 2025-11-29 | Fix: Use sent_on instead of created_at for Update model ordering |
+| 18 | `012686be54c9` | Rich Copestake | richard@... | 2025-11-29 | Improve Key facts section visual design with better spacing and typogr... |
+| 19 | `2bf75a4b59d5` | Rich Copestake | richard@... | 2025-11-29 | Add admin account creation command and one-time route |
+| 20 | `8c99e88e6632` | Rich Copestake | richard@... | 2025-11-29 | Fix: Add fillable fields to Person model for mass assignment |
+| 21 | `ce491dabbddb` | Rich Copestake | richard@... | 2025-11-29 | Fix: Handle existing person records when creating admin account |
+| 22 | `fae8554c9532` | Rich Copestake | richard@... | 2025-11-29 | Fix: Add fillable fields to Account model for mass assignment |
+| 23 | `e61715eac255` | Rich Copestake | richard@... | 2025-11-29 | Fix: Enable proper horizontal scrolling for investments table |
+| 24 | `17366f1651d5` | Rich Copestake | richard@... | 2025-11-29 | Make investment table rows clickable, linking to account details |
+| 25 | `98ec4d5f17e8` | Rich Copestake | richard@... | 2025-11-29 | Make individual table columns clickable - Project links to project pag... |
+| 26 | `578ea85dce21` | Rich Copestake | richard@... | 2025-11-29 | Add 'View as Investor' button to account page and make notifications o... |
+| 27 | `1ae883feba41` | Rich Copestake | richard@... | 2025-11-29 | Add web route to run missing migrations |
+| 28 | `6bba4ac814fa` | Rich Copestake | richard@... | 2025-11-29 | Create admin project detail page with investors, updates, documents an... |
+| 29 | `608f4a9902ab` | Rich Copestake | richard@... | 2025-11-29 | Fix: Make document email logs optional if table doesn't exist |
+| 30 | `04f8f1c3df70` | Rich Copestake | richard@... | 2025-11-29 | Make project column clickable in updates table, linking to admin proje... |
+| 31 | `4faccb58e034` | Rich Copestake | richard@... | 2025-11-29 | Fix: Rename update() relationship to quarterlyUpdate() to avoid confli... |
+| 32 | `3612b3e91f5a` | Rich Copestake | richard@... | 2025-11-29 | Add route and controller to serve investor documents from legacy syste... |
+| 33 | `910f2677ef53` | Rich Copestake | richard@... | 2025-11-29 | Improve document controller with better error handling, logging, and f... |
+| 34 | `84843abe33aa` | Rich Copestake | richard@... | 2025-11-29 | Improve document controller: better route matching, file path detectio... |
+| 35 | `c14682cb59ef` | Rich Copestake | richard@... | 2025-11-29 | Replace document buttons with icons - restore Font Awesome icons for d... |
+| 36 | `c36d158fbe70` | Rich Copestake | richard@... | 2025-11-29 | Add enhanced file detection, directory scanning, and debug route for d... |
+| 37 | `ceb12bfa9051` | Rich Copestake | richard@... | 2025-11-29 | Fix document hash parsing to handle 'o' characters in hash, improve do... |
+| 38 | `815ac946f797` | Rich Copestake | richard@... | 2025-11-29 | Add intelligent document path detection with Forge server support and ... |
+| 39 | `ed4a0a81a8d4` | Rich Copestake | richard@... | 2025-11-29 | Improve document directory finder with symlink detection and proposal-... |
+| 40 | `e2fceb28f874` | Rich Copestake | richard@... | 2025-11-29 | Add fallback to proxy documents from legacy system if files not found ... |
+| 41 | `571bf023a68d` | Rich Copestake | richard@... | 2025-11-29 | Improve proxy error handling and add test route for legacy system conn... |
+| 42 | `1ab9411ecf43` | Rich Copestake | richard@... | 2025-11-29 | Move documents to project level instead of per-investment row to avoid... |
+| 43 | `4bc5e995f8f1` | Rich Copestake | richard@... | 2025-11-29 | Add investment management (create/edit/delete), document trace route f... |
+| 44 | `b21310bd5d0c` | Rich Copestake | richard@... | 2025-11-29 | Add account editing (admin & investor), image uploads for updates, rem... |
+| 45 | `83fc6db751fb` | Rich Copestake | richard@... | 2025-11-29 | Add project overview to account investments section with fallback mess... |
+| 46 | `f732478372c4` | Rich Copestake | richard@... | 2025-11-29 | Add project creation functionality with index page, create form, and i... |
+| 47 | `1ccee6dfd01d` | Rich Copestake | richard@... | 2025-11-29 | Redesign admin interface with sidebar navigation, modern styling, and ... |
+| 48 | `c0e091c6c864` | Rich Copestake | richard@... | 2025-11-29 | Fix broken layout, add Inter font, improve typography and styling to m... |
+| 49 | `fd0eaf74159f` | Rich Copestake | richard@... | 2025-11-29 | Add custom CSS styles and fix investments table header styling |
+| 50 | `de8e23a53541` | Rich Copestake | richard@... | 2025-11-29 | Transform sidebar with dark theme, colorful icons, gradients, and mode... |
+| 51 | `f79b8425022b` | Rich Copestake | richard@... | 2025-11-29 | Fix broken Updates page HTML structure and improve layout consistency |
+| 52 | `9ed4e463d343` | Rich Copestake | richard@... | 2025-11-29 | Fix broken Investments page HTML structure - remove duplicate divs and... |
+| 53 | `2aea62ab654b` | Rich Copestake | richard@... | 2025-11-29 | Redesign sidebar to match Dasho style with section headings, teal acti... |
+| 54 | `720a2497f045` | Rich Copestake | richard@... | 2025-11-30 | Fix investment creation: set transfer_id and pay_in_id to null instead... |
+| 55 | `58258a911ac5` | Rich Copestake | richard@... | 2025-11-30 | Fix investment type values: use 1,2 (Debt/Mezzanine) instead of 0,1 in... |
+| 56 | `cebf2f2fc9bb` | Rich Copestake | richard@... | 2025-11-30 | Fix investment type validation: handle empty strings and ensure type i... |
+| 57 | `d5cc42a96853` | Rich Copestake | richard@... | 2025-11-30 | Add comprehensive functionality to project detail page: quick actions,... |
+| 58 | `06ed5fc7005b` | Rich Copestake | richard@... | 2025-11-30 | Add comprehensive project management system: migrations, models, contr... |
+| 59 | `1a17cfdcde15` | Rich Copestake | richard@... | 2025-11-30 | Fix updates: pre-select project from URL, add multiple image upload wi... |
+| 60 | `7241f348fe2b` | Rich Copestake | richard@... | 2025-11-30 | Fix: Handle missing document tables gracefully until migrations are ru... |
+| 61 | `3a3a1b3ceef7` | Rich Copestake | richard@... | 2025-11-30 | Add SQL migration files for direct database execution |
+| 62 | `e3d67e9ee73f` | Rich Copestake | richard@... | 2025-11-30 | Fix SQL migration syntax for MySQL compatibility |
+| 63 | `705eadfed5eb` | Rich Copestake | richard@... | 2025-11-30 | Fix SQL: correct column reference in show_drawings ALTER statement |
+| 64 | `14b1f7eac23e` | Rich Copestake | richard@... | 2025-11-30 | Add URL route to run document migrations via browser |
+| 65 | `fb681d45a3f7` | Rich Copestake | richard@... | 2025-11-30 | Fix: Rename UpdateImage update() method to updateRecord() to avoid con... |
+| 66 | `ab8c0cbd4780` | Rich Copestake | richard@... | 2025-11-30 | Fix SQL migration: Remove AFTER clauses that cause errors when columns... |
+| 67 | `43a2b43f4a66` | Rich Copestake | richard@... | 2025-11-30 | Improve SQL statement parsing in migration route |
+| 68 | `f8f0b0ba1f55` | Rich Copestake | richard@... | 2025-11-30 | Add system status management: admin interface, login page widget, and ... |
+| 69 | `2107e7e407bd` | Rich Copestake | richard@... | 2025-11-30 | Add system status migration route |
+| 70 | `1638d1b8e29d` | Rich Copestake | richard@... | 2025-11-30 | Create admin dashboard view with stats and recent activity |
+| 71 | `18ae1f833bfe` | Rich Copestake | richard@... | 2025-11-30 | Redesign login page with modern gradient design and convert investor d... |
+| 72 | `add67970465e` | Rich Copestake | richard@... | 2025-11-30 | Disable failing tests workflow |
+| 73 | `17fe4e9703a3` | Rich Copestake | richard@... | 2025-11-30 | Redesign public homepage with modern gradient hero, improved typograph... |
+| 74 | `e9f0ddbafc06` | Rich Copestake | richard@... | 2025-11-30 | Redesign projects listing page with modern card grid, improved typogra... |
+| 75 | `37453ac500ee` | Rich Copestake | richard@... | 2025-11-30 | Fix Vite manifest error with fallback and add Create Account functiona... |
+| 76 | `5317fc1ba1b2` | Rich Copestake | richard@... | 2025-11-30 | Add fillable fields to Company model |
+| 77 | `54e352b84b6b` | Rich Copestake | richard@... | 2025-11-30 | Add graceful error handling for missing system_status table |
+| 78 | `1ad046d7ef13` | Rich Copestake | richard@... | 2025-11-30 | Fix system status form submission: improve checkbox handling, Quill ed... |
+| 79 | `8f0502772ad7` | Rich Copestake | richard@... | 2025-11-30 | Fix form validation error: remove required from hidden textarea and ad... |
+| 80 | `0d1622b58a3e` | Rich Copestake | richard@... | 2025-11-30 | Fix system status form: sync Quill editor with hidden textarea in real... |
+| 81 | `6739fa0b05f4` | Rich Copestake | richard@... | 2025-11-30 | Improve system status migration route: better SQL parsing and table ex... |
+| 82 | `44d27a215cb9` | Rich Copestake | richard@... | 2025-11-30 | Simplify system status migration: execute SQL directly and check table... |
+| 83 | `c1af8950e328` | Rich Copestake | richard@... | 2025-11-30 | Add date and time display to system status widget on login page |
+| 84 | `12fd9ce6fb27` | Rich Copestake | richard@... | 2025-11-30 | Add account search and document upload to investment creation form |
+| 85 | `8de8b5c33926` | Rich Copestake | richard@... | 2025-11-30 | Add Home link to sidebar, replace top bar title with breadcrumb naviga... |
+| 86 | `5ef422ee78d4` | Rich Copestake | richard@... | 2025-11-30 | Remove duplicate title from system status page |
+| 87 | `e7802e9bd04e` | Rich Copestake | richard@... | 2025-11-30 | Improve breadcrumb to show dynamic names (e.g., project names) for sho... |
+| 88 | `307964d2780d` | Rich Copestake | richard@... | 2025-11-30 | Fix account search with clear instructions, redesign account detail pa... |
+| 89 | `9a927fd26ba7` | Rich Copestake | richard@... | 2025-11-30 | Add helpdesk tab with chat-like ticket system, enhance dashboard overv... |
+| 90 | `3a67b534e192` | Rich Copestake | richard@... | 2025-11-30 | Add system status widget to investor dashboard and support ticket migr... |
+| 91 | `962ed052e80d` | Rich Copestake | richard@... | 2025-11-30 | Add support ticket migration route |
+| 92 | `95434314e0ae` | Rich Copestake | richard@... | 2025-11-30 | Fix support ticket migration SQL syntax - split statements and handle ... |
+| 93 | `d14bd31e9aa4` | Rich Copestake | richard@... | 2025-11-30 | Fix duplicate route name for investor.support.store - remove project p... |
+| 94 | `d96283345cf0` | Rich Copestake | richard@... | 2025-11-30 | Add notification bell to top bar, change notifications tab to email hi... |
+| 95 | `f4194245e3e6` | Rich Copestake | richard@... | 2025-11-30 | Add Alpine.js to admin layout for notification dropdown |
+| 96 | `8e4addd0cc40` | Rich Copestake | richard@... | 2025-11-30 | Complete system status updates feature with fixed button, add email hi... |
+| 97 | `7a1fa26f729d` | Rich Copestake | richard@... | 2025-11-30 | Add system status updates migration route |
+| 98 | `d4355d7e2b76` | Rich Copestake | richard@... | 2025-11-30 | Fix system status updates to handle missing table gracefully, make mig... |
+| 99 | `992a11b51d72` | Rich Copestake | richard@... | 2025-11-30 | Add admin-prefixed migration route redirects |
+| 100 | `7ca8c62309ab` | Rich Copestake | richard@... | 2025-11-30 | Add admin-prefixed migration routes that actually run the migrations |
+| 101 | `7b738f831667` | Rich Copestake | richard@... | 2025-11-30 | Add account shares migration route and handle missing table gracefully... |
+| 102 | `eed421c77ed2` | Rich Copestake | richard@... | 2025-11-30 | Fix account search on investments create page - improve query handling... |
+| 103 | `707b19f5335c` | Rich Copestake | richard@... | 2025-11-30 | Fix jQuery dependency for Select2 and remove Font Awesome integrity ch... |
+| 104 | `eff15637df27` | Rich Copestake | richard@... | 2025-11-30 | Fix foreign key constraint violation - convert empty/zero values to nu... |
+| 105 | `fd65ada8c447` | Rich Copestake | richard@... | 2025-11-30 | Fix nested form issue - remove form tag from document upload section |
+| 106 | `235fd095bbe2` | Rich Copestake | richard@... | 2025-11-30 | Fix null project error in investor dashboard - add null checks for pro... |
+| 107 | `7439222855a6` | Rich Copestake | richard@... | 2025-11-30 | Fix foreign key constraint - validate and convert invalid transfer_id/... |
+| 108 | `1cff5fcbc065` | Rich Copestake | richard@... | 2025-11-30 | Add login route alias to fix RouteNotFoundException |
+| 109 | `63525669703b` | Rich Copestake | richard@... | 2025-12-01 | Update homepage copy to reflect no new investment opportunities |
+| 110 | `ac92cf4b70cd` | Rich Copestake | richard@... | 2025-12-01 | Update homepage messaging and investment workflow fixes |
+| 111 | `a4c3a50ae43c` | Rich Copestake | richard@... | 2025-12-01 | Simplify homepage to platform update only |
+| 112 | `388e3030408e` | Rich Copestake | richard@... | 2025-12-01 | Simplify homepage to platform update only |
+| 113 | `5a9258a4c2ce` | Rich Copestake | richard@... | 2025-12-01 | Simplify homepage to platform update only |
+| 114 | `a6ed5c5b1ece` | Rich Copestake | richard@... | 2025-12-01 | Security fixes |
+| 115 | `6e4071e5602d` | Rich Copestake | richard@... | 2025-12-01 | Security fixes |
+| 116 | `ca6c567926eb` | Rich Copestake | richard@... | 2025-12-01 | Security fixes |
+| 117 | `f082d77a90e2` | Rich Copestake | richard@... | 2025-12-01 | Security fixes |
+| 118 | `d208f6da1046` | Rich Copestake | richard@... | 2025-12-01 | Email system deployment |
+| 119 | `9cf105880e7b` | Rich Copestake | richard@... | 2025-12-01 | Email system deployment |
+| 120 | `8663e5f85f92` | Rich Copestake | richard@... | 2025-12-03 | Wire Postmark email system and fix admin updates controller |
+| 121 | `7a0bb05d0d2d` | Rich Copestake | richard@... | 2025-12-03 | Add home route redirecting to investor login |
+| 122 | `c6f5abd5922a` | Rich Copestake | richard@... | 2025-12-03 | Restore full routes file and set home to investor login |
+| 123 | `7b89edaa043b` | Rich Copestake | richard@... | 2025-12-03 | Point 404 homepage link at investor login instead of home route |
+| 124 | `5288fd6030ca` | Rich Copestake | richard@... | 2025-12-03 | Remove Email Templates menu until routes are wired |
+| 125 | `2ae82b592169` | Rich Copestake | richard@... | 2025-12-03 | Temporarily remove Changelog menu link to avoid missing route |
+| 126 | `af7916aaff0a` | Rich Copestake | richard@... | 2025-12-03 | Ensure home route redirects to investor login |
+| 127 | `c511c4b30246` | Rich Copestake | richard@... | 2025-12-03 | Restore full routes file including investor login |
+| 128 | `f3786d22c892` | Rich Copestake | richard@... | 2025-12-03 | Add admin changelog routes |
+| 129 | `c9613b7927ec` | Rich Copestake | richard@... | 2025-12-03 | Order projects numerically by project_id in updates dropdown |
+| 130 | `768e978f1763` | Rich Copestake | richard@... | 2025-12-03 | Require symfony/postmark-mailer for Postmark transport |
+| 131 | `58eca2166f5e` | Rich Copestake | richard@... | 2025-12-04 | Fix null project error in ProjectUpdateMail |
+| 132 | `9683def0615a` | Rich Copestake | richard@... | 2025-12-04 | Fix image display in update show view |
+| 133 | `b4c7333b37c7` | Rich Copestake | richard@... | 2025-12-04 | Simplify image URL generation to use asset() directly |
+| 134 | `2046d623d192` | Rich Copestake | richard@... | 2025-12-04 | Add admin-prefixed route for document migrations |
+| 135 | `7a9358cb4b56` | Rich Copestake | richard@... | 2025-12-04 | Improve document migrations route with table verification |
+| 136 | `14af6c9ae239` | Rich Copestake | richard@... | 2025-12-04 | Add direct route to create account_documents table |
+| 137 | `041af7906ba3` | Rich Copestake | richard@... | 2025-12-04 | Make document file upload optional |
+| 138 | `dc561275e877` | Rich Copestake | richard@... | 2025-12-04 | Fix foreign key validation for transfer_id and pay_in_id |
+| 139 | `da4cef603edb` | Rich Copestake | richard@... | 2025-12-08 | Fix 'Unknown' project names and add personal documents section |
+| 140 | `f76cbb5d268f` | Rich Copestake | richard@... | 2025-12-08 | Fix 'Unknown Project' display in investor dashboard |
+| 141 | `7a5b465c41c6` | Rich Copestake | richard@... | 2025-12-08 | Improve project name loading in account page with better fallbacks |
+| 142 | `65ea94f26b33` | Rich Copestake | richard@... | 2025-12-08 | Fix 'Call to a member function format() on string' error |
+| 143 | `2a9619194fd3` | Rich Copestake | richard@... | 2025-12-08 | Fix 'Call to a member function format() on string' error in investor d... |
+| 144 | `81b3366cc2ef` | Rich Copestake | richard@... | 2025-12-08 | Fix project loading in investor dashboard to match admin account page |
+| 145 | `f1d3029e9ca9` | Rich Copestake | richard@... | 2025-12-08 | Fix project updates accordion and Recent Activity section |
+| 146 | `ae9ee4eacb4e` | Rich Copestake | richard@... | 2025-12-08 | Fix Email History tab loading and improve fallback message |
+| 147 | `ec1d3be41328` | Rich Copestake | richard@... | 2025-12-08 | Add click-to-view functionality for email history |
+| 148 | `52b42c350fcc` | Rich Copestake | richard@... | 2025-12-09 | Add support for multiple file types in project updates |
+| 149 | `65651a1c3d85` | Rich Copestake | richard@... | 2025-12-09 | Update investor dashboard: show only most recent update, remove paymen... |
+| 150 | `272897c3219d` | Rich Copestake | richard@... | 2025-12-09 | Update investor dashboard to match brand colors |
+| 151 | `e408953f6794` | Rich Copestake | richard@... | 2025-12-10 | Add cache clearing route for debugging |
+| 152 | `7a03b503e9a0` | Rich Copestake | richard@... | 2025-12-10 | Fix cache clearing route to handle SQLite errors gracefully |
+| 153 | `3d31c1cd1a04` | Rich Copestake | richard@... | 2025-12-10 | Remove duplicate masquerading banner from investor dashboard (already ... |
+| 154 | `de2b2ca7dff7` | Rich Copestake | richard@... | 2025-12-10 | Add missing @endif before @endsection to fix ParseError |
+| 155 | `94654fff5379` | Rich Copestake | richard@... | 2025-12-10 | Remove extra @endif - investigating ParseError |
+| 156 | `50fdff966cee` | Rich Copestake | richard@... | 2025-12-10 | Fix CI workflow: Update composer lock file before install to handle ou... |
+| 157 | `5c208e8f6b9c` | Rich Copestake | richard@... | 2025-12-10 | Disable GitHub Actions lint workflow - Forge handles deployments |
+| 158 | `af06cff2a18b` | Rich Copestake | richard@... | 2025-12-10 | Trigger deployment: Ensure syntax error fix is deployed |
+| 159 | `39540a972e01` | Rich Copestake | richard@... | 2025-12-10 | Fix syntax error: Add missing @endif before @endsection |
+| 160 | `125fcfa79915` | Rich Copestake | richard@... | 2025-12-10 | Fix: Add null checks to UpdateImage url and thumbnail_url accessors to... |
+| 161 | `8a5907937b79` | Rich Copestake | richard@... | 2025-12-10 | Fix: Add null check for file_path in getFileTypeCategoryAttribute to p... |
+| 162 | `3d72565e3cea` | Rich Copestake | richard@... | 2025-12-10 | Fix: Add error handling and null checks in UpdateShowController to pre... |
+| 163 | `5fb1b661a4f1` | Rich Copestake | richard@... | 2025-12-10 | Fix: Add additional type checks and error handling in UpdateImage acce... |
+| 164 | `ae91cdfc60c2` | Rich Copestake | richard@... | 2025-12-10 | Fix: Improve pathinfo handling for non-image files to prevent array ke... |
+| 165 | `3803f40f2078` | Rich Copestake | richard@... | 2025-12-10 | Fix: Add comprehensive error handling and suppress pathinfo warnings t... |
+| 166 | `c2eb9f65ab9d` | Rich Copestake | richard@... | 2025-12-10 | Fix: Add comprehensive error handling in InvestorDashboardController i... |
+| 167 | `94e789d0a072` | Rich Copestake | richard@... | 2025-12-10 | Fix: Replace pathinfo() with custom string parsing to eliminate undefi... |
+| 168 | `da8402967ec6` | Rich Copestake | richard@... | 2025-12-10 | Fix: Improve substr() handling in UpdateImage to prevent undefined arr... |
+| 169 | `5dcc0bcfba72` | Rich Copestake | richard@... | 2025-12-10 | Fix: Add comprehensive type checking and error handling to prevent und... |
+| 170 | `5db8bd4babf2` | Rich Copestake | richard@... | 2025-12-10 | Fix: Access file_path directly from attributes to prevent casting issu... |
+| 171 | `058bcbe1bf68` | Rich Copestake | richard@... | 2025-12-11 | Fix: Add comprehensive error handling in UpdateShowController and safe... |
+| 172 | `33b4e3840e34` | Rich Copestake | richard@... | 2025-12-11 | Fix: Improve error handling in InvestorDashboardController image mappi... |
+| 173 | `923d6cc78c3c` | Rich Copestake | richard@... | 2025-12-11 | Revert: Simplify updates section to only handle images |
+| 174 | `7e6aa3c17180` | Rich Copestake | richard@... | 2025-12-11 | Fix: Build image URLs directly from file_path to avoid accessor method... |
+| 175 | `9403b42696f3` | Rich Copestake | richard@... | 2025-12-11 | Remove images and files from updates section in investor dashboard |
+| 176 | `8ec71136baf2` | Rich Copestake | richard@... | 2025-12-11 | Fix: Remove orphaned @endif causing syntax error |
+| 177 | `ab095ed6970a` | Rich Copestake | richard@... | 2025-12-11 | Fix: Add explicit text colors to prevent white text on white backgroun... |
+| 178 | `e6281e563d22` | Rich Copestake | richard@... | 2025-12-11 | Fix: Add text colors to loading and empty states |
+| 179 | `e8d5e7ccdfe9` | Rich Copestake | richard@... | 2025-12-11 | Fix: Add explicit white text colors to project header sections |
+| 180 | `e8533d471bdb` | Rich Copestake | richard@... | 2025-12-11 | Fix: Add explicit white text colors to payout section header |
+| 181 | `b22584f7e5dd` | Rich Copestake | richard@... | 2025-12-11 | Fix: Render HTML properly in update comments instead of escaping |
+| 182 | `cc76c241450f` | Rich Copestake | richard@... | 2025-12-11 | Change project header from gradient to solid purple background |
+| 183 | `fce7fdfd56a5` | Rich Copestake | richard@... | 2025-12-11 | Change Project Not Found header to solid purple |
+| 184 | `0b77d8a6a5b4` | Rich Copestake | richard@... | 2025-12-11 | Update colors: Replace bright purple/teal with subtle slate tones |
+| 185 | `ee825a6f997e` | Rich Copestake | richard@... | 2025-12-11 | Complete color update: Replace remaining purple/teal with slate tones |
+| 186 | `d905af97eb0e` | Rich Copestake | richard@... | 2025-12-11 | Add images and documents support to update modal display |
+| 187 | `1397ea25f6be` | Rich Copestake | richard@... | 2025-12-11 | Add file_type and mime_type columns to update_images table |
+| 188 | `c27e3a172c16` | Rich Copestake | richard@... | 2025-12-11 | Add route to run update_images columns migration |
+| 189 | `078f49b1ba8b` | Rich Copestake | richard@... | 2025-12-12 | Cursor: Apply local changes for cloud agent |
+| 190 | `bf57ea2f9dda` | Rich Copestake | richard@... | 2025-12-12 | Fix Blade syntax error: remove blank line between @endpush and @endsec... |
+| 191 | `be4a5a8c4f29` | Rich Copestake | richard@... | 2025-12-12 | Fix Blade syntax: add proper spacing between @endpush and @endsection ... |
+| 192 | `776b7836a8b5` | Rich Copestake | richard@... | 2025-12-12 | Remove file displays from updates, show only images in investor dashbo... |
+| 193 | `75f838cc39a7` | Rich Copestake | richard@... | 2025-12-12 | Fix Blade syntax: replace where() with filter() closures to avoid pars... |
+| 194 | `2f9df78a24ad` | Rich Copestake | richard@... | 2025-12-12 | Fix Blade syntax: replace filter closures with simple @if checks insid... |
+| 195 | `7f229c8962ab` | Rich Copestake | richard@... | 2025-12-12 | Update investor dashboard: verify Blade structure and fix image filter... |
+| 196 | `29171921097c` | Rich Copestake | richard@... | 2025-12-12 | Fix: restore missing @endpush and @endsection directives at end of fil... |
+| 197 | `eca4b042531c` | Rich Copestake | richard@... | 2025-12-14 | Ensure file ends with newline after @endsection |
+| 198 | `a9a2c0846496` | Rich Copestake | richard@... | 2025-12-14 | Add runtime instrumentation to InvestorDashboardController for debuggi... |
+| 199 | `1678b1b76b8c` | Rich Copestake | richard@... | 2025-12-15 | Add server-side logging to capture actual file state and errors on ser... |
+| 200 | `198f922b1892` | Rich Copestake | richard@... | 2025-12-15 | Move @push outside @section to fix Blade compilation error |
+| 201 | `79c71930eb4a` | Rich Copestake | richard@... | 2025-12-15 | Update dashboard and migration files |
+| 202 | `4a1ddde3d9e3` | Rich Copestake | richard@... | 2025-12-15 | Fix Documents Tab section: correct structure with @endif and closing d... |
+| 203 | `fdd308365a74` | Rich Copestake | richard@... | 2025-12-15 | Fix Documents Tab: remove extra closing div tag causing structure issu... |
+| 204 | `0381624f8dce` | Rich Copestake | richard@... | 2025-12-15 | Update dashboard file |
+| 205 | `43fa8272c30e` | Rich Copestake | richard@... | 2025-12-15 | Update investor dashboard |
+| 206 | `6a8df1d32d55` | Rich Copestake | richard@... | 2025-12-15 | Restore missing @extends directive in dashboard |
+| 207 | `8eb4e96952d1` | Rich Copestake | richard@... | 2025-12-15 | Fix missing @endpush directive causing Blade compilation error |
+| 208 | `30ea3cc34301` | Rich Copestake | richard@... | 2025-12-15 | Remove all image displays from project updates |
+| 209 | `0eb56b2ecaf3` | Rich Copestake | richard@... | 2025-12-15 | Add file and image display to project updates sections |
+| 210 | `c9e44631148d` | Rich Copestake | richard@... | 2025-12-15 | Fix Alpine.js nested template tags causing Blade parsing error |
+| 211 | `c321132f871b` | Rich Copestake | richard@... | 2025-12-15 | Remove all image and file displays from project updates |
+| 212 | `6ea03d87f18d` | Rich Copestake | richard@... | 2025-12-15 | Add per-project performance summaries, improved empty states, and cros... |
+| 213 | `5fe5581906e5` | Rich Copestake | richard@... | 2025-12-15 | Complete cross-linking and improved empty states |
+| 214 | `5ab169ea633b` | Rich Copestake | richard@... | 2025-12-15 | Add help link to email history empty state |
+| 215 | `6cc854cce617` | Rich Copestake | richard@... | 2025-12-15 | Fix Postmark integration for update emails and add resend functionalit... |
+| 216 | `0fc8679a4d7d` | Rich Copestake | richard@... | 2025-12-15 | Complete Postmark fix and resend route |
+| 217 | `074b411600c8` | Rich Copestake | richard@... | 2025-12-15 | Fix investor updates query to only show sent, non-deleted updates with... |
+| 218 | `578ea764de3b` | Rich Copestake | richard@... | 2025-12-16 | Fix images/files in updates: include in emails, simplify dashboard dis... |
+| 219 | `d2346199e327` | Rich Copestake | richard@... | 2025-12-16 | Simplify email history file display to match dashboard updates |
+| 220 | `5309ff614ed5` | Rich Copestake | richard@... | 2025-12-16 | Add attachments section to project update email template |
+| 221 | `39cb67c07396` | Rich Copestake | richard@... | 2025-12-16 | Add resend update email feature for investors |
+| 222 | `bfed3370f2c0` | Rich Copestake | richard@... | 2025-12-16 | Add resend button to Recent Activity section |
+| 223 | `4927163b4477` | Rich Copestake | richard@... | 2025-12-17 | Fix email sending: use project internal id for investments lookup, add... |
+| 224 | `2212fdb49a65` | Rich Copestake | richard@... | 2025-12-17 | Add visual email confirmation indicators to updates list and detail pa... |
+| 225 | `641cbbabe9b9` | Rich Copestake | richard@... | 2025-12-17 | Add success/error message display to updates index page |
+| 226 | `420cbbc3df1f` | Rich Copestake | richard@... | 2025-12-17 | Add admin panel link to investor dashboard for users with admin permis... |
+| 227 | `ae08f087fbb6` | Rich Copestake | richard@... | 2025-12-17 | Fix undefined internalSentCount in bulk email dispatch and track inter... |
+| 228 | `52a077197ae3` | Rich Copestake | richard@... | 2025-12-17 | Fix bulkEmailPreflight project ID lookup and improve zero-investor fee... |
+| 229 | `72dd7f0e36c4` | Rich Copestake | richard@... | 2025-12-17 | Add improved zero-investor feedback to update store method |
+| 230 | `00b5b6c75d69` | Rich Copestake | richard@... | 2025-12-17 | Add detailed logging to debug zero investor email issue |
+| 231 | `c0b7b40e6817` | Rich Copestake | richard@... | 2025-12-17 | Improve account loading and add detailed debugging for investor accoun... |
+| 232 | `3616d12a94f0` | Rich Copestake | richard@... | 2025-12-17 | Fix misleading error message: distinguish between no emails vs email d... |
+| 233 | `bb1d8fcb3b30` | Rich Copestake | richard@... | 2025-12-17 | Remove duplicate logging line |
+| 234 | `4c32ee634ad8` | Rich Copestake | richard@... | 2025-12-17 | Add global email log system with Postmark integration, delivery status... |
+| 235 | `8543ba9780c3` | Rich Copestake | richard@... | 2025-12-17 | Fix PHP error in LogEmailSent and create full email template managemen... |
+| 236 | `b4927e2b93e7` | Rich Copestake | richard@... | 2025-12-17 | Fix test email sending functionality in EmailTemplateController |
+| 237 | `89d6acc1399c` | Rich Copestake | richard@... | 2025-12-17 | Add missing email-logs routes |
+| 238 | `eaced869ee01` | Rich Copestake | richard@... | 2025-12-17 | Fix EmailLog update() method name conflict - rename to updateRelation(... |
+| 239 | `cbbc47352aaf` | Rich Copestake | richard@... | 2025-12-19 | Add comprehensive project history report with time estimates |
+| 240 | `61f81b83e62c` | Rich Copestake | richard@... | 2025-12-19 | Add detailed time tracking breakdown for billing purposes |
+| 241 | `22ea385388f1` | Rich Copestake | richard@... | 2025-12-19 | Update project reports with comprehensive 4-week time tracking includi... |
+| 242 | `bc2cb22cd742` | Rich Copestake | richard@... | 2025-12-19 | Add comprehensive GitHub commits log with full details |
+| 243 | `8444d5943fde` | Rich Copestake | richard@... | 2025-12-19 | Update GitHub commits log: include all commits from project start (Aug... |
+| 244 | `6c9ed51f8d44` | Rich Copestake | richard@... | 2025-12-19 | Remove temporary commit log generation script |
+| 245 | `f567023e99b3` | Rich Copestake | richard@... | 2025-12-19 | Update commit counts: 243 total commits (231 by Rich Copestake, 12 by ... |
+| 246 | `f04857650481` | Rich Copestake | richard@... | 2025-12-19 | Update to 244 total commits (232 by Rich Copestake, 12 by Chris Rouxel... |
+| 247 | `86f540fd2317` | Rich Copestake | richard@... | 2025-12-19 | Add complete chronological commit list with all commits from August 19... |
+
+**Note:** All commits from #13 onwards are by Rich Copestake (richard@rise-capital.co.uk). The "Detailed Commit Log" section above contains complete file change details for commits from November 29, 2025 onwards.
+
+**To view the complete file change details for any commit, use:**
 ```bash
 git show <commit-hash> --stat
 ```
 
-Or view on GitHub at: https://github.com/richarddev20/jvlegacy/commit/<commit-hash>
+**Or view on GitHub at:** https://github.com/richarddev20/jvlegacy/commit/<commit-hash>
 
 ---
 
