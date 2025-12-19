@@ -22,9 +22,9 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Commits** | 241 |
-| **Commits by Rich Copestake** | 230 |
-| **Commits by Chris Rouxel** | 11 |
+| **Total Commits** | 243 |
+| **Commits by Rich Copestake** | 231 |
+| **Commits by Chris Rouxel** | 12 |
 | **Date Range** | Aug 19, 2025 - Dec 19, 2025 |
 | **Project Start Date** | August 19, 2025 |
 | **Average Commits Per Day** | ~12 |
@@ -685,13 +685,13 @@ December 2025:
 ## Developer Contributions
 
 ### Rich Copestake (richard@rise-capital.co.uk)
-- **Total Commits:** 230
+- **Total Commits:** 231
 - **Primary Focus:** Full-stack development, bug fixes, feature implementation
 - **Key Areas:** Dashboard, email system, admin panel, bug fixes
 - **Period:** November 17, 2025 - December 19, 2025
 
 ### Chris Rouxel (chris@jaevee.co.uk)
-- **Total Commits:** 11
+- **Total Commits:** 12
 - **Primary Focus:** Initial setup, email configuration
 - **Key Areas:** Mailgun setup, logo additions, initial commits
 - **Period:** August 19, 2025 - August 30, 2025
@@ -702,7 +702,7 @@ December 2025:
 
 **Repository:** github.com/richarddev20/jvlegacy  
 **Branch:** main  
-**Total Commits (Complete History):** 241  
+**Total Commits (Complete History):** 243  
 **Lines Added:** ~8,000+  
 **Lines Deleted:** ~3,000+  
 **Net Change:** ~5,000+ lines  
