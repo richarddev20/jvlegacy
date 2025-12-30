@@ -19,16 +19,21 @@ class SetupMongoDB extends Command
         // Validate MongoDB configuration before attempting connection
         $dsn = config('database.connections.legacy.dsn');
         $host = config('database.connections.legacy.host');
+        $username = config('database.connections.legacy.username');
+        $password = config('database.connections.legacy.password');
+        
+        // Check if host is already a connection string (mongodb:// or mongodb+srv://)
+        $hostIsConnectionString = !empty($host) && (str_starts_with($host, 'mongodb://') || str_starts_with($host, 'mongodb+srv://'));
         
         if (empty($dsn) && empty($host)) {
             $this->error('❌ MongoDB configuration is missing!');
             $this->newLine();
             $this->line('Please set one of the following in your .env file:');
             $this->line('  - DB_LEGACY_DSN (full connection string), OR');
-            $this->line('  - DB_LEGACY_HOST (hostname/IP address)');
+            $this->line('  - DB_LEGACY_HOST (hostname/IP address or connection string)');
             $this->newLine();
             $this->line('Example DSN:');
-            $this->line('  DB_LEGACY_DSN=mongodb://username:password@host:27017/database');
+            $this->line('  DB_LEGACY_DSN=mongodb+srv://username:password@host/database?authSource=admin');
             $this->newLine();
             $this->line('Example Host (will build DSN automatically):');
             $this->line('  DB_LEGACY_HOST=your-mongodb-host');
@@ -36,7 +41,21 @@ class SetupMongoDB extends Command
             $this->line('  DB_LEGACY_USERNAME=your-username');
             $this->line('  DB_LEGACY_PASSWORD=your-password');
             $this->line('  DB_LEGACY_DATABASE=your-database');
+            $this->newLine();
+            $this->line('For DigitalOcean MongoDB SRV:');
+            $this->line('  DB_LEGACY_HOST=mongodb+srv://hostname (or use DB_LEGACY_DSN with full string)');
             return 1;
+        }
+        
+        // If host looks like a connection string but we have username/password, we need to build proper DSN
+        if ($hostIsConnectionString && !empty($username) && !empty($password)) {
+            // Extract hostname from connection string
+            $hostname = preg_replace('/^mongodb\+?srv?:\/\//', '', $host);
+            $hostname = preg_replace('/\/.*$/', '', $hostname); // Remove path if present
+            $hostname = preg_replace('/\?.*$/', '', $hostname); // Remove query string if present
+            
+            // Use the host as base but we'll rebuild it in getMongoClient
+            // For now, just note that we have what we need
         }
 
         try {
@@ -133,15 +152,50 @@ class SetupMongoDB extends Command
             $port = config('database.connections.legacy.port', 27017);
             $username = config('database.connections.legacy.username');
             $password = config('database.connections.legacy.password');
+            $database = config('database.connections.legacy.database', 'admin');
+            $authDatabase = config('database.connections.legacy.options.database', 'admin');
             
             if (empty($host)) {
                 throw new \Exception('MongoDB host is required. Set DB_LEGACY_HOST in your .env file.');
             }
             
-            if ($username && $password) {
-                $dsn = "mongodb://{$username}:{$password}@{$host}:{$port}";
+            // Check if host is already a connection string (mongodb:// or mongodb+srv://)
+            $isSrv = str_starts_with($host, 'mongodb+srv://');
+            $isStandard = str_starts_with($host, 'mongodb://');
+            
+            if ($isSrv || $isStandard) {
+                // Extract hostname from connection string
+                $hostname = preg_replace('/^mongodb\+?srv?:\/\//', '', $host);
+                $hostname = preg_replace('/\/.*$/', '', $hostname); // Remove path if present
+                $hostname = preg_replace('/\?.*$/', '', $hostname); // Remove query string if present
+                $hostname = preg_replace('/@.*$/', '', $hostname); // Remove credentials if present
+                
+                // Use SRV protocol if original was SRV
+                $protocol = $isSrv ? 'mongodb+srv' : 'mongodb';
+                
+                // Build connection string with credentials
+                if ($username && $password) {
+                    $dsn = "{$protocol}://{$username}:{$password}@{$hostname}/{$database}";
+                } else {
+                    $dsn = "{$protocol}://{$hostname}/{$database}";
+                }
+                
+                // Add authSource if different from database
+                if ($authDatabase !== $database) {
+                    $dsn .= "?authSource={$authDatabase}";
+                }
             } else {
-                $dsn = "mongodb://{$host}:{$port}";
+                // Standard hostname, build connection string
+                if ($username && $password) {
+                    $dsn = "mongodb://{$username}:{$password}@{$host}:{$port}/{$database}";
+                } else {
+                    $dsn = "mongodb://{$host}:{$port}/{$database}";
+                }
+                
+                // Add authSource if different from database
+                if ($authDatabase !== $database) {
+                    $dsn .= "?authSource={$authDatabase}";
+                }
             }
         }
 
