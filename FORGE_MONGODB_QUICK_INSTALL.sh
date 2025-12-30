@@ -10,13 +10,16 @@ if php -m | grep -q mongodb; then
     exit 0
 fi
 
-echo "📦 Installing MongoDB extension via PECL..."
+echo "📦 Installing OpenSSL development libraries (required for DigitalOcean MongoDB)..."
+sudo apt-get update -qq
+sudo apt-get install -y php8.4-dev pkg-config libssl-dev libcurl4-openssl-dev build-essential
+
+echo "📦 Installing MongoDB extension via PECL (with SSL support)..."
 sudo pecl install mongodb <<< ""
 
 if [ $? -ne 0 ]; then
-    echo "❌ PECL installation failed. Installing dependencies..."
-    sudo apt-get update
-    sudo apt-get install -y php8.4-dev pkg-config libssl-dev build-essential
+    echo "❌ PECL installation failed. Retrying..."
+    sudo pecl uninstall mongodb 2>/dev/null || true
     sudo pecl install mongodb <<< ""
 fi
 

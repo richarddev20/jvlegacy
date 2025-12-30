@@ -12,15 +12,18 @@ In your Forge dashboard:
 2. **Add this at the very top** (before `composer install`):
 
 ```bash
-# Install MongoDB extension if not present
+# Install MongoDB extension if not present (with SSL support for DigitalOcean)
 if ! php -m | grep -q mongodb; then
-    echo "Installing MongoDB extension..."
+    echo "Installing MongoDB extension with SSL support..."
+    # Ensure OpenSSL libraries are installed FIRST
+    sudo apt-get update -qq
+    sudo apt-get install -y php8.4-dev pkg-config libssl-dev libcurl4-openssl-dev build-essential
     sudo pecl install mongodb <<< "" 2>&1 | tee /tmp/mongodb_install.log
     if [ $? -eq 0 ]; then
         echo "extension=mongodb.so" | sudo tee /etc/php/8.4/cli/conf.d/20-mongodb.ini
         echo "extension=mongodb.so" | sudo tee /etc/php/8.4/fpm/conf.d/20-mongodb.ini
         sudo service php8.4-fpm restart
-        echo "MongoDB extension installed successfully"
+        echo "MongoDB extension installed successfully with SSL support"
     else
         echo "MongoDB extension installation failed. Check /tmp/mongodb_install.log"
         exit 1
@@ -90,15 +93,18 @@ Here's a complete deployment script with MongoDB installation:
 ```bash
 cd /home/forge/jvlegacy-eqqugdgf.on-forge.com
 
-# Install MongoDB extension if not present
+# Install MongoDB extension if not present (with SSL support for DigitalOcean)
 if ! php -m | grep -q mongodb; then
-    echo "Installing MongoDB extension..."
+    echo "Installing MongoDB extension with SSL support..."
+    # Ensure OpenSSL libraries are installed FIRST
+    sudo apt-get update -qq
+    sudo apt-get install -y php8.4-dev pkg-config libssl-dev libcurl4-openssl-dev build-essential
     sudo pecl install mongodb <<< "" 2>&1 | tee /tmp/mongodb_install.log
     if [ $? -eq 0 ]; then
         echo "extension=mongodb.so" | sudo tee /etc/php/8.4/cli/conf.d/20-mongodb.ini
         echo "extension=mongodb.so" | sudo tee /etc/php/8.4/fpm/conf.d/20-mongodb.ini
         sudo service php8.4-fpm restart
-        echo "✅ MongoDB extension installed"
+        echo "✅ MongoDB extension installed with SSL support"
     else
         echo "❌ MongoDB extension installation failed"
         cat /tmp/mongodb_install.log
@@ -134,8 +140,45 @@ You may need to install dependencies:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y php8.4-dev pkg-config libssl-dev
+sudo apt-get install -y php8.4-dev pkg-config libssl-dev libcurl4-openssl-dev build-essential
 sudo pecl install mongodb
+```
+
+### SSL Support Required for DigitalOcean MongoDB
+
+**Important:** DigitalOcean MongoDB requires SSL/TLS connections. If you see the error:
+```
+Can't create SSL client, SSL not enabled in this build
+```
+
+The MongoDB extension was compiled without SSL support. Fix it by:
+
+1. **Run the SSL fix script:**
+```bash
+# Download and run the fix script
+curl -O https://raw.githubusercontent.com/your-repo/jvlegacy/main/FIX_MONGODB_SSL.sh
+chmod +x FIX_MONGODB_SSL.sh
+sudo ./FIX_MONGODB_SSL.sh
+```
+
+2. **Or manually reinstall with SSL support:**
+```bash
+# Install OpenSSL development libraries FIRST
+sudo apt-get update
+sudo apt-get install -y php8.4-dev pkg-config libssl-dev libcurl4-openssl-dev build-essential
+
+# Remove existing extension
+sudo pecl uninstall mongodb
+sudo rm -f /etc/php/8.4/cli/conf.d/20-mongodb.ini
+sudo rm -f /etc/php/8.4/fpm/conf.d/20-mongodb.ini
+
+# Reinstall with SSL support (will auto-detect OpenSSL)
+sudo pecl install mongodb <<< ""
+
+# Re-enable extension
+echo "extension=mongodb.so" | sudo tee /etc/php/8.4/cli/conf.d/20-mongodb.ini
+echo "extension=mongodb.so" | sudo tee /etc/php/8.4/fpm/conf.d/20-mongodb.ini
+sudo service php8.4-fpm restart
 ```
 
 ### If Extension Still Not Found
