@@ -16,12 +16,34 @@ class SetupMongoDB extends Command
         $this->info('🚀 Setting up MongoDB database structure...');
         $this->newLine();
 
+        // Validate MongoDB configuration before attempting connection
+        $dsn = config('database.connections.legacy.dsn');
+        $host = config('database.connections.legacy.host');
+        
+        if (empty($dsn) && empty($host)) {
+            $this->error('❌ MongoDB configuration is missing!');
+            $this->newLine();
+            $this->line('Please set one of the following in your .env file:');
+            $this->line('  - DB_LEGACY_DSN (full connection string), OR');
+            $this->line('  - DB_LEGACY_HOST (hostname/IP address)');
+            $this->newLine();
+            $this->line('Example DSN:');
+            $this->line('  DB_LEGACY_DSN=mongodb://username:password@host:27017/database');
+            $this->newLine();
+            $this->line('Example Host (will build DSN automatically):');
+            $this->line('  DB_LEGACY_HOST=your-mongodb-host');
+            $this->line('  DB_LEGACY_PORT=27017');
+            $this->line('  DB_LEGACY_USERNAME=your-username');
+            $this->line('  DB_LEGACY_PASSWORD=your-password');
+            $this->line('  DB_LEGACY_DATABASE=your-database');
+            return 1;
+        }
+
         try {
-            $connection = DB::connection('legacy');
-            
-            // Get MongoDB client
-            $client = $this->getMongoClient($connection);
-            $database = $client->selectDatabase(config('database.connections.legacy.database'));
+            // Get MongoDB client directly (bypass Laravel connection if config is incomplete)
+            $client = $this->getMongoClient(null);
+            $databaseName = config('database.connections.legacy.database', 'admin');
+            $database = $client->selectDatabase($databaseName);
 
             // List of collections to create with their indexes
             $collections = $this->getCollectionsConfig();
@@ -89,26 +111,32 @@ class SetupMongoDB extends Command
         return 0;
     }
 
-    protected function getMongoClient($connection)
+    protected function getMongoClient($connection = null)
     {
-        // Try to get client from connection
-        try {
-            if (method_exists($connection, 'getMongoClient')) {
-                return $connection->getMongoClient();
+        // Try to get client from connection if provided
+        if ($connection !== null) {
+            try {
+                if (method_exists($connection, 'getMongoClient')) {
+                    return $connection->getMongoClient();
+                }
+            } catch (\Exception $e) {
+                // Continue to fallback
             }
-        } catch (\Exception $e) {
-            // Continue to fallback
         }
 
-        // Fallback: create client directly from config
+        // Create client directly from config
         $dsn = config('database.connections.legacy.dsn');
         
-        if (!$dsn) {
+        if (empty($dsn)) {
             // Build DSN from components
             $host = config('database.connections.legacy.host');
             $port = config('database.connections.legacy.port', 27017);
             $username = config('database.connections.legacy.username');
             $password = config('database.connections.legacy.password');
+            
+            if (empty($host)) {
+                throw new \Exception('MongoDB host is required. Set DB_LEGACY_HOST in your .env file.');
+            }
             
             if ($username && $password) {
                 $dsn = "mongodb://{$username}:{$password}@{$host}:{$port}";
